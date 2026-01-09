@@ -15,6 +15,8 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     m_robotContainer = new RobotContainer();
+    
+    FollowPathCommand.warmupCommand().schedule();
   }
 
   @Override
