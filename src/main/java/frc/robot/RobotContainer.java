@@ -50,12 +50,15 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser("");
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        Command squareAuto = new PathPlannerAuto("Square");
 
-        
+        // Auto sandbox
         // Square Auto
+        Command squareAuto = new PathPlannerAuto("Square");
         joystick.x().onTrue(squareAuto); // Not sure if this will work. Might need a custom squareAutoCommand object that calls Command.schedule() for the execute function.
         // joystick.x().onTrue(new SquareAutoCommand(squareAuto));
+        
+        // // Orchestra
+        // m_driverController.a().onTrue(new OrchestraCommand(m_orchestra));
     }
 
     private void configureBindings() {
