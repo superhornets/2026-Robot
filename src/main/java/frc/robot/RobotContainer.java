@@ -22,7 +22,12 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.Commands.OrchestraPlayCommand;
+import frc.robot.Commands.OrchestraStopCommand;
 import frc.robot.Commands.SquareAutoCommand;
+
+import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
@@ -41,6 +46,17 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
+    TalonFX[] instruments = {
+        new TalonFX(11), 
+        new TalonFX(12), 
+        new TalonFX(21), 
+        new TalonFX(22), 
+        new TalonFX(31), 
+        new TalonFX(32), 
+        new TalonFX(41), 
+        new TalonFX(42)};
+    private final Orchestra m_orchestra = new Orchestra();
+
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public RobotContainer() {
@@ -58,7 +74,13 @@ public class RobotContainer {
         // joystick.x().onTrue(new SquareAutoCommand(squareAuto));
         
         // // Orchestra
-        // m_driverController.a().onTrue(new OrchestraCommand(m_orchestra));
+        for(TalonFX talon : instruments)
+        {
+            m_orchestra.addInstrument(talon);
+        }
+        m_orchestra.loadMusic("thunder.chrp");
+        joystick.leftTrigger().onTrue(new OrchestraPlayCommand(m_orchestra));
+        joystick.leftBumper().onTrue(new OrchestraStopCommand(m_orchestra));
     }
 
     private void configureBindings() {
