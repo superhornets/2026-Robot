@@ -8,8 +8,12 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -18,10 +22,19 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Vision;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+
 import frc.robot.subsystems.VisionSystem;
 
+import frc.robot.Commands.OrchestraPlayCommand;
+import frc.robot.Commands.OrchestraStopCommand;
+import frc.robot.Commands.SquareAutoCommand;
+
+import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.hardware.TalonFX;
+
 public class RobotContainer {
-    private double SpeedMultiplier = 0.5;
+private final SendableChooser<Command> autoChooser;
+    private double SpeedMultiplier = 0.25;
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * SpeedMultiplier; // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * SpeedMultiplier; // 3/4 of a rotation per second max angular velocity
 
@@ -36,12 +49,43 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
+    TalonFX[] instruments = {
+        new TalonFX(11), 
+        new TalonFX(12), 
+        new TalonFX(21), 
+        new TalonFX(22), 
+        new TalonFX(31), 
+        new TalonFX(32), 
+        new TalonFX(41), 
+        new TalonFX(42)};
+    private final Orchestra m_orchestra = new Orchestra();
+
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public final VisionSystem vision = new VisionSystem(drivetrain::addVisionMeasurement);
 
     public RobotContainer() {
         configureBindings();
+        
+        // Build an auto chooser. This will use Commands.none() as the default option.
+        autoChooser = AutoBuilder.buildAutoChooser("");
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+
+
+        // Auto sandbox
+        // Square Auto
+        Command squareAuto = new PathPlannerAuto("Square");
+        joystick.x().onTrue(squareAuto); // Not sure if this will work. Might need a custom squareAutoCommand object that calls Command.schedule() for the execute function.
+        // joystick.x().onTrue(new SquareAutoCommand(squareAuto));
+        
+        // // Orchestra
+        for(TalonFX talon : instruments)
+        {
+            m_orchestra.addInstrument(talon);
+        }
+        m_orchestra.loadMusic("thunder.chrp");
+        joystick.leftTrigger().onTrue(new OrchestraPlayCommand(m_orchestra));
+        joystick.leftBumper().onTrue(new OrchestraStopCommand(m_orchestra));
     }
 
     private void configureBindings() {
@@ -82,6 +126,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        return autoChooser.getSelected();
     }
 }
