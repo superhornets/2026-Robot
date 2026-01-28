@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     
-    m_robotContainer.m_orchestra.play();
+    // m_robotContainer.m_orchestra.play();
   }
 
   @Override
@@ -67,7 +67,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopExit() {
-    m_robotContainer.m_orchestra.stop();
+    // m_robotContainer.m_orchestra.stop();
   }
 
   @Override
