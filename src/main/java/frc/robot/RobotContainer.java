@@ -79,7 +79,7 @@ private final SendableChooser<Command> autoChooser;
         PathPlannerPath path = PathPlannerPath.fromPathFile("Right");
         // Create the constraints to use while pathfinding. The constraints defined in the path will only be used for the path.
         PathConstraints constraints = new PathConstraints(
-                3.0, 4.0, Units.
+                3.0, 4.0, 
                 Units.degreesToRadians(540), Units.degreesToRadians(720));
         
         // // Orchestra
