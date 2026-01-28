@@ -4,7 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.units.Units;
+//import edu.wpi.first.units.Units;
+import edu.wpi.first.math.util.Units;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -15,6 +16,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -76,10 +78,19 @@ private final SendableChooser<Command> autoChooser;
         joystick.x().onTrue(squareAuto); // Not sure if this will work. Might need a custom squareAutoCommand object that calls Command.schedule() for the execute function.
         // joystick.x().onTrue(new SquareAutoCommand(squareAuto));
 
-        PathPlannerPath path = PathPlannerPath.fromPathFile("Right");
+        try
+        {
+            PathPlannerPath path = PathPlannerPath.fromPathFile("Right");
+        }
+        catch(Exception e)
+        {
+            DriverStation.reportError(e.getMessage(),false);
+        }
+        
+
         // Create the constraints to use while pathfinding. The constraints defined in the path will only be used for the path.
         PathConstraints constraints = new PathConstraints(
-                3.0, 4.0, Units.
+                3.0, 4.0, 
                 Units.degreesToRadians(540), Units.degreesToRadians(720));
         
         // // Orchestra
