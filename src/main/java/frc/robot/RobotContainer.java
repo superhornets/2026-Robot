@@ -4,12 +4,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.units.Units;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -55,7 +58,7 @@ private final SendableChooser<Command> autoChooser;
         new TalonFX(32), 
         new TalonFX(41), 
         new TalonFX(42)};
-    private final Orchestra m_orchestra = new Orchestra();
+    public final Orchestra m_orchestra = new Orchestra();
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -72,6 +75,12 @@ private final SendableChooser<Command> autoChooser;
         Command squareAuto = new PathPlannerAuto("Square");
         joystick.x().onTrue(squareAuto); // Not sure if this will work. Might need a custom squareAutoCommand object that calls Command.schedule() for the execute function.
         // joystick.x().onTrue(new SquareAutoCommand(squareAuto));
+
+        PathPlannerPath path = PathPlannerPath.fromPathFile("Right");
+        // Create the constraints to use while pathfinding. The constraints defined in the path will only be used for the path.
+        PathConstraints constraints = new PathConstraints(
+                3.0, 4.0, Units.
+                Units.degreesToRadians(540), Units.degreesToRadians(720));
         
         // // Orchestra
         for(TalonFX talon : instruments)
@@ -79,7 +88,7 @@ private final SendableChooser<Command> autoChooser;
             m_orchestra.addInstrument(talon);
         }
         m_orchestra.loadMusic("thunder.chrp");
-        joystick.leftTrigger().onTrue(new OrchestraPlayCommand(m_orchestra));
+        joystick.rightBumper().onTrue(new OrchestraPlayCommand(m_orchestra));
         joystick.leftBumper().onTrue(new OrchestraStopCommand(m_orchestra));
     }
 
