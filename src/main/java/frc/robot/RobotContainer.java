@@ -81,6 +81,21 @@ private final SendableChooser<Command> autoChooser;
         try
         {
             PathPlannerPath path = PathPlannerPath.fromPathFile("Right");
+            
+            // Create the constraints to use while pathfinding. The constraints defined in the path will only be used for the path.
+            PathConstraints constraints = new PathConstraints(
+                3.0, 4.0,
+                Units.degreesToRadians(540), 
+                Units.degreesToRadians(720));
+
+                
+            // Since AutoBuilder is configured, we can use it to build pathfinding commands
+            Command pathfindingCommand = AutoBuilder.pathfindThenFollowPath(
+                    path,
+                    constraints);
+
+            joystick.y().onTrue(pathfindingCommand); // Not sure if this will work. Might need a custom squareAutoCommand object that calls Command.schedule() for the execute function.
+
         }
         catch(Exception e)
         {
@@ -99,8 +114,8 @@ private final SendableChooser<Command> autoChooser;
             m_orchestra.addInstrument(talon);
         }
         m_orchestra.loadMusic("thunder.chrp");
-        joystick.rightBumper().onTrue(new OrchestraPlayCommand(m_orchestra));
-        joystick.leftBumper().onTrue(new OrchestraStopCommand(m_orchestra));
+        joystick.povUp().onTrue(new OrchestraPlayCommand(m_orchestra));
+        joystick.povDown().onTrue(new OrchestraStopCommand(m_orchestra));
     }
 
     private void configureBindings() {
