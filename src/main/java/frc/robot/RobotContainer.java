@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
+import frc.robot.Constants.Vision;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.Commands.OrchestraPlayCommand;
@@ -34,9 +34,12 @@ import frc.robot.Commands.SquareAutoCommand;
 import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import frc.robot.subsystems.VisionSystem;
+
 public class RobotContainer {
 private final SendableChooser<Command> autoChooser;
     private double SpeedMultiplier = 0.25;
+    
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * SpeedMultiplier; // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * SpeedMultiplier; // 3/4 of a rotation per second max angular velocity
 
@@ -63,6 +66,8 @@ private final SendableChooser<Command> autoChooser;
     public final Orchestra m_orchestra = new Orchestra();
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    public final VisionSystem vision = new VisionSystem(drivetrain::addVisionMeasurement);
 
     public RobotContainer() {
         configureBindings();
