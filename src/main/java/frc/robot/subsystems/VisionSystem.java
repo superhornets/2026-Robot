@@ -63,8 +63,8 @@ public class VisionSystem extends SubsystemBase {
      */
     public VisionSystem(EstimateConsumer estConsumer) {
         this.estConsumer = estConsumer;
-        camera = new PhotonCamera(kCameraName);
-        photonEstimator = new PhotonPoseEstimator(kTagLayout, kRobotToCam);
+        camera = new PhotonCamera(kCamera1);
+        photonEstimator = new PhotonPoseEstimator(kTagLayout, kRobotToCam1);
 
         // ----- Simulation
         if (Utils.isSimulation()) {
@@ -83,7 +83,7 @@ public class VisionSystem extends SubsystemBase {
             // targets.
             cameraSim = new PhotonCameraSim(camera, cameraProp);
             // Add the simulated camera to view the targets on this simulated field.
-            visionSim.addCamera(cameraSim, kRobotToCam);
+            visionSim.addCamera(cameraSim, kRobotToCam1);
 
             cameraSim.enableDrawWireframe(true);
         }
