@@ -48,9 +48,12 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import com.ctre.phoenix6.Utils;
 
 public class VisionSystem extends SubsystemBase {
-    private final PhotonCamera camera;
-    private final PhotonPoseEstimator photonEstimator;
-    private Matrix<N3, N1> curStdDevs;
+    private final PhotonCamera hotSauce;
+    private final PhotonPoseEstimator hotSauceEstimator;
+
+    private final PhotonCamera mildSauce;
+    private final PhotonPoseEstimator mildSauceEstimator;
+
     private final EstimateConsumer estConsumer;
 
     // Simulation
@@ -63,8 +66,10 @@ public class VisionSystem extends SubsystemBase {
      */
     public VisionSystem(EstimateConsumer estConsumer) {
         this.estConsumer = estConsumer;
-        camera = new PhotonCamera(kCamera1);
-        photonEstimator = new PhotonPoseEstimator(kTagLayout, kRobotToCam1);
+        hotSauce = new PhotonCamera(kHotSauceCamera);
+        hotSauceEstimator = new PhotonPoseEstimator(kTagLayout, kRobotToHotSauce);
+        mildSauce = new PhotonCamera(kMildSauceCamera);
+        mildSauceEstimator = new PhotonPoseEstimator(kTagLayout, kRobotToMildSauce);
 
         // ----- Simulation
         if (Utils.isSimulation()) {
@@ -81,22 +86,32 @@ public class VisionSystem extends SubsystemBase {
             cameraProp.setLatencyStdDevMs(15);
             // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
             // targets.
-            cameraSim = new PhotonCameraSim(camera, cameraProp);
+            cameraSim = new PhotonCameraSim(hotSauce, cameraProp);
             // Add the simulated camera to view the targets on this simulated field.
-            visionSim.addCamera(cameraSim, kRobotToCam1);
+            visionSim.addCamera(cameraSim, kRobotToHotSauce);
 
             cameraSim.enableDrawWireframe(true);
         }
     }
     @Override
     public void periodic() {
+        processPoseEstimates(hotSauce, hotSauceEstimator);
+        processPoseEstimates(mildSauce, mildSauceEstimator);
+    }
+
+    /**
+     * 
+     * @param camera The camera from which to get the Apriltag results
+     * @param estimator The PhotonPoseEstimator to use to estimate the pose based on an AprilTag
+     */
+    private void processPoseEstimates(PhotonCamera camera, PhotonPoseEstimator photonEstimator) {
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
         for (var result : camera.getAllUnreadResults()) {
             visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
             if (visionEst.isEmpty()) {
                 visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
             }
-            updateEstimationStdDevs(visionEst, result.getTargets());
+            Matrix<N3, N1> estStdDevs = getEstimationStdDevs(visionEst, result.getTargets(), photonEstimator);
 
             if (Utils.isSimulation()) {
                 visionEst.ifPresentOrElse(
@@ -111,9 +126,7 @@ public class VisionSystem extends SubsystemBase {
 
             visionEst.ifPresent(
                     est -> {
-                        // Change our trust in the measurement based on the tags we can see
-                        var estStdDevs = getEstimationStdDevs();
-
+                        // Change our trust in the measurement based on the tags we can see using the standard deviation
                         estConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
                     });
         }
@@ -125,12 +138,15 @@ public class VisionSystem extends SubsystemBase {
      *
      * @param estimatedPose The estimated pose to guess standard deviations for.
      * @param targets All targets in this camera frame
+     * @param estimator The estimator used to estimate the pose provided.
+     * 
+     * @return The standard deviations
      */
-    private void updateEstimationStdDevs(
-            Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
+    private Matrix<N3, N1> getEstimationStdDevs(
+            Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets, PhotonPoseEstimator photonEstimator) {
         if (estimatedPose.isEmpty()) {
             // No pose input. Default to single-tag std devs
-            curStdDevs = kSingleTagStdDevs;
+            return kSingleTagStdDevs;
 
         } else {
             // Pose present. Start running Heuristic
@@ -153,7 +169,7 @@ public class VisionSystem extends SubsystemBase {
 
             if (numTags == 0) {
                 // No tags visible. Default to single-tag std devs
-                curStdDevs = kSingleTagStdDevs;
+                return kSingleTagStdDevs;
             } else {
                 // One or more tags visible, run the full heuristic.
                 avgDist /= numTags;
@@ -163,19 +179,9 @@ public class VisionSystem extends SubsystemBase {
                 if (numTags == 1 && avgDist > 4)
                     estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
                 else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
-                curStdDevs = estStdDevs;
+                return estStdDevs;
             }
         }
-    }
-
-    /**
-     * Returns the latest standard deviations of the estimated pose from {@link
-     * #getEstimatedGlobalPose()}, for use with {@link
-     * edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}. This should
-     * only be used when there are targets visible.
-     */
-    public Matrix<N3, N1> getEstimationStdDevs() {
-        return curStdDevs;
     }
 
     // ----- Simulation

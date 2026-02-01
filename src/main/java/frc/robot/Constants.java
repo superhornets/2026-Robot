@@ -13,13 +13,13 @@ import edu.wpi.first.math.numbers.N3;
 public class Constants {
         public static class Vision {
  
-        public static final String kCamera1 = "hot_sauce";
-        public static final String kCamera2 = "mild_sauce";
+        public static final String kHotSauceCamera = "hot_sauce";
+        public static final String kMildSauceCamera = "mild_sauce";
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-        public static final Transform3d kRobotToCam1 =
-                new Transform3d(new Translation3d(0.42545, 0.0, 0.13335), new Rotation3d(0, Math.PI / 3, 0));
-        public static final Transform3d kRobotToCam2 =
-                new Transform3d(new Translation3d(-0.42545, 0.12065, 0.13335), new Rotation3d(0, Math.PI / 3, Math.PI));
+        public static final Transform3d kRobotToHotSauce =
+                new Transform3d(new Translation3d(0.42545, 0.0, 0.13335), new Rotation3d(0, -Math.PI / 3, 0));
+        public static final Transform3d kRobotToMildSauce =
+                new Transform3d(new Translation3d(-0.42545, 0.12065, 0.13335), new Rotation3d(0, -Math.PI / 3, Math.PI));
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout =
