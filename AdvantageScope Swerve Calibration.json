@@ -1,10 +1,10 @@
 {
   "hubs": [
     {
-      "x": 139,
-      "y": 95,
+      "x": 90,
+      "y": 74,
       "width": 1100,
-      "height": 650,
+      "height": 654,
       "state": {
         "sidebar": {
           "width": 300,
@@ -13,11 +13,14 @@
             "/RealOutputs",
             "/RealOutputs/SwerveStates",
             "/RealOutputs/SwerveChassisSpeeds",
-            "/RealOutputs/Odometry"
+            "/RealOutputs/Odometry",
+            "/RealOutputs/Vision",
+            "/RealOutputs/Vision/Camera0",
+            "/RealOutputs/Vision/Camera1"
           ]
         },
         "tabs": {
-          "selected": 1,
+          "selected": 2,
           "tabs": [
             {
               "type": 0,
@@ -120,18 +123,38 @@
                       "model": "Crab Bot",
                       "color": "#ff8c00"
                     }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/Camera0/RobotPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "model": "Crab Bot",
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/Camera1/RobotPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "model": "Crab Bot",
+                      "color": "#00ff00"
+                    }
                   }
                 ],
-                "game": ""
+                "game": "FRC:2026 Field"
               },
               "controllerUUID": "psf0y633oclnjyocus23hcnq1d4tpyte",
               "renderer": {
-                "cameraIndex": -1,
+                "cameraIndex": -2,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  1.4695761589768238e-15,
-                  5.999999999999999,
-                  -12
+                  1.9913001538606294,
+                  1.2035107046802573,
+                  0.8887048923207992
                 ],
                 "cameraTarget": [
                   0,
