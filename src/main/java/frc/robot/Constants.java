@@ -28,4 +28,13 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
+    public static final class DriveConstants {
+
+        public static final double kSlowModeMultiplier = 0.25;
+
+        public static final double kFastModeMultiplier = 0.75;
+        public static final double kNormalModeMultiplier = 0.5; //0.25 is the slow mode
+  }
 }
+
+
