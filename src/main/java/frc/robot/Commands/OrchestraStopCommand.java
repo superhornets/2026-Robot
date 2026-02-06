@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.Commands;
 
 import com.ctre.phoenix6.Orchestra;
 import edu.wpi.first.wpilibj2.command.Command;
