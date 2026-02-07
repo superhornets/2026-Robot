@@ -168,6 +168,12 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    driverController
+        .y()
+        .whileTrue(
+            DriveCommands.aimAtHub(
+                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX()));
   }
 
   /**
