@@ -33,7 +33,7 @@ public final class Constants {
 
     public static final double kSlowModeMultiplier = 0.25;
 
-    public static final double kFastModeMultiplier = 0.65;
-    public static final double kNormalModeMultiplier = 0.5; // 0.25 is the slow mode
+    public static final double kFastModeMultiplier = 0.60;
+    public static final double kNormalModeMultiplier = 0.40; // 0.25 is the slow mode
   }
 }
