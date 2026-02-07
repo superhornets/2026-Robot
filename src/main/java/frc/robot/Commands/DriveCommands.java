@@ -11,6 +11,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -173,11 +174,26 @@ public class DriveCommands {
             new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
-    float Rotation = 0;
+    boolean isFlipped =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
 
+    Pose3d hubCenter =
+        isFlipped ? Constants.FieldConstants.RedHubCenter : Constants.FieldConstants.BlueHubCenter;
     // Construct command
     return Commands.run(
             () -> {
+              Pose2d RobotPose = drive.getPose();
+
+              double relativeHubX = hubCenter.getX() - RobotPose.getX();
+              double relativeHubY = hubCenter.getY() - RobotPose.getY();
+              double HubZ = hubCenter.getZ();
+
+              double Length = Math.sqrt(relativeHubX * relativeHubX + relativeHubY * relativeHubY);
+              relativeHubX /= Length;
+              relativeHubY /= Length;
+
+              double Rotation = Math.atan2(relativeHubY, relativeHubX);
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -191,9 +207,6 @@ public class DriveCommands {
                       linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                       linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                       omega);
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       speeds,

@@ -7,6 +7,10 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -27,6 +31,14 @@ public final class Constants {
 
     /** Replaying from a log file. */
     REPLAY
+  }
+
+  public static final class FieldConstants {
+    public static final Pose3d RedHubCenter =
+        new Pose3d(Inches.of(469.11f), Inches.of(158.845f), Inches.of(0), Rotation3d.kZero);
+
+    public static final Pose3d BlueHubCenter =
+        new Pose3d(Inches.of(182.11f), Inches.of(158.845f), Inches.of(0), Rotation3d.kZero);
   }
 
   public static final class DriveConstants {
