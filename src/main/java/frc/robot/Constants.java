@@ -35,10 +35,10 @@ public final class Constants {
 
   public static final class FieldConstants {
     public static final Pose3d RedHubCenter =
-        new Pose3d(Inches.of(469.11f), Inches.of(158.845f), Inches.of(0), Rotation3d.kZero);
+        new Pose3d(Inches.of(469.11f), Inches.of(158.845f), Inches.of(72), Rotation3d.kZero);
 
     public static final Pose3d BlueHubCenter =
-        new Pose3d(Inches.of(182.11f), Inches.of(158.845f), Inches.of(0), Rotation3d.kZero);
+        new Pose3d(Inches.of(182.11f), Inches.of(158.845f), Inches.of(72), Rotation3d.kZero);
   }
 
   public static final class DriveConstants {
