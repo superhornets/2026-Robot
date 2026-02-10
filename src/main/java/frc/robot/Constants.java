@@ -48,4 +48,11 @@ public final class Constants {
     public static final double kFastModeMultiplier = 0.60;
     public static final double kNormalModeMultiplier = 0.40; // 0.25 is the slow mode
   }
+
+  public static final class ShooterConstants {
+    public static final int flywheel1ID = 0;
+    public static final int flywheel2ID = 0;
+    public static final int hoodMotorID = 0;
+    public static final int feederID = 0;
+  }
 }
