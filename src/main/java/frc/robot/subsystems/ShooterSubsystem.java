@@ -11,8 +11,10 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,9 +25,30 @@ public class ShooterSubsystem extends SubsystemBase {
   public SparkClosedLoopController controller;
   public RelativeEncoder encoder;
 
+  public SparkFlex flywheel1;
+  public SparkFlexConfig flywheelConfig1;
+  public SparkClosedLoopController flywheelController1;
+  public RelativeEncoder flywheelEncoder1;
+  public SparkFlex flywheel2;
+  public SparkFlexConfig flywheelConfig2;
+  public SparkClosedLoopController flywheelController2;
+  public RelativeEncoder flywheelEncoder2;
+
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem() {
-    motor = new SparkMax(0000000000000000000, MotorType.kBrushless);
+    flywheel1 = new SparkFlex(89, MotorType.kBrushless);
+    flywheel2 = new SparkFlex(89, MotorType.kBrushless);
+    flywheelConfig1 = new SparkFlexConfig();
+    flywheelConfig2 = new SparkFlexConfig();
+    flywheelController1 = flywheel1.getClosedLoopController();
+    flywheelController2 = flywheel2.getClosedLoopController();
+    flywheelEncoder1 = flywheel1.getEncoder();
+    flywheelEncoder2 = flywheel2.getEncoder();
+    flywheelConfig1.encoder.positionConversionFactor(1).velocityConversionFactor(1);
+    flywheelConfig2.encoder.positionConversionFactor(1).velocityConversionFactor(1);
+
+    motor = new SparkMax(89, MotorType.kBrushless);
+    motorConfig = new SparkMaxConfig();
     controller = motor.getClosedLoopController();
     encoder = motor.getEncoder();
     motorConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
@@ -48,7 +71,47 @@ public class ShooterSubsystem extends SubsystemBase {
         // kV is now in Volts, so we multiply by the nominal voltage (12V)
         .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
 
+    flywheelConfig1
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        // Set PID values for position control. We don't need to pass a closed loop
+        // slot, as it will default to slot 0.
+        .p(0.1)
+        .i(0)
+        .d(0)
+        .outputRange(-1, 1)
+        // Set PID values for velocity control in slot 1
+        .p(0.0001, ClosedLoopSlot.kSlot1)
+        .i(0, ClosedLoopSlot.kSlot1)
+        .d(0, ClosedLoopSlot.kSlot1)
+        .outputRange(-1, 1, ClosedLoopSlot.kSlot1)
+        .feedForward
+        // kV is now in Volts, so we multiply by the nominal voltage (12V)
+        .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
+
+    flywheelConfig2
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        // Set PID values for position control. We don't need to pass a closed loop
+        // slot, as it will default to slot 0.
+        .p(0.1)
+        .i(0)
+        .d(0)
+        .outputRange(-1, 1)
+        // Set PID values for velocity control in slot 1
+        .p(0.0001, ClosedLoopSlot.kSlot1)
+        .i(0, ClosedLoopSlot.kSlot1)
+        .d(0, ClosedLoopSlot.kSlot1)
+        .outputRange(-1, 1, ClosedLoopSlot.kSlot1)
+        .feedForward
+        // kV is now in Volts, so we multiply by the nominal voltage (12V)
+        .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
+
     motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    flywheel1.configure(
+        flywheelConfig1, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    flywheel2.configure(
+        flywheelConfig2, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     SmartDashboard.setDefaultNumber("Target Position", 0);
     SmartDashboard.setDefaultNumber("Target Velocity", 0);
