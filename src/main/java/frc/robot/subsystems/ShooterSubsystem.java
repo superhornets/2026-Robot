@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.lang.ProcessBuilder.Redirect.Type;
-
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -13,10 +11,9 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -26,19 +23,15 @@ public class ShooterSubsystem extends SubsystemBase {
   public SparkClosedLoopController controller;
   public RelativeEncoder encoder;
 
-
-
-
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem() {
     motor = new SparkMax(0000000000000000000, MotorType.kBrushless);
     controller = motor.getClosedLoopController();
     encoder = motor.getEncoder();
-    motorConfig.encoder 
-      .positionConversionFactor(1)
-      .velocityConversionFactor(1);
-    
-    motorConfig.closedLoop
+    motorConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
+
+    motorConfig
+        .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control. We don't need to pass a closed loop
         // slot, as it will default to slot 0.
@@ -52,8 +45,8 @@ public class ShooterSubsystem extends SubsystemBase {
         .d(0, ClosedLoopSlot.kSlot1)
         .outputRange(-1, 1, ClosedLoopSlot.kSlot1)
         .feedForward
-          // kV is now in Volts, so we multiply by the nominal voltage (12V)
-          .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
+        // kV is now in Volts, so we multiply by the nominal voltage (12V)
+        .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
 
     motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
@@ -62,8 +55,6 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.setDefaultBoolean("Control Mode", false);
     SmartDashboard.setDefaultBoolean("Reset Encoder", false);
   }
-
-  
 
   @Override
   public void periodic() {
