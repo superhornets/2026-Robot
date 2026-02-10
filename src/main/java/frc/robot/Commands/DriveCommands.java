@@ -174,16 +174,19 @@ public class DriveCommands {
             new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
-    boolean isFlipped =
-        DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
-
-    Pose3d hubCenter =
-        isFlipped ? Constants.FieldConstants.RedHubCenter : Constants.FieldConstants.BlueHubCenter;
     // Construct command
     return Commands.run(
             () -> {
               Pose2d RobotPose = drive.getPose();
+
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+
+              Pose3d hubCenter =
+                  isFlipped
+                      ? Constants.FieldConstants.RedHubCenter
+                      : Constants.FieldConstants.BlueHubCenter;
 
               double relativeHubX = hubCenter.getX() - RobotPose.getX();
               double relativeHubY = hubCenter.getY() - RobotPose.getY();
