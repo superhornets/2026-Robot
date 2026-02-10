@@ -28,12 +28,12 @@
         }
       ],
       "axisCount": 6,
-      "buttonCount": 6,
+      "buttonCount": 4,
       "buttonKeys": [
-        90,
-        88,
-        67,
-        86,
+        66,
+        71,
+        72,
+        89,
         -1,
         -1
       ],
@@ -67,7 +67,7 @@
       "buttonKeys": [
         77,
         44,
-        46,
+        -1,
         47
       ],
       "povCount": 0
