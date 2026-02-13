@@ -48,4 +48,8 @@ public final class Constants {
     public static final double kFastModeMultiplier = 0.60;
     public static final double kNormalModeMultiplier = 0.40; // 0.25 is the slow mode
   }
+
+  public static final class CanIds {
+    public static final int ClimberMotor1 = 89;
+  }
 }
