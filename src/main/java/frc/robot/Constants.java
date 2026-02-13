@@ -55,4 +55,9 @@ public final class Constants {
     public static final int hoodMotorID = 0;
     public static final int feederID = 0;
   }
+
+  public static final class IntakeConstants {
+    public static final int armMotorID = 0;
+    public static final int intakeMotorID = 0;
+  }
 }
