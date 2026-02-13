@@ -9,6 +9,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
@@ -21,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
+  public SparkAbsoluteEncoder throughBoreEncoder;
+
   public SparkMax hoodMotor;
   public SparkMaxConfig hoodMotorConfig;
   public SparkClosedLoopController hoodController;
@@ -59,6 +62,7 @@ public class ShooterSubsystem extends SubsystemBase {
     hoodEncoder = hoodMotor.getEncoder();
     hoodMotorConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
 
+    throughBoreEncoder = hoodMotor.getAbsoluteEncoder();
     hoodMotorConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -178,5 +182,21 @@ public class ShooterSubsystem extends SubsystemBase {
       // Reset the encoder position to 0
       hoodEncoder.setPosition(0);
     }
+  }
+
+  public double getHoodPosition() {
+    return throughBoreEncoder.getPosition();
+  }
+
+  public void setShooterAngle(double THETA) {
+    double offset = hoodEncoder.getPosition() - getHoodPosition();
+    hoodController.setSetpoint(THETA - offset, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    return;
+  }
+
+  public void setShooterVelocity(double Velocity) {
+    flywheelController1.setSetpoint(Velocity, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+    flywheelController2.setSetpoint(Velocity, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+    return;
   }
 }
