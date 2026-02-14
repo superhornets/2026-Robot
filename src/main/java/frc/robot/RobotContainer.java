@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -42,6 +43,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
+  private final ShooterSubsystem Shooter;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -51,6 +53,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    Shooter = new ShooterSubsystem();
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
