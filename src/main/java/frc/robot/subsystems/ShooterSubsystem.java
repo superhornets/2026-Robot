@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
-  public SparkAbsoluteEncoder throughBoreEncoder;
+ // public SparkAbsoluteEncoder throughBoreEncoder;
 
   public SparkMax hoodMotor;
   public SparkMaxConfig hoodMotorConfig;
@@ -62,7 +62,7 @@ public class ShooterSubsystem extends SubsystemBase {
     hoodEncoder = hoodMotor.getEncoder();
     hoodMotorConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
 
-    throughBoreEncoder = hoodMotor.getAbsoluteEncoder();
+   // throughBoreEncoder = hoodMotor.getAbsoluteEncoder();
     hoodMotorConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -189,8 +189,9 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setShooterAngle(double THETA) {
-    double offset = hoodEncoder.getPosition() - getHoodPosition();
-    hoodController.setSetpoint(THETA - offset, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    //double offset = hoodEncoder.getPosition() - getHoodPosition();
+   // hoodController.setSetpoint(THETA - offset, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    hoodController.setSetpoint(THETA, ControlType.kPosition, ClosedLoopSlot.kSlot0);
     return;
   }
 
