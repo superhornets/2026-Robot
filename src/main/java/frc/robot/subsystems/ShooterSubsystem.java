@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
+import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
@@ -17,12 +18,13 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
-
 public class ShooterSubsystem extends SubsystemBase {
- // public SparkAbsoluteEncoder throughBoreEncoder;
+  public SparkAbsoluteEncoder throughBoreEncoder;
 
   public SparkMax hoodMotor;
   public SparkMaxConfig hoodMotorConfig;
@@ -34,19 +36,27 @@ public class ShooterSubsystem extends SubsystemBase {
   public SparkClosedLoopController feederController;
   public RelativeEncoder feederEncoder;
 
+  public DCMotor flywheelSimMotor1;
   public SparkFlex flywheel1;
+  public SparkFlexSim flywheelSim1;
   public SparkFlexConfig flywheelConfig1;
   public SparkClosedLoopController flywheelController1;
   public RelativeEncoder flywheelEncoder1;
+
+  public DCMotor flywheelSimMotor2;
   public SparkFlex flywheel2;
+  public SparkFlexSim flywheelSim2;
   public SparkFlexConfig flywheelConfig2;
   public SparkClosedLoopController flywheelController2;
   public RelativeEncoder flywheelEncoder2;
 
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem() {
+
     flywheel1 = new SparkFlex(ShooterConstants.flywheel1ID, MotorType.kBrushless);
     flywheel2 = new SparkFlex(ShooterConstants.flywheel2ID, MotorType.kBrushless);
+    flywheelSim1 = new SparkFlexSim(flywheel1, flywheelSimMotor1);
+    flywheelSim2 = new SparkFlexSim(flywheel2, flywheelSimMotor2);
     flywheelConfig1 = new SparkFlexConfig();
     flywheelConfig2 = new SparkFlexConfig();
     flywheelController1 = flywheel1.getClosedLoopController();
@@ -62,7 +72,7 @@ public class ShooterSubsystem extends SubsystemBase {
     hoodEncoder = hoodMotor.getEncoder();
     hoodMotorConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
 
-   // throughBoreEncoder = hoodMotor.getAbsoluteEncoder();
+    throughBoreEncoder = hoodMotor.getAbsoluteEncoder();
     hoodMotorConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -123,7 +133,6 @@ public class ShooterSubsystem extends SubsystemBase {
         .feedForward
         // kV is now in Volts, so we multiply by the nominal voltage (12V)
         .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
-
     flywheelConfig2
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
