@@ -47,9 +47,8 @@ public class ClimberIOReal implements ClimberIO
     }
 
     @Override
-    public void extendClimber()
+    public void extendClimber(double targetPosition)
     {
-        double targetPosition = SmartDashboard.getNumber("Climber Target Position", 0);
         controller.setSetpoint(targetPosition, ControlType.kPosition);
         extending = true;
     }

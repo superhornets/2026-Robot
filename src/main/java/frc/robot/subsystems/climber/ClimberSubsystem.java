@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.climber;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -23,6 +25,7 @@ import frc.robot.subsystems.climber.ClimberIO.*;
 public class ClimberSubsystem extends SubsystemBase {
   ClimberIOInputs inputs = new ClimberIOInputs();
   ClimberIO io;
+  double lastTarget = 0.0;
 
   /* Creates a new ClimberSubsystem. */
   public ClimberSubsystem(ClimberIO IOImplementation) 
@@ -36,7 +39,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public void extendClimber()
   {
-    io.extendClimber();
+    lastTarget = SmartDashboard.getNumber("Climber Target Position", 0);
+    io.extendClimber(lastTarget);
   }
 
   public void retractClimber()
@@ -52,5 +56,7 @@ public class ClimberSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Extending Climber", inputs.extending);
     SmartDashboard.putNumber("Climber Actual Position", inputs.position);
     SmartDashboard.putNumber("Climber Actual Velocity", inputs.velocity);
+    Logger.processInputs("Climber", inputs);
+    Logger.recordOutput("Climber Target Position", lastTarget);
   }
 }

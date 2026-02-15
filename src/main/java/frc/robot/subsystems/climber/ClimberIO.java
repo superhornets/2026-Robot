@@ -27,7 +27,7 @@ public interface ClimberIO
         }
     }
 
-    public void extendClimber();
+    public void extendClimber(double targetPosition);
     public void retractClimber();
     public void updateInputs(ClimberIOInputs inputs);
 }
