@@ -3,7 +3,7 @@ package frc.robot.subsystems.climber;
 public class ClimberIOSim implements ClimberIO {
 
     @Override
-    public void extendClimber()
+    public void extendClimber(double targetPosition)
     {
 
     }
@@ -17,6 +17,6 @@ public class ClimberIOSim implements ClimberIO {
     @Override
     public void updateInputs(ClimberIOInputs inputs)
     {
-        
+
     }
 }
