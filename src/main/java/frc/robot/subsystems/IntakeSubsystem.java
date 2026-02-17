@@ -9,8 +9,10 @@ import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private IntakeModule leftIntake = new IntakeModule(Constants.Intake.CAN.kLeftArm, Constants.Intake.CAN.kLeftRoller);
-  private IntakeModule rightIntake = new IntakeModule(Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller);
+  private IntakeModule leftIntake =
+      new IntakeModule(Constants.Intake.CAN.kLeftArm, Constants.Intake.CAN.kLeftRoller);
+  private IntakeModule rightIntake =
+      new IntakeModule(Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller);
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {}

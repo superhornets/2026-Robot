@@ -12,7 +12,6 @@ import static edu.wpi.first.units.Units.Inches;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
@@ -53,17 +52,18 @@ public final class Constants {
   }
 
   public static final class ShooterConstants {
-    public static final int flywheel1ID = 0;
-    public static final int flywheel2ID = 0;
-    public static final int hoodMotorID = 0;
-    public static final int feederID = 0;
+    public static final int flywheel1ID = 11;
+    public static final int flywheel2ID = 12;
+    public static final int hoodMotorID = 13;
+    public static final int feederID = 14;
   }
 
   public static final class Intake {
     public static final class Sim {
       public static final double kRollerMOI = 1.0;
       public static final double kRollerGearRatio = 1.0;
-      public static final double kArmMOI = SingleJointedArmSim.estimateMOI(Units.inchesToMeters(14), 0.4);
+      public static final double kArmMOI =
+          SingleJointedArmSim.estimateMOI(Units.inchesToMeters(14), 0.4);
       public static final double kArmGearRatio = 1.0;
       public static final double kArmLengthMeters = 1.0;
     }
@@ -73,14 +73,14 @@ public final class Constants {
     public static final double kIntakeRollerSpeed = 2000.0; // RPM
 
     public static final class CAN {
-      public static final int kLeftArm = 0;
-      public static final int kLeftRoller = 0;  
-      public static final int kRightArm = 0;
-      public static final int kRightRoller = 0;
+      public static final int kLeftArm = 21;
+      public static final int kLeftRoller = 22;
+      public static final int kRightArm = 23;
+      public static final int kRightRoller = 24;
     }
   }
 
   public static final class SIM {
-    public static final double interval = 1.0 / 50.0; //50Hz
-
+    public static final double interval = 1.0 / 50.0; // 50Hz
+  }
 }
