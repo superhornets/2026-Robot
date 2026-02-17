@@ -1,9 +1,7 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
-
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -18,86 +16,82 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 public class ShooterSubsystem extends SubsystemBase {
-  public SparkAbsoluteEncoder throughBoreEncoder;
-
-  public SparkMax hoodMotor;
-  public SparkMaxConfig hoodMotorConfig;
-  public SparkClosedLoopController hoodController;
-  public RelativeEncoder hoodEncoder;
-
-  public SparkMax feederMotor;
-  public SparkMaxConfig feederMotorConfig;
-  public SparkClosedLoopController feederController;
-  public RelativeEncoder feederEncoder;
-
-  public DCMotor flywheelSimMotor1;
-  public SparkFlex flywheel1;
-  public SparkFlexSim flywheelSim1;
-  public SparkFlexConfig flywheelConfig1;
-  public SparkClosedLoopController flywheelController1;
-  public RelativeEncoder flywheelEncoder1;
-
-  public DCMotor flywheelSimMotor2;
-  public SparkFlex flywheel2;
-  public SparkFlexSim flywheelSim2;
-  public SparkFlexConfig flywheelConfig2;
-  public SparkClosedLoopController flywheelController2;
-  public RelativeEncoder flywheelEncoder2;
-
-  /** Creates a new ShooterSubsystem. */
-  public ShooterSubsystem() {
-
-    flywheel1 = new SparkFlex(ShooterConstants.flywheel1ID, MotorType.kBrushless);
-    flywheel2 = new SparkFlex(ShooterConstants.flywheel2ID, MotorType.kBrushless);
-    flywheelSim1 = new SparkFlexSim(flywheel1, flywheelSimMotor1);
-    flywheelSim2 = new SparkFlexSim(flywheel2, flywheelSimMotor2);
-    flywheelConfig1 = new SparkFlexConfig();
-    flywheelConfig2 = new SparkFlexConfig();
-    flywheelController1 = flywheel1.getClosedLoopController();
-    flywheelController2 = flywheel2.getClosedLoopController();
-    flywheelEncoder1 = flywheel1.getEncoder();
-    flywheelEncoder2 = flywheel2.getEncoder();
-    flywheelConfig1.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-    flywheelConfig2.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-
-    hoodMotor = new SparkMax(ShooterConstants.hoodMotorID, MotorType.kBrushless);
-    hoodMotorConfig = new SparkMaxConfig();
-    hoodController = hoodMotor.getClosedLoopController();
-    hoodEncoder = hoodMotor.getEncoder();
-    hoodMotorConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-
-    throughBoreEncoder = hoodMotor.getAbsoluteEncoder();
-    hoodMotorConfig
-        .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        // Set PID values for position control. We don't need to pass a closed loop
-        // slot, as it will default to slot 0.
-        .p(0.1)
-        .i(0)
-        .d(0)
-        .outputRange(-1, 1)
-        // Set PID values for velocity control in slot 1
-        .p(0.0001, ClosedLoopSlot.kSlot1)
-        .i(0, ClosedLoopSlot.kSlot1)
-        .d(0, ClosedLoopSlot.kSlot1)
-        .outputRange(-1, 1, ClosedLoopSlot.kSlot1)
-        .feedForward
-        // kV is now in Volts, so we multiply by the nominal voltage (12V)
-        .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
-
+    public SparkAbsoluteEncoder throughBoreEncoder;
+    public SparkMax hoodMotor;
+    public SparkMaxConfig hoodMotorConfig;
+    public SparkClosedLoopController hoodController;
+    public RelativeEncoder hoodEncoder;
+    public SparkMax feederMotor;
+    public SparkMaxConfig feederMotorConfig;
+    public SparkClosedLoopController feederController;
+    public RelativeEncoder feederEncoder;
+    public DCMotor flywheelMotorSim1;
+    public SparkFlex flywheelMotor1;
+    public SparkFlexSim flywheelControllerSim1;
+    public FlywheelSim flywheelSim;
+    public SparkFlexConfig flywheelConfig1;
+    public SparkClosedLoopController flywheelController1;
+    public RelativeEncoder flywheelEncoder1;
+    public DCMotor flywheelMotorSim2;
+    public SparkFlex flywheelMotor2;
+    public SparkFlexSim flywheelControllerSim2;
+    public SparkFlexConfig flywheelConfig2;
+    public SparkClosedLoopController flywheelController2;
+    public RelativeEncoder flywheelEncoder2;
+    /** Creates a new ShooterSubsystem. */
+    public ShooterSubsystem() {
+      flywheelSim = new FlywheelSim(null, flywheelMotorSim1, null);
+      flywheelMotorSim1 = DCMotor.getNeoVortex(2);
+      flywheelMotor1 = new SparkFlex(ShooterConstants.flywheel1ID, MotorType.kBrushless);
+      flywheelMotor2 = new SparkFlex(ShooterConstants.flywheel2ID, MotorType.kBrushless);
+      flywheelControllerSim1 = new SparkFlexSim(flywheelMotor1, flywheelMotorSim1);
+      flywheelControllerSim2 = new SparkFlexSim(flywheelMotor2, flywheelMotorSim1);
+      flywheelConfig1 = new SparkFlexConfig();
+      flywheelConfig2 = new SparkFlexConfig();
+      flywheelController1 = flywheelMotor1.getClosedLoopController();
+      flywheelController2 = flywheelMotor2.getClosedLoopController();
+      flywheelEncoder1 = flywheelMotor1.getEncoder();
+      flywheelEncoder2 = flywheelMotor2.getEncoder();
+      flywheelConfig1.encoder.positionConversionFactor(1).velocityConversionFactor(1);
+      flywheelConfig2.encoder.positionConversionFactor(1).velocityConversionFactor(1);
+      hoodMotor = new SparkMax(ShooterConstants.hoodMotorID, MotorType.kBrushless);
+      hoodMotorConfig = new SparkMaxConfig();
+      hoodController = hoodMotor.getClosedLoopController();
+      hoodEncoder = hoodMotor.getEncoder();
+      hoodMotorConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
+      throughBoreEncoder = hoodMotor.getAbsoluteEncoder();
+      hoodMotorConfig
+      .closedLoop
+      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      // Set PID values for position control. We don't need to pass a closed loop
+    // slot, as it will default to slot 0.
+    .p(0.1)
+    .i(0)
+    .d(0)
+    .outputRange(-1, 1)
+    // Set PID values for velocity control in slot 1
+    .p(0.0001, ClosedLoopSlot.kSlot1)
+    .i(0, ClosedLoopSlot.kSlot1)
+    .d(0, ClosedLoopSlot.kSlot1)
+    .outputRange(-1, 1, ClosedLoopSlot.kSlot1)
+    .feedForward
+    // kV is now in Volts, so we multiply by the nominal voltage (12V)
+    .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
     feederMotor = new SparkMax(ShooterConstants.feederID, MotorType.kBrushless);
-    feederMotorConfig = new SparkMaxConfig();
-    feederController = hoodMotor.getClosedLoopController();
-    feederEncoder = hoodMotor.getEncoder();
-    feederMotorConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
-
-    feederMotorConfig
+        feederMotorConfig = new SparkMaxConfig();
+        feederController = hoodMotor.getClosedLoopController();
+        feederEncoder = hoodMotor.getEncoder();
+        feederMotorConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
+        feederMotorConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control. We don't need to pass a closed loop
@@ -109,13 +103,11 @@ public class ShooterSubsystem extends SubsystemBase {
         // Set PID values for velocity control in slot 1
         .p(0.0001, ClosedLoopSlot.kSlot1)
         .i(0, ClosedLoopSlot.kSlot1)
-        .d(0, ClosedLoopSlot.kSlot1)
-        .outputRange(-1, 1, ClosedLoopSlot.kSlot1)
-        .feedForward
-        // kV is now in Volts, so we multiply by the nominal voltage (12V)
-        .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
-
-
+    .d(0, ClosedLoopSlot.kSlot1)
+    .outputRange(-1, 1, ClosedLoopSlot.kSlot1)
+    .feedForward
+    // kV is now in Volts, so we multiply by the nominal voltage (12V)
+    .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
     flywheelConfig1
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -150,60 +142,75 @@ public class ShooterSubsystem extends SubsystemBase {
         .feedForward
         // kV is now in Volts, so we multiply by the nominal voltage (12V)
         .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
-
     hoodMotor.configure(hoodMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     feederMotor.configure(hoodMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    flywheel1.configure(
-        flywheelConfig1, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    flywheel2.configure(
-        flywheelConfig2, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
+    flywheelMotor1.configure(
+    flywheelConfig1, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    flywheelMotor2.configure(
+    flywheelConfig2, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     SmartDashboard.setDefaultNumber("Target Position", 0);
     SmartDashboard.setDefaultNumber("Target Velocity", 0);
     SmartDashboard.setDefaultBoolean("Control Mode", false);
     SmartDashboard.setDefaultBoolean("Reset Encoder", false);
+  } 
+  
+  public void simulationPeriodic() {
+    // In this method, we update our simulation of what our arm is doing
+    // First, we set our "inputs" (voltages)
+    flywheelSim.setInput(flywheelMotorSim1.getSpeed(0, 0) * RoboRioSim.getVInVoltage());
+    // Next, we update it. The standard loop time is 20ms.
+    flywheelSim.update(0.02);
+    // Now, we update the Spark Flex
+    flywheelControllerSim1.iterate(
+    Units.radiansPerSecondToRotationsPerMinute( // motor velocity, in RPM
+        flywheelSim.getAngularVelocityRadPerSec()),
+    RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
+        0.02); // Time interval, in Seconds
+    // SimBattery estimates loaded battery voltages
+    // This should include all motors being simulated
+    RoboRioSim.setVInVoltage(
+    BatterySim.calculateDefaultBatteryLoadedVoltage(flywheelSim.getCurrentDrawAmps()));
+    // Update any external GUI displays or values as desired
+    // For example, a Mechanism2d Arm based on the simulated arm angle
+     //   m_arm.setAngle(Units.radiansToDegrees(flywheelSim.getAngleRads()));
   }
 
-  @Override
+@Override
   public void periodic() {
     // This method will be called once per scheduler run
     if (SmartDashboard.getBoolean("Control Mode", false)) {
       /*
-       * Get the target velocity from SmartDashboard and set it as the setpoint
-       * for the closed loop controller.
-       */
-      double targetVelocity = SmartDashboard.getNumber("Target Velocity", 0);
+          * Get the target velocity from SmartDashboard and set it as the setpoint
+              * for the closed loop controller.
+          */
+          double targetVelocity = SmartDashboard.getNumber("Target Velocity", 0);
       hoodController.setSetpoint(targetVelocity, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
     } else {
       /*
-       * Get the target position from SmartDashboard and set it as the setpoint
-       * for the closed loop controller.
-       */
+          * Get the target position from SmartDashboard and set it as the setpoint
+      * for the closed loop controller.
+      */
       double targetPosition = SmartDashboard.getNumber("Target Position", 0);
       hoodController.setSetpoint(targetPosition, ControlType.kPosition, ClosedLoopSlot.kSlot0);
     }
-
     SmartDashboard.putNumber("Actual Position", hoodEncoder.getPosition());
     SmartDashboard.putNumber("Actual Velocity", hoodEncoder.getVelocity());
-
     if (SmartDashboard.getBoolean("Reset Encoder", false)) {
       SmartDashboard.putBoolean("Reset Encoder", false);
-      // Reset the encoder position to 0
-      hoodEncoder.setPosition(0);
-    }
+        // Reset the encoder position to 0
+        hoodEncoder.setPosition(0);
+      }
   }
 
   public double getHoodPosition() {
     return throughBoreEncoder.getPosition();
   }
-
-  public void setShooterAngle(double THETA) {
-    //double offset = hoodEncoder.getPosition() - getHoodPosition();
-   // hoodController.setSetpoint(THETA - offset, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    public void setShooterAngle(double THETA) {
+      //double offset = hoodEncoder.getPosition() - getHoodPosition();
+      // hoodController.setSetpoint(THETA - offset, ControlType.kPosition, ClosedLoopSlot.kSlot0);
     hoodController.setSetpoint(THETA, ControlType.kPosition, ClosedLoopSlot.kSlot0);
     return;
   }
-
   public void setShooterVelocity(double Velocity) {
     flywheelController1.setSetpoint(Velocity, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
     flywheelController2.setSetpoint(Velocity, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
