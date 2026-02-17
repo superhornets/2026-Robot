@@ -58,7 +58,6 @@ public class IntakeModule extends SubsystemBase {
     
     rollerMotor = new SparkMax(rollerID, MotorType.kBrushless);
     SparkMaxConfig rollerConfig = new SparkMaxConfig();
-    rollerConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
     rollerConfig.closedLoop.p(0.1).i(0).d(0.01).maxMotion.maxAcceleration(Math.PI * 10, ClosedLoopSlot.kSlot0);
     rollerMotor.configure(rollerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     rollerController = rollerMotor.getClosedLoopController();
@@ -107,14 +106,6 @@ public class IntakeModule extends SubsystemBase {
    */
   public boolean isLowered() {
     return armController.getSetpoint() == Constants.Intake.kLoweredAngleRad && armController.isAtSetpoint();
-  }
-  
-  /**
-   * Returns true if the arm is at the lowered setpoint and the roller is stopped.
-   * @return true if both conditions are met, false otherwise
-   */
-  public boolean isLoweredAndStopped() {
-    return isLowered() && rollerController.getSetpoint() == 0.0;
   }
   
   /**
