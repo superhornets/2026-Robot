@@ -11,7 +11,10 @@ import static edu.wpi.first.units.Units.Inches;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -56,8 +59,28 @@ public final class Constants {
     public static final int feederID = 0;
   }
 
-  public static final class IntakeConstants {
-    public static final int armMotorID = 0;
-    public static final int intakeMotorID = 0;
+  public static final class Intake {
+    public static final class Sim {
+      public static final double kRollerMOI = 1.0;
+      public static final double kRollerGearRatio = 1.0;
+      public static final double kArmMOI = SingleJointedArmSim.estimateMOI(Units.inchesToMeters(14), 0.4);
+      public static final double kArmGearRatio = 1.0;
+      public static final double kArmLengthMeters = 1.0;
+    }
+
+    public static final double kRaisedAngleRad = Units.degreesToRadians(0.0);
+    public static final double kLoweredAngleRad = Units.degreesToRadians(90.0);
+    public static final double kIntakeRollerSpeed = 2000.0; // RPM
+
+    public static final class CAN {
+      public static final int kLeftArm = 0;
+      public static final int kLeftRoller = 0;  
+      public static final int kRightArm = 0;
+      public static final int kRightRoller = 0;
+    }
   }
+
+  public static final class SIM {
+    public static final double interval = 1.0 / 50.0; //50Hz
+
 }
