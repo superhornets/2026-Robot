@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -15,7 +16,14 @@ public class IntakeSubsystem extends SubsystemBase {
       new IntakeModule(Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller);
 
   /** Creates a new IntakeSubsystem. */
-  public IntakeSubsystem() {}
+  public IntakeSubsystem() {
+    SmartDashboard.setDefaultNumber("LeftAngle", 0);
+    SmartDashboard.setDefaultNumber("RightAngle", 0);
+    SmartDashboard.setDefaultBoolean("LeftRaised", false);
+    SmartDashboard.setDefaultBoolean("RightRaised", false);
+    SmartDashboard.setDefaultBoolean("LowerLeft", false);
+    SmartDashboard.setDefaultBoolean("LowerRight", false);
+  }
 
   @Override
   public void periodic() {
@@ -39,6 +47,20 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
+
+    boolean right = SmartDashboard.getBoolean("LowerRight", false);
+    boolean left = SmartDashboard.getBoolean("LowerLeft", false);
+    if (left) lowerLeft();
+    if (right) lowerRight();
+
+    SmartDashboard.putBoolean("LeftRaised", !leftIntake.isLowered());
+    SmartDashboard.putBoolean("RightRaised", !rightIntake.isLowered());
+
+    // double leftAngle = SmartDashboard.getNumber("LeftAngle", false);
+
+    //    SmartDashboard.putBoolean("LeftRaised", true);
+    // This method will be called once per scheduler run during simulation
+
     leftIntake.simulationPeriodic();
     rightIntake.simulationPeriodic();
   }
