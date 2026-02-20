@@ -47,6 +47,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
+
     boolean right = SmartDashboard.getBoolean("LowerRight", false);
     boolean left = SmartDashboard.getBoolean("LowerLeft", false);
     if (left) lowerLeft();
@@ -59,5 +60,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     //    SmartDashboard.putBoolean("LeftRaised", true);
     // This method will be called once per scheduler run during simulation
+
+    leftIntake.simulationPeriodic();
+    rightIntake.simulationPeriodic();
   }
 }

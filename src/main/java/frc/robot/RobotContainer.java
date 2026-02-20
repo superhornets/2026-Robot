@@ -19,7 +19,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Commands.DriveCommands;
+import frc.robot.Commands.IntakeCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -44,6 +46,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final ShooterSubsystem Shooter;
+  private final IntakeSubsystem intake;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -72,7 +75,7 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVision(camera0Name, robotToCamera0),
                 new VisionIOPhotonVision(camera1Name, robotToCamera1));
-
+        intake = new IntakeSubsystem();
         break;
 
       case SIM:
@@ -90,6 +93,7 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
                 new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
+        intake = new IntakeSubsystem();
 
         break;
 
@@ -104,7 +108,7 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-
+        intake = new IntakeSubsystem();
         break;
     }
 
@@ -177,6 +181,9 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.aimAtHub(
                 drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX()));
+
+    driverController.leftBumper().whileTrue(IntakeCommands.lowerLeft(intake));
+    driverController.rightBumper().whileTrue(IntakeCommands.lowerRight(intake));
   }
 
   /**

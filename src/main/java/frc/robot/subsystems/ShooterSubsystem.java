@@ -9,7 +9,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
@@ -22,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
- // public SparkAbsoluteEncoder throughBoreEncoder;
+  // public SparkAbsoluteEncoder throughBoreEncoder;
 
   public SparkMax hoodMotor;
   public SparkMaxConfig hoodMotorConfig;
@@ -62,7 +61,7 @@ public class ShooterSubsystem extends SubsystemBase {
     hoodEncoder = hoodMotor.getEncoder();
     hoodMotorConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
 
-   // throughBoreEncoder = hoodMotor.getAbsoluteEncoder();
+    // throughBoreEncoder = hoodMotor.getAbsoluteEncoder();
     hoodMotorConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -105,7 +104,6 @@ public class ShooterSubsystem extends SubsystemBase {
         // kV is now in Volts, so we multiply by the nominal voltage (12V)
         .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
 
-
     flywheelConfig1
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -142,8 +140,10 @@ public class ShooterSubsystem extends SubsystemBase {
         // kV is now in Volts, so we multiply by the nominal voltage (12V)
         .kV(12.0 / 5767, ClosedLoopSlot.kSlot1);
 
-    hoodMotor.configure(hoodMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    feederMotor.configure(hoodMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    hoodMotor.configure(
+        hoodMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    feederMotor.configure(
+        hoodMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     flywheel1.configure(
         flywheelConfig1, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     flywheel2.configure(
@@ -184,13 +184,9 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
-  public double getHoodPosition() {
-    return throughBoreEncoder.getPosition();
-  }
-
   public void setShooterAngle(double THETA) {
-    //double offset = hoodEncoder.getPosition() - getHoodPosition();
-   // hoodController.setSetpoint(THETA - offset, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    // double offset = hoodEncoder.getPosition() - getHoodPosition();
+    // hoodController.setSetpoint(THETA - offset, ControlType.kPosition, ClosedLoopSlot.kSlot0);
     hoodController.setSetpoint(THETA, ControlType.kPosition, ClosedLoopSlot.kSlot0);
     return;
   }
