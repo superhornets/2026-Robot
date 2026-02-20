@@ -50,9 +50,9 @@ public class IntakeModule extends SubsystemBase {
     armConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .p(1000)
+        .p(1)
         .i(0)
-        .d(0.01)
+        .d(0.1)
         .positionWrappingEnabled(true)
         .maxMotion
         .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
@@ -86,9 +86,9 @@ public class IntakeModule extends SubsystemBase {
             Constants.Intake.Sim.kArmGearRatio,
             Constants.Intake.Sim.kArmMOI,
             Constants.Intake.Sim.kArmLengthMeters,
-            Constants.Intake.kRaisedAngle,
-            Constants.Intake.kLoweredAngle,
-            true,
+            Constants.Intake.kRaisedAngle * 2 * Math.PI,
+            Constants.Intake.kLoweredAngle * 2 * Math.PI,
+            false,
             Constants.Intake.kRaisedAngle);
 
     rollerGearboxSim = DCMotor.getNEO(1);
@@ -131,9 +131,7 @@ public class IntakeModule extends SubsystemBase {
   /** Raises the arm and stops the roller. */
   public void raise() {
     armController.setSetpoint(
-        Constants.Intake.kRaisedAngle,
-        ControlType.kMAXMotionPositionControl,
-        ClosedLoopSlot.kSlot0);
+        Constants.Intake.kRaisedAngle, ControlType.kPosition, ClosedLoopSlot.kSlot0);
     rollerController.setSetpoint(0.0, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
   }
 
