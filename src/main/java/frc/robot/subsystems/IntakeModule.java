@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
@@ -13,11 +14,11 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -33,6 +34,7 @@ public class IntakeModule extends SubsystemBase {
 
   // SIMULATION OBJECTS
   private SparkMaxSim armMotorSim;
+  private SparkAbsoluteEncoderSim armEncoderSim;
   private DCMotor armGearboxSim;
   private SingleJointedArmSim armSim;
   private SparkMaxSim rollerMotorSim;
@@ -45,15 +47,17 @@ public class IntakeModule extends SubsystemBase {
     armMotor = new SparkMax(armID, MotorType.kBrushless);
 
     SparkMaxConfig armConfig = new SparkMaxConfig();
-    armConfig.closedLoop.feedbackSensor(FeedbackSensor.kDetachedAbsoluteEncoder);
     armConfig
         .closedLoop
-        .p(0.1)
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        .p(1000)
         .i(0)
         .d(0.01)
+        .positionWrappingEnabled(true)
         .maxMotion
-        .maxAcceleration(
-            Units.radiansPerSecondToRotationsPerMinute(Math.PI), ClosedLoopSlot.kSlot0);
+        .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
+        .maxAcceleration(Math.PI, ClosedLoopSlot.kSlot0);
+
     armMotor.configure(
         armConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     armController = armMotor.getClosedLoopController();
@@ -66,7 +70,7 @@ public class IntakeModule extends SubsystemBase {
         .i(0)
         .d(0.01)
         .maxMotion
-        .maxAcceleration(Math.PI * 10, ClosedLoopSlot.kSlot0);
+        .maxAcceleration(4000, ClosedLoopSlot.kSlot0);
     rollerMotor.configure(
         rollerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     rollerController = rollerMotor.getClosedLoopController();
@@ -74,6 +78,7 @@ public class IntakeModule extends SubsystemBase {
     // SIMULATION OBJECTS
     armGearboxSim = DCMotor.getNEO(1);
     armMotorSim = new SparkMaxSim(armMotor, armGearboxSim);
+    armEncoderSim = new SparkAbsoluteEncoderSim(armMotor);
 
     armSim =
         new SingleJointedArmSim(
@@ -81,10 +86,10 @@ public class IntakeModule extends SubsystemBase {
             Constants.Intake.Sim.kArmGearRatio,
             Constants.Intake.Sim.kArmMOI,
             Constants.Intake.Sim.kArmLengthMeters,
-            Constants.Intake.kRaisedAngleRad,
-            Constants.Intake.kLoweredAngleRad,
+            Constants.Intake.kRaisedAngle,
+            Constants.Intake.kLoweredAngle,
             true,
-            Constants.Intake.kRaisedAngleRad);
+            Constants.Intake.kRaisedAngle);
 
     rollerGearboxSim = DCMotor.getNEO(1);
     rollerMotorSim = new SparkMaxSim(rollerMotor, rollerGearboxSim);
@@ -106,9 +111,7 @@ public class IntakeModule extends SubsystemBase {
   /** Lowers the arm and starts the roller at the intake speed. */
   public void lower() {
     armController.setSetpoint(
-        Constants.Intake.kLoweredAngleRad,
-        ControlType.kMAXMotionPositionControl,
-        ClosedLoopSlot.kSlot0);
+        Constants.Intake.kLoweredAngle, ControlType.kPosition, ClosedLoopSlot.kSlot0);
     rollerController.setSetpoint(
         Constants.Intake.kIntakeRollerSpeed,
         ControlType.kMAXMotionVelocityControl,
@@ -121,14 +124,14 @@ public class IntakeModule extends SubsystemBase {
    * @return true if the arm is at the lowered setpoint, false otherwise
    */
   public boolean isLowered() {
-    return armController.getSetpoint() == Constants.Intake.kLoweredAngleRad
+    return armController.getSetpoint() == Constants.Intake.kLoweredAngle
         && armController.isAtSetpoint();
   }
 
   /** Raises the arm and stops the roller. */
   public void raise() {
     armController.setSetpoint(
-        Constants.Intake.kRaisedAngleRad,
+        Constants.Intake.kRaisedAngle,
         ControlType.kMAXMotionPositionControl,
         ClosedLoopSlot.kSlot0);
     rollerController.setSetpoint(0.0, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
@@ -142,7 +145,7 @@ public class IntakeModule extends SubsystemBase {
    * @return true if the arm is at the raised setpoint, false otherwise
    */
   public boolean isRaised() {
-    return armController.getSetpoint() == Constants.Intake.kRaisedAngleRad
+    return armController.getSetpoint() == Constants.Intake.kRaisedAngle
         && armController.isAtSetpoint();
   }
 
@@ -156,6 +159,8 @@ public class IntakeModule extends SubsystemBase {
         RoboRioSim.getVInVoltage(),
         Constants.SIM.interval);
 
+    armEncoderSim.iterate(armSim.getVelocityRadPerSec(), Constants.SIM.interval);
+
     // Roller
     rollerFlywheelSim.setInput(rollerMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
     rollerFlywheelSim.update(Constants.SIM.interval);
@@ -166,8 +171,8 @@ public class IntakeModule extends SubsystemBase {
         Constants.SIM.interval); // Time interval, in Seconds
 
     // SimBattery estimates loaded battery voltages
-    RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(
-            rollerFlywheelSim.getCurrentDrawAmps() + armSim.getCurrentDrawAmps()));
+    // RoboRioSim.setVInVoltage(
+    //     BatterySim.calculateDefaultBatteryLoadedVoltage(
+    //         rollerFlywheelSim.getCurrentDrawAmps() + armSim.getCurrentDrawAmps()));
   }
 }

@@ -45,7 +45,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
-  private final ShooterSubsystem Shooter;
+  private final ShooterSubsystem shooter;
   private final IntakeSubsystem intake;
 
   // Controller
@@ -56,7 +56,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    Shooter = new ShooterSubsystem();
+    shooter = new ShooterSubsystem();
+    intake = new IntakeSubsystem();
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -75,7 +76,6 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVision(camera0Name, robotToCamera0),
                 new VisionIOPhotonVision(camera1Name, robotToCamera1));
-        intake = new IntakeSubsystem();
         break;
 
       case SIM:
@@ -93,7 +93,6 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
                 new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
-        intake = new IntakeSubsystem();
 
         break;
 
@@ -108,7 +107,6 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-        intake = new IntakeSubsystem();
         break;
     }
 

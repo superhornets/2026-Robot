@@ -52,31 +52,32 @@ public final class Constants {
   }
 
   public static final class ShooterConstants {
-    public static final int flywheel1ID = 11;
-    public static final int flywheel2ID = 12;
-    public static final int hoodMotorID = 13;
-    public static final int feederID = 14;
+    public static final int flywheel1ID = 101;
+    public static final int flywheel2ID = 102;
+    public static final int hoodMotorID = 103;
+    public static final int feederID = 104;
   }
 
   public static final class Intake {
     public static final class Sim {
-      public static final double kRollerMOI = 1.0;
+      public static final double kRollerMOI = 0.00117;
       public static final double kRollerGearRatio = 1.0;
+
+      public static final double kArmLengthMeters = Units.inchesToMeters(14);
       public static final double kArmMOI =
-          SingleJointedArmSim.estimateMOI(Units.inchesToMeters(14), 0.4);
+          SingleJointedArmSim.estimateMOI(kArmLengthMeters, Units.lbsToKilograms(2));
       public static final double kArmGearRatio = 1.0;
-      public static final double kArmLengthMeters = 1.0;
     }
 
-    public static final double kRaisedAngleRad = Units.degreesToRadians(0.0);
-    public static final double kLoweredAngleRad = Units.degreesToRadians(90.0);
+    public static final double kRaisedAngle = Units.degreesToRotations(0.0);
+    public static final double kLoweredAngle = Units.degreesToRotations(90.0);
     public static final double kIntakeRollerSpeed = 2000.0; // RPM
 
     public static final class CAN {
-      public static final int kLeftArm = 21;
-      public static final int kLeftRoller = 22;
-      public static final int kRightArm = 23;
-      public static final int kRightRoller = 24;
+      public static final int kLeftArm = 201;
+      public static final int kLeftRoller = 202;
+      public static final int kRightArm = 203;
+      public static final int kRightRoller = 204;
     }
   }
 

@@ -14,17 +14,23 @@ public class IntakeCommands {
   private IntakeCommands() {}
 
   public static Command lowerLeft(IntakeSubsystem intake) {
-    return Commands.run(
+    return Commands.startEnd(
         () -> {
           intake.lowerLeft();
+        },
+        () -> {
+          intake.raiseAll();
         },
         intake);
   }
 
   public static Command lowerRight(IntakeSubsystem intake) {
-    return Commands.run(
+    return Commands.startEnd(
         () -> {
           intake.lowerRight();
+        },
+        () -> {
+          intake.raiseAll();
         },
         intake);
   }
