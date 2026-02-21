@@ -57,11 +57,24 @@ public final class Constants {
     public static final double kLengthMeters = Units.inchesToMeters(29.25);
   }
 
-  public static final class ShooterConstants {
-    public static final int flywheel1ID = 101;
-    public static final int flywheel2ID = 102;
-    public static final int hoodMotorID = 103;
-    public static final int feederID = 104;
+  public static final class Shooter {
+    public static final class SIM {
+      public static final double kFlywheelMOI = 0.00117;
+      public static final double kFlywheelGearRatio = 1.0;
+      public static final double kHoodGearRatio = 1.0;
+    }
+
+    public static final double kFlywheelMaxSpeed = 2000.0; // RPM
+    public static final double kFlywheelMinSpeed = -200.0; // RPM
+    public static final double kHoodMinAngleDegrees = 0;
+    public static final double kHoodMaxAngleDegrees = 90;
+
+    public static final class CAN {
+      public static final int kFlywheel = 400;
+      public static final int kFeeder = 401;
+      public static final int kAgitator = 402;
+      public static final int kHood = 403;
+    }
   }
 
   public static final class Intake {

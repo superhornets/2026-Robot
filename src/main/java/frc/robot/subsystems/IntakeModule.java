@@ -50,7 +50,6 @@ public class IntakeModule extends SubsystemBase {
     SparkMaxConfig armConfig = new SparkMaxConfig();
     armConfig
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(armID, rollerID)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .p(10)
