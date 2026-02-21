@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Commands.DriveCommands;
 import frc.robot.Commands.IntakeCommands;
+import frc.robot.Commands.ShooterCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -50,6 +51,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
+  private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -182,6 +184,9 @@ public class RobotContainer {
 
     driverController.leftBumper().whileTrue(IntakeCommands.lowerLeft(intake));
     driverController.rightBumper().whileTrue(IntakeCommands.lowerRight(intake));
+
+    operatorController.rightTrigger().whileTrue(ShooterCommands.runFlywheel(shooter));
+    operatorController.leftTrigger().whileTrue(ShooterCommands.runFeeder(shooter));
   }
 
   /**

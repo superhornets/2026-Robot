@@ -70,10 +70,10 @@ public final class Constants {
     public static final double kHoodMaxAngleDegrees = 90;
 
     public static final class CAN {
-      public static final int kFlywheel = 400;
-      public static final int kFeeder = 401;
-      public static final int kAgitator = 402;
-      public static final int kHood = 403;
+      public static final int kFlywheel = 50;
+      public static final int kFeeder = 51;
+      public static final int kAgitator = 52;
+      public static final int kHood = 53;
     }
   }
 
