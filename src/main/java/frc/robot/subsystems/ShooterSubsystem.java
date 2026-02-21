@@ -7,15 +7,18 @@ package frc.robot.subsystems;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
+import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -31,9 +34,9 @@ public class ShooterSubsystem extends SubsystemBase {
   // HARDWARE OBJECTS
   private SparkMax hoodMotor;
   private SparkClosedLoopController hoodController;
-  private SparkMax flywheelMotor;
+  private SparkFlex flywheelMotor;
   private SparkClosedLoopController flywheelController;
-  private SparkMax agitatorMotor;
+  private SparkFlex agitatorMotor;
   private SparkClosedLoopController agitatorController;
   private SparkMax feederMotor;
   private SparkClosedLoopController feederController;
@@ -43,7 +46,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkAbsoluteEncoderSim hoodEncoderSim;
   private DCMotor hoodGearboxSim;
   private SingleJointedArmSim hoodSim;
-  private SparkMaxSim flywheelMotorSim;
+  private SparkFlexSim flywheelMotorSim;
   private FlywheelSim flywheelSim;
   private DCMotor flywheelGearboxSim;
 
@@ -72,8 +75,8 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     hoodController = hoodMotor.getClosedLoopController();
 
-    flywheelMotor = new SparkMax(Constants.Shooter.CAN.kFlywheel, MotorType.kBrushless);
-    SparkMaxConfig flywheelConfig = new SparkMaxConfig();
+    flywheelMotor = new SparkFlex(Constants.Shooter.CAN.kFlywheel, MotorType.kBrushless);
+    SparkFlexConfig flywheelConfig = new SparkFlexConfig();
     flywheelConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
@@ -85,6 +88,34 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelMotor.configure(
         flywheelConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     flywheelController = flywheelMotor.getClosedLoopController();
+
+    feederMotor = new SparkMax(Constants.Shooter.CAN.kFeeder, MotorType.kBrushless);
+    SparkMaxConfig feederConfig = new SparkMaxConfig();
+    feederConfig
+        .idleMode(IdleMode.kCoast)
+        .closedLoop
+        .p(10)
+        .i(0)
+        .d(0.1)
+        .maxMotion
+        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
+    feederMotor.configure(
+        feederConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    feederController = feederMotor.getClosedLoopController();
+
+    agitatorMotor = new SparkFlex(Constants.Shooter.CAN.kAgitator, MotorType.kBrushless);
+    SparkFlexConfig agigitatorConfig = new SparkFlexConfig();
+    agigitatorConfig
+        .idleMode(IdleMode.kCoast)
+        .closedLoop
+        .p(10)
+        .i(0)
+        .d(0.1)
+        .maxMotion
+        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
+    agitatorMotor.configure(
+        agigitatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    agitatorController = agitatorMotor.getClosedLoopController();
 
     // SIMULATION OBJECTS
     hoodGearboxSim = DCMotor.getNEO(1);
@@ -105,7 +136,7 @@ public class ShooterSubsystem extends SubsystemBase {
             Units.degreesToRadians(Constants.Shooter.kHoodMaxAngleDegrees));
 
     flywheelGearboxSim = DCMotor.getNEO(1);
-    flywheelMotorSim = new SparkMaxSim(flywheelMotor, flywheelGearboxSim);
+    flywheelMotorSim = new SparkFlexSim(flywheelMotor, flywheelGearboxSim);
 
     flywheelSim =
         new FlywheelSim(

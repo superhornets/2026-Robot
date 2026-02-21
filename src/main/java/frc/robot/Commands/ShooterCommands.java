@@ -6,34 +6,32 @@ package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShooterCommands {
 
-  public ShooterCommands() {
-
-  }
+  public ShooterCommands() {}
 
   public static Command runFlywheel(ShooterSubsystem shooter) {
     return Commands.startEnd(
-      () -> {
-        shooter.startFlywheel(2000);
-      }, () -> {
-        shooter.stopFlywheel();
-      }, 
-      shooter);
+        () -> {
+          shooter.startFlywheel(2000);
+        },
+        () -> {
+          shooter.stopFlywheel();
+        },
+        shooter);
   }
 
   public static Command runFeeder(ShooterSubsystem shooter) {
     return Commands.startEnd(
-      () -> {
-        shooter.startFeeder();
-      },
-      ()-> {
-        shooter.stopFeeder();
-      },
-      shooter);  
+        () -> {
+          shooter.startFeeder();
+        },
+        () -> {
+          shooter.stopFeeder();
+        },
+        shooter);
   }
 }
