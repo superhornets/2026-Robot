@@ -38,7 +38,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkClosedLoopController flywheelController;
   private SparkFlex agitatorMotor;
   private SparkClosedLoopController agitatorController;
-  private SparkMax feederMotor;
+  private SparkFlex feederMotor;
   private SparkClosedLoopController feederController;
 
   // SIMULATION OBJECTS
@@ -89,8 +89,8 @@ public class ShooterSubsystem extends SubsystemBase {
         flywheelConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     flywheelController = flywheelMotor.getClosedLoopController();
 
-    feederMotor = new SparkMax(Constants.Shooter.CAN.kFeeder, MotorType.kBrushless);
-    SparkMaxConfig feederConfig = new SparkMaxConfig();
+    feederMotor = new SparkFlex(Constants.Shooter.CAN.kFeeder, MotorType.kBrushless);
+    SparkFlexConfig feederConfig = new SparkFlexConfig();
     feederConfig
         .inverted(true)
         .idleMode(IdleMode.kCoast)
