@@ -80,7 +80,7 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(10)
+        .p(0.1)
         .i(0)
         .d(0.1)
         .maxMotion
@@ -92,9 +92,10 @@ public class ShooterSubsystem extends SubsystemBase {
     feederMotor = new SparkMax(Constants.Shooter.CAN.kFeeder, MotorType.kBrushless);
     SparkMaxConfig feederConfig = new SparkMaxConfig();
     feederConfig
+        .inverted(true)
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(10)
+        .p(0.1)
         .i(0)
         .d(0.1)
         .maxMotion
@@ -108,7 +109,7 @@ public class ShooterSubsystem extends SubsystemBase {
     agigitatorConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(10)
+        .p(0.1)
         .i(0)
         .d(0.1)
         .maxMotion
@@ -178,9 +179,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void startFeeder() {
     feederController.setSetpoint(
-        1000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
     agitatorController.setSetpoint(
-        1000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
   }
 
   public void reverseFeeder() {
