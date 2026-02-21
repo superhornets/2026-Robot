@@ -43,12 +43,18 @@ public final class Constants {
         new Pose3d(Inches.of(182.11f), Inches.of(158.845f), Inches.of(72), Rotation3d.kZero);
   }
 
+  public static final class Robot {
+    public static final double kWidthMeters = Units.inchesToMeters(20.5);
+    public static final double kLengthMeters = Units.inchesToMeters(29.25);
+  }
+
   public static final class DriveConstants {
-
     public static final double kSlowModeMultiplier = 0.25;
-
-    public static final double kFastModeMultiplier = 0.60;
     public static final double kNormalModeMultiplier = 0.40; // 0.25 is the slow mode
+    public static final double kFastModeMultiplier = 0.60;
+
+    public static final double kWidthMeters = Units.inchesToMeters(20.5);
+    public static final double kLengthMeters = Units.inchesToMeters(29.25);
   }
 
   public static final class ShooterConstants {
@@ -59,14 +65,14 @@ public final class Constants {
   }
 
   public static final class Intake {
-    public static final class Sim {
+    public static final class SIM {
       public static final double kRollerMOI = 0.00117;
       public static final double kRollerGearRatio = 1.0;
 
       public static final double kArmLengthMeters = Units.inchesToMeters(14);
       public static final double kArmMOI =
           SingleJointedArmSim.estimateMOI(kArmLengthMeters, Units.lbsToKilograms(2));
-      public static final double kArmGearRatio = 1.0;
+      public static final double kArmGearRatio = 5.0;
     }
 
     public static final double kRaisedAngle = Units.degreesToRotations(0.0);

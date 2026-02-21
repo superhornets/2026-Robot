@@ -15,6 +15,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -48,15 +49,20 @@ public class IntakeModule extends SubsystemBase {
 
     SparkMaxConfig armConfig = new SparkMaxConfig();
     armConfig
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(armID, rollerID)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .p(1)
+        .p(10)
         .i(0)
-        .d(0.1)
+        .d(1)
         .positionWrappingEnabled(true)
+        .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0)
         .maxMotion
         .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-        .maxAcceleration(Math.PI, ClosedLoopSlot.kSlot0);
+        .allowedProfileError(Units.degreesToRotations(0.2))
+        .cruiseVelocity(120)
+        .maxAcceleration(6_000.0, ClosedLoopSlot.kSlot0);
 
     armMotor.configure(
         armConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -65,12 +71,13 @@ public class IntakeModule extends SubsystemBase {
     rollerMotor = new SparkMax(rollerID, MotorType.kBrushless);
     SparkMaxConfig rollerConfig = new SparkMaxConfig();
     rollerConfig
+        .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.1)
+        .p(10)
         .i(0)
-        .d(0.01)
+        .d(0.1)
         .maxMotion
-        .maxAcceleration(4000, ClosedLoopSlot.kSlot0);
+        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     rollerMotor.configure(
         rollerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     rollerController = rollerMotor.getClosedLoopController();
@@ -83,13 +90,13 @@ public class IntakeModule extends SubsystemBase {
     armSim =
         new SingleJointedArmSim(
             armGearboxSim,
-            Constants.Intake.Sim.kArmGearRatio,
-            Constants.Intake.Sim.kArmMOI,
-            Constants.Intake.Sim.kArmLengthMeters,
-            Constants.Intake.kRaisedAngle * 2 * Math.PI,
-            Constants.Intake.kLoweredAngle * 2 * Math.PI,
-            false,
-            Constants.Intake.kRaisedAngle);
+            Constants.Intake.SIM.kArmGearRatio,
+            Constants.Intake.SIM.kArmMOI,
+            Constants.Intake.SIM.kArmLengthMeters,
+            Units.rotationsToRadians(Constants.Intake.kRaisedAngle),
+            Units.rotationsToRadians(Constants.Intake.kLoweredAngle),
+            true,
+            Units.rotationsToRadians(Constants.Intake.kRaisedAngle));
 
     rollerGearboxSim = DCMotor.getNEO(1);
     rollerMotorSim = new SparkMaxSim(rollerMotor, rollerGearboxSim);
@@ -98,8 +105,8 @@ public class IntakeModule extends SubsystemBase {
         new FlywheelSim(
             LinearSystemId.createFlywheelSystem(
                 rollerGearboxSim,
-                Constants.Intake.Sim.kRollerMOI,
-                Constants.Intake.Sim.kRollerGearRatio),
+                Constants.Intake.SIM.kRollerMOI,
+                Constants.Intake.SIM.kRollerGearRatio),
             rollerGearboxSim);
   }
 
@@ -111,7 +118,9 @@ public class IntakeModule extends SubsystemBase {
   /** Lowers the arm and starts the roller at the intake speed. */
   public void lower() {
     armController.setSetpoint(
-        Constants.Intake.kLoweredAngle, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+        Constants.Intake.kLoweredAngle,
+        ControlType.kMAXMotionPositionControl,
+        ClosedLoopSlot.kSlot0);
     rollerController.setSetpoint(
         Constants.Intake.kIntakeRollerSpeed,
         ControlType.kMAXMotionVelocityControl,
@@ -131,8 +140,12 @@ public class IntakeModule extends SubsystemBase {
   /** Raises the arm and stops the roller. */
   public void raise() {
     armController.setSetpoint(
-        Constants.Intake.kRaisedAngle, ControlType.kPosition, ClosedLoopSlot.kSlot0);
-    rollerController.setSetpoint(0.0, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        Constants.Intake.kRaisedAngle,
+        ControlType.kMAXMotionPositionControl,
+        ClosedLoopSlot.kSlot0);
+    // We set the roller to 0 using duty cycle control, as setting it to 0 using velocity control
+    // will cause the motor to brake and stop the rollers rather than letting them coast to a stop.
+    rollerController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
   }
 
   /**
@@ -147,6 +160,14 @@ public class IntakeModule extends SubsystemBase {
         && armController.isAtSetpoint();
   }
 
+  public double getAngleRadians() {
+    return armMotor.getAbsoluteEncoder().getPosition();
+  }
+
+  public double getRollerVelocityRPM() {
+    return rollerMotor.getEncoder().getVelocity();
+  }
+
   public void simulationPeriodic() {
     // Arm
     armSim.setInput(armMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
@@ -157,7 +178,10 @@ public class IntakeModule extends SubsystemBase {
         RoboRioSim.getVInVoltage(),
         Constants.SIM.interval);
 
-    armEncoderSim.iterate(armSim.getVelocityRadPerSec(), Constants.SIM.interval);
+    armEncoderSim.iterate(
+        Units.radiansPerSecondToRotationsPerMinute(armSim.getVelocityRadPerSec())
+            / Constants.Intake.SIM.kArmGearRatio,
+        Constants.SIM.interval);
 
     // Roller
     rollerFlywheelSim.setInput(rollerMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
@@ -167,10 +191,5 @@ public class IntakeModule extends SubsystemBase {
             rollerFlywheelSim.getAngularVelocityRadPerSec()),
         RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
         Constants.SIM.interval); // Time interval, in Seconds
-
-    // SimBattery estimates loaded battery voltages
-    // RoboRioSim.setVInVoltage(
-    //     BatterySim.calculateDefaultBatteryLoadedVoltage(
-    //         rollerFlywheelSim.getCurrentDrawAmps() + armSim.getCurrentDrawAmps()));
   }
 }

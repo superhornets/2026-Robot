@@ -4,9 +4,12 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.generated.TunerConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -14,6 +17,8 @@ public class IntakeSubsystem extends SubsystemBase {
       new IntakeModule(Constants.Intake.CAN.kLeftArm, Constants.Intake.CAN.kLeftRoller);
   private IntakeModule rightIntake =
       new IntakeModule(Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller);
+
+  private Mechanism2d Panel = new Mechanism2d(Units.inchesToMeters(Constants.Robot.kWidthMeters), Constants.Robot.kLengthMeters);
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
@@ -27,7 +32,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    
   }
 
   public void raiseAll() {
@@ -64,4 +69,6 @@ public class IntakeSubsystem extends SubsystemBase {
     leftIntake.simulationPeriodic();
     rightIntake.simulationPeriodic();
   }
+
+
 }
