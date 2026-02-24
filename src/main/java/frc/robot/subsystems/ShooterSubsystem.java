@@ -32,10 +32,16 @@ import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
   // HARDWARE OBJECTS
+
+  // flywheel
+  private SparkFlex flywheelMotorLeft;
+  private SparkClosedLoopController flywheelControllerLeft;
+  private SparkFlex flywheelMotorRight;
+  private SparkClosedLoopController flywheelControllerRight;
+
+  // other
   private SparkMax hoodMotor;
   private SparkClosedLoopController hoodController;
-  private SparkFlex flywheelMotor;
-  private SparkClosedLoopController flywheelController;
   private SparkFlex agitatorMotor;
   private SparkClosedLoopController agitatorController;
   private SparkFlex feederMotor;
@@ -83,9 +89,10 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     hoodController = hoodMotor.getClosedLoopController();
 
-    flywheelMotor = new SparkFlex(Constants.Shooter.CAN.kFlywheel, MotorType.kBrushless);
-    SparkFlexConfig flywheelConfig = new SparkFlexConfig();
-    flywheelConfig
+    flywheelMotorLeft = new SparkFlex(Constants.Shooter.CAN.kFlywheelLeft, MotorType.kBrushless);
+    SparkFlexConfig flywheelConfigLeft = new SparkFlexConfig();
+    flywheelConfigLeft
+        .inverted(true)
         .idleMode(IdleMode.kCoast)
         .closedLoop
         .p(0.1)
@@ -93,9 +100,23 @@ public class ShooterSubsystem extends SubsystemBase {
         .d(0.1)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
-    flywheelMotor.configure(
-        flywheelConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    flywheelController = flywheelMotor.getClosedLoopController();
+    flywheelMotorLeft.configure(
+        flywheelConfigLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    flywheelControllerLeft = flywheelMotorLeft.getClosedLoopController();
+
+    flywheelMotorRight = new SparkFlex(Constants.Shooter.CAN.kFlywheelRight, MotorType.kBrushless);
+    SparkFlexConfig flywheelConfigRight = new SparkFlexConfig();
+    flywheelConfigRight
+        .idleMode(IdleMode.kCoast)
+        .closedLoop
+        .p(0.1)
+        .i(0)
+        .d(0.1)
+        .maxMotion
+        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
+    flywheelMotorRight.configure(
+        flywheelConfigRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    flywheelControllerRight = flywheelMotorRight.getClosedLoopController();
 
     feederMotor = new SparkFlex(Constants.Shooter.CAN.kFeeder, MotorType.kBrushless);
     SparkFlexConfig feederConfig = new SparkFlexConfig();
@@ -144,9 +165,8 @@ public class ShooterSubsystem extends SubsystemBase {
             Units.degreesToRadians(Constants.Shooter.kHoodMaxAngleDegrees));
 
     // Flywheel sim
-    flywheelGearboxSim = DCMotor.getNeoVortex(1);
-    flywheelMotorSim = new SparkFlexSim(flywheelMotor, flywheelGearboxSim);
-
+    flywheelGearboxSim = DCMotor.getNeoVortex(2);
+    flywheelMotorSim = new SparkFlexSim(flywheelMotorLeft, flywheelGearboxSim);
     flywheelSim =
         new FlywheelSim(
             LinearSystemId.createFlywheelSystem(
@@ -199,12 +219,15 @@ public class ShooterSubsystem extends SubsystemBase {
     double speedClamped =
         MathUtil.clamp(
             speedRPM, Constants.Shooter.kFlywheelMinSpeed, Constants.Shooter.kFlywheelMaxSpeed);
-    flywheelController.setSetpoint(
+    flywheelControllerLeft.setSetpoint(
+        speedClamped, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+    flywheelControllerRight.setSetpoint(
         speedClamped, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
   }
 
   public void stopFlywheel() {
-    flywheelController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+    flywheelControllerLeft.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+    flywheelControllerRight.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
   }
 
   public void startFeeder() {
@@ -214,11 +237,17 @@ public class ShooterSubsystem extends SubsystemBase {
         500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
   }
 
-  public void reverseFeeder() {
+  public void startReverseFeeder() {
     feederController.setSetpoint(
         -200, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
     agitatorController.setSetpoint(
         1000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+    startFlywheel(-200);
+  }
+
+  public void stopReverseFeeder() {
+    stopFeeder();
+    stopFlywheel();
   }
 
   public void stopFeeder() {
@@ -231,7 +260,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public double getRollerVelocityRPM() {
-    return flywheelMotor.getEncoder().getVelocity();
+    return flywheelMotorLeft.getEncoder().getVelocity();
   }
 
   public void simulationPeriodic() {
@@ -250,7 +279,7 @@ public class ShooterSubsystem extends SubsystemBase {
         Constants.SIM.interval);
 
     // Flywheel
-    flywheelSim.setInput(flywheelMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+    flywheelSim.setInput(2 * flywheelMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
     flywheelSim.update(Constants.SIM.interval);
     flywheelMotorSim.iterate(
         Units.radiansPerSecondToRotationsPerMinute( // motor velocity, in RPM

@@ -44,4 +44,20 @@ public class ShooterCommands {
         },
         shooter);
   }
+
+  public static Command startReverse(ShooterSubsystem shooter) {
+    return Commands.runOnce(
+        () -> {
+          shooter.startReverseFeeder();
+        },
+        shooter);
+  }
+
+  public static Command stopReverse(ShooterSubsystem shooter) {
+    return Commands.runOnce(
+        () -> {
+          shooter.stopReverseFeeder();
+        },
+        shooter);
+  }
 }

@@ -190,6 +190,9 @@ public class RobotContainer {
 
     operatorController.leftTrigger().onTrue(ShooterCommands.startFeeder(shooter));
     operatorController.leftTrigger().onFalse(ShooterCommands.stopFeeder(shooter));
+
+    operatorController.y().onTrue(ShooterCommands.startReverse(shooter));
+    operatorController.y().onFalse(ShooterCommands.stopReverse(shooter));
   }
 
   /**
