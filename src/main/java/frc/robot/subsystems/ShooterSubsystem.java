@@ -100,6 +100,7 @@ public class ShooterSubsystem extends SubsystemBase {
     feederMotor = new SparkFlex(Constants.Shooter.CAN.kFeeder, MotorType.kBrushless);
     SparkFlexConfig feederConfig = new SparkFlexConfig();
     feederConfig
+        .inverted(true)
         .idleMode(IdleMode.kCoast)
         .inverted(true)
         .closedLoop
@@ -208,9 +209,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void startFeeder() {
     feederController.setSetpoint(
-        1000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
     agitatorController.setSetpoint(
-        1000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
   }
 
   public void reverseFeeder() {
