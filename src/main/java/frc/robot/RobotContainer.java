@@ -19,7 +19,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Commands.DriveCommands;
+import frc.robot.Commands.IntakeCommands;
+import frc.robot.Commands.ShooterCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -31,7 +34,6 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-import frc.robot.subsystems.climber.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -45,10 +47,11 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final ShooterSubsystem shooter;
-  private final ClimberSubsystem climber;
+  private final IntakeSubsystem intake;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
+  private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -56,6 +59,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     shooter = new ShooterSubsystem();
+    intake = new IntakeSubsystem();
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -74,9 +78,6 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVision(camera0Name, robotToCamera0),
                 new VisionIOPhotonVision(camera1Name, robotToCamera1));
-
-        climber = new ClimberSubsystem(new ClimberIOReal());
-
         break;
 
       case SIM:
@@ -95,8 +96,6 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
                 new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
 
-        climber = new ClimberSubsystem(new ClimberIOSim());
-
         break;
 
       default:
@@ -110,9 +109,6 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-
-        climber = new ClimberSubsystem(new ClimberIOSim() {});
-
         break;
     }
 
@@ -185,6 +181,15 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.aimAtHub(
                 drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX()));
+
+    driverController.leftBumper().whileTrue(IntakeCommands.lowerLeft(intake));
+    driverController.rightBumper().whileTrue(IntakeCommands.lowerRight(intake));
+
+    operatorController.rightTrigger().onTrue(ShooterCommands.startFlywheel(shooter));
+    operatorController.rightTrigger().onFalse(ShooterCommands.stopFlywheel(shooter));
+
+    operatorController.leftTrigger().onTrue(ShooterCommands.startFeeder(shooter));
+    operatorController.leftTrigger().onFalse(ShooterCommands.stopFeeder(shooter));
   }
 
   /**
