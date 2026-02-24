@@ -185,8 +185,11 @@ public class RobotContainer {
     driverController.leftBumper().whileTrue(IntakeCommands.lowerLeft(intake));
     driverController.rightBumper().whileTrue(IntakeCommands.lowerRight(intake));
 
-    operatorController.rightTrigger().whileTrue(ShooterCommands.runFlywheel(shooter));
-    operatorController.leftTrigger().whileTrue(ShooterCommands.runFeeder(shooter));
+    operatorController.rightTrigger().onTrue(ShooterCommands.startFlywheel(shooter));
+    operatorController.rightTrigger().onFalse(ShooterCommands.stopFlywheel(shooter));
+
+    operatorController.leftTrigger().onTrue(ShooterCommands.startFeeder(shooter));
+    operatorController.leftTrigger().onFalse(ShooterCommands.stopFeeder(shooter));
   }
 
   /**

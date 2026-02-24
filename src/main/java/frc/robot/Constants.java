@@ -59,12 +59,12 @@ public final class Constants {
 
   public static final class Shooter {
     public static final class SIM {
-      public static final double kFlywheelMOI = 0.00117;
+      public static final double kFlywheelMOI = 0.0000117;
       public static final double kFlywheelGearRatio = 1.0;
       public static final double kHoodGearRatio = 1.0;
     }
 
-    public static final double kFlywheelMaxSpeed = 2000.0; // RPM
+    public static final double kFlywheelMaxSpeed = 6000.0; // RPM
     public static final double kFlywheelMinSpeed = -200.0; // RPM
     public static final double kHoodMinAngleDegrees = 0;
     public static final double kHoodMaxAngleDegrees = 90;

@@ -13,22 +13,32 @@ public class ShooterCommands {
 
   public ShooterCommands() {}
 
-  public static Command runFlywheel(ShooterSubsystem shooter) {
-    return Commands.startEnd(
+  public static Command startFlywheel(ShooterSubsystem shooter) {
+    return Commands.runOnce(
         () -> {
-          shooter.startFlywheel(2000);
+          shooter.startFlywheel(6000);
         },
+        shooter);
+  }
+
+  public static Command stopFlywheel(ShooterSubsystem shooter) {
+    return Commands.runOnce(
         () -> {
           shooter.stopFlywheel();
         },
         shooter);
   }
 
-  public static Command runFeeder(ShooterSubsystem shooter) {
-    return Commands.startEnd(
+  public static Command startFeeder(ShooterSubsystem shooter) {
+    return Commands.runOnce(
         () -> {
           shooter.startFeeder();
         },
+        shooter);
+  }
+
+  public static Command stopFeeder(ShooterSubsystem shooter) {
+    return Commands.runOnce(
         () -> {
           shooter.stopFeeder();
         },

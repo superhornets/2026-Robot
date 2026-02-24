@@ -38,7 +38,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkClosedLoopController flywheelController;
   private SparkFlex agitatorMotor;
   private SparkClosedLoopController agitatorController;
-  private SparkMax feederMotor;
+  private SparkFlex feederMotor;
   private SparkClosedLoopController feederController;
 
   // SIMULATION OBJECTS
@@ -49,6 +49,14 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkFlexSim flywheelMotorSim;
   private FlywheelSim flywheelSim;
   private DCMotor flywheelGearboxSim;
+  // Feeder simulation (matches flywheel)
+  private SparkFlexSim feederMotorSim;
+  private FlywheelSim feederSim;
+  private DCMotor feederGearboxSim;
+  // Agitator simulation (matches flywheel)
+  private SparkFlexSim agitatorMotorSim;
+  private FlywheelSim agitatorSim;
+  private DCMotor agitatorGearboxSim;
 
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem() {
@@ -80,7 +88,7 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(10)
+        .p(0.1)
         .i(0)
         .d(0.1)
         .maxMotion
@@ -89,12 +97,13 @@ public class ShooterSubsystem extends SubsystemBase {
         flywheelConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     flywheelController = flywheelMotor.getClosedLoopController();
 
-    feederMotor = new SparkMax(Constants.Shooter.CAN.kFeeder, MotorType.kBrushless);
-    SparkMaxConfig feederConfig = new SparkMaxConfig();
+    feederMotor = new SparkFlex(Constants.Shooter.CAN.kFeeder, MotorType.kBrushless);
+    SparkFlexConfig feederConfig = new SparkFlexConfig();
     feederConfig
         .idleMode(IdleMode.kCoast)
+        .inverted(true)
         .closedLoop
-        .p(10)
+        .p(0.1)
         .i(0)
         .d(0.1)
         .maxMotion
@@ -108,7 +117,7 @@ public class ShooterSubsystem extends SubsystemBase {
     agigitatorConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(10)
+        .p(0.1)
         .i(0)
         .d(0.1)
         .maxMotion
@@ -126,8 +135,6 @@ public class ShooterSubsystem extends SubsystemBase {
         new SingleJointedArmSim(
             hoodGearboxSim,
             Constants.Shooter.SIM.kHoodGearRatio,
-            //  Constants.Shooter.SIM.kHoodMOI,
-            //  Constants.Shooter.SIM.kHoodLengthMeters,
             1,
             1,
             Units.degreesToRadians(Constants.Shooter.kHoodMaxAngleDegrees),
@@ -135,7 +142,8 @@ public class ShooterSubsystem extends SubsystemBase {
             true,
             Units.degreesToRadians(Constants.Shooter.kHoodMaxAngleDegrees));
 
-    flywheelGearboxSim = DCMotor.getNEO(1);
+    // Flywheel sim
+    flywheelGearboxSim = DCMotor.getNeoVortex(1);
     flywheelMotorSim = new SparkFlexSim(flywheelMotor, flywheelGearboxSim);
 
     flywheelSim =
@@ -145,6 +153,28 @@ public class ShooterSubsystem extends SubsystemBase {
                 Constants.Shooter.SIM.kFlywheelMOI,
                 Constants.Shooter.SIM.kFlywheelGearRatio),
             flywheelGearboxSim);
+
+    // Feeder sim
+    feederGearboxSim = DCMotor.getNeoVortex(1);
+    feederMotorSim = new SparkFlexSim(feederMotor, feederGearboxSim);
+    feederSim =
+        new FlywheelSim(
+            LinearSystemId.createFlywheelSystem(
+                feederGearboxSim,
+                Constants.Shooter.SIM.kFlywheelMOI,
+                Constants.Shooter.SIM.kFlywheelGearRatio),
+            feederGearboxSim);
+
+    // Agitator sim
+    agitatorGearboxSim = DCMotor.getNeoVortex(1);
+    agitatorMotorSim = new SparkFlexSim(agitatorMotor, agitatorGearboxSim);
+    agitatorSim =
+        new FlywheelSim(
+            LinearSystemId.createFlywheelSystem(
+                agitatorGearboxSim,
+                Constants.Shooter.SIM.kFlywheelMOI,
+                Constants.Shooter.SIM.kFlywheelGearRatio),
+            agitatorGearboxSim);
   }
 
   public void periodic() {
@@ -224,6 +254,24 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelMotorSim.iterate(
         Units.radiansPerSecondToRotationsPerMinute( // motor velocity, in RPM
             flywheelSim.getAngularVelocityRadPerSec()),
+        RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
+        Constants.SIM.interval); // Time interval, in Seconds
+
+    // Feeder
+    feederSim.setInput(feederMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+    feederSim.update(Constants.SIM.interval);
+    feederMotorSim.iterate(
+        Units.radiansPerSecondToRotationsPerMinute( // motor velocity, in RPM
+            feederSim.getAngularVelocityRadPerSec()),
+        RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
+        Constants.SIM.interval); // Time interval, in Seconds
+
+    // Agitator
+    agitatorSim.setInput(agitatorMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+    agitatorSim.update(Constants.SIM.interval);
+    agitatorMotorSim.iterate(
+        Units.radiansPerSecondToRotationsPerMinute( // motor velocity, in RPM
+            agitatorSim.getAngularVelocityRadPerSec()),
         RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
         Constants.SIM.interval); // Time interval, in Seconds
   }
