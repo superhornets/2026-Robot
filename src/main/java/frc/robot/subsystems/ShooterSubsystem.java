@@ -21,9 +21,13 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -201,6 +205,50 @@ public class ShooterSubsystem extends SubsystemBase {
   public void periodic() {
     // Nothing to do here, as the subsystem is fully closed-loop in simulation and on the real
     // robot. The only thing we need to do is update the simulation objects in simulationPeriodic().
+  }
+
+  public void update(Pose2d robotPose) {
+    double dist = getDistance(robotPose);
+
+    setShootDist(dist);
+  }
+
+  public double getDistance(Pose2d RobotPose) {
+    boolean isFlipped =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+
+    Pose3d hubCenter =
+        isFlipped ? Constants.FieldConstants.RedHubCenter : Constants.FieldConstants.BlueHubCenter;
+
+    double relativeHubX = hubCenter.getX() - RobotPose.getX();
+    double relativeHubY = hubCenter.getY() - RobotPose.getY();
+    System.out.println("relativeX: " + relativeHubX + ", relativeY: " + relativeHubY);
+    // double HubZ = hubCenter.getZ();
+
+    double dist = Math.sqrt(relativeHubX * relativeHubX + relativeHubY * relativeHubY);
+
+    return dist;
+  }
+
+  public void setShootDist(double dist) {
+    double maxDist = 10;
+    double minDist = 1;
+
+    double hoodAngleMin = 0;
+    double hoodAngleMax = 45;
+
+    double flywheelSpeedMin = 300;
+    double flywheelSpeedMax = 2000;
+
+    double ratio = (dist - minDist) / (maxDist - minDist);
+    double hoodAngle =
+        ratio * (hoodAngleMax - hoodAngleMin)
+            + hoodAngleMin; // ratio * (maxValue - minValue) + minValue
+    double flywheelSpeed = ratio * (flywheelSpeedMax - flywheelSpeedMin) + flywheelSpeedMin;
+
+    setHoodAngle(hoodAngle);
+    startFlywheel(flywheelSpeed);
   }
 
   /** Lowers the arm and starts the roller at the intake speed. */

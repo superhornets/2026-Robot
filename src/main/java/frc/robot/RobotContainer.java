@@ -176,11 +176,19 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
+    // driverController
+    //     .y()
+    //     .whileTrue(
+    //         DriveCommands.aimAtHub(
+    //             drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX()));
+
     driverController
         .y()
         .whileTrue(
-            DriveCommands.aimAtHub(
-                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX()));
+            Commands.parallel(
+                DriveCommands.aimAtHub(
+                    drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX()),
+                ShooterCommands.update(shooter, () -> drive.getPose())));
 
     driverController.leftBumper().whileTrue(IntakeCommands.lowerLeft(intake));
     driverController.rightBumper().whileTrue(IntakeCommands.lowerRight(intake));
