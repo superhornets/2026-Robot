@@ -34,7 +34,6 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-import frc.robot.subsystems.climber.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -48,8 +47,9 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final ShooterSubsystem shooter;
-  private final IntakeSubsystem intake;
+
   private final ClimberSubsystem climber;
+  private final IntakeSubsystem intake;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -97,8 +97,6 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
                 new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
-
-        climber = new ClimberSubsystem(new ClimberIOSim());
 
         break;
 
