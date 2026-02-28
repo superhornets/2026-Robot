@@ -47,8 +47,6 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final ShooterSubsystem shooter;
-
-  private final ClimberSubsystem climber;
   private final IntakeSubsystem intake;
 
   // Controller
