@@ -49,7 +49,8 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
+  public void periodic() 
+  {
     // This method will be called once per scheduler run
     io.updateInputs(inputs);
 
@@ -58,5 +59,11 @@ public class ClimberSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Climber Actual Velocity", inputs.velocity);
     Logger.processInputs("Climber", inputs);
     Logger.recordOutput("Climber Target Position", lastTarget);
+  }
+
+  @Override
+  public void simulationPeriodic()
+  {
+    this.periodic();
   }
 }
