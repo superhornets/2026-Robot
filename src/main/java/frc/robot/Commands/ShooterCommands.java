@@ -16,9 +16,12 @@ public class ShooterCommands {
   public ShooterCommands() {}
 
   public static Command update(ShooterSubsystem shooter, Supplier<Pose2d> robotPose) {
-    return Commands.run(
+    return Commands.runEnd(
         () -> {
           shooter.update(robotPose.get());
+        },
+        () -> {
+          shooter.stopFlywheel();
         },
         shooter);
   }

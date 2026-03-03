@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class ShooterSubsystem extends SubsystemBase {
   // HARDWARE OBJECTS
@@ -99,9 +100,9 @@ public class ShooterSubsystem extends SubsystemBase {
         .inverted(true)
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.1)
+        .p(0.0001)
         .i(0)
-        .d(0.1)
+        .d(1)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     flywheelMotorLeft.configure(
@@ -113,9 +114,9 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelConfigRight
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.1)
+        .p(0.0001)
         .i(0)
-        .d(0.1)
+        .d(1)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     flywheelMotorRight.configure(
@@ -274,8 +275,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void stopFlywheel() {
-    flywheelControllerLeft.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
-    flywheelControllerRight.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+    flywheelControllerLeft.setSetpoint(0.0, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    flywheelControllerRight.setSetpoint(0.0, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
   public void startFeeder() {
@@ -307,6 +308,7 @@ public class ShooterSubsystem extends SubsystemBase {
     return hoodMotor.getAbsoluteEncoder().getPosition();
   }
 
+  @AutoLogOutput(key = "Shooter/FlywheelVelocityRPM")
   public double getRollerVelocityRPM() {
     return flywheelMotorLeft.getEncoder().getVelocity();
   }
