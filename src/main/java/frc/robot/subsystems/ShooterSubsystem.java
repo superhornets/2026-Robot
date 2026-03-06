@@ -16,7 +16,6 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -79,16 +78,16 @@ public class ShooterSubsystem extends SubsystemBase {
         .idleMode(IdleMode.kBrake)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .p(10)
+        .p(15)
         .i(0)
-        .d(1)
-        .positionWrappingEnabled(true)
-        .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0)
-        .maxMotion
-        .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-        .allowedProfileError(Units.degreesToRotations(0.2))
-        .cruiseVelocity(120)
-        .maxAcceleration(6_000.0, ClosedLoopSlot.kSlot0);
+        .d(0.5)
+        .positionWrappingEnabled(false)
+        .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0);
+    //   .maxMotion
+    //   .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
+    //   .allowedProfileError(Units.degreesToRotations(0.2))
+    //   .cruiseVelocity(120)
+    //   .maxAcceleration(6_000.0, ClosedLoopSlot.kSlot0);
 
     hoodMotor.configure(
         hoodConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -100,9 +99,9 @@ public class ShooterSubsystem extends SubsystemBase {
         .inverted(true)
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.0001)
+        .p(0.01)
         .i(0)
-        .d(1)
+        .d(0.3)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     flywheelMotorLeft.configure(
@@ -114,9 +113,9 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelConfigRight
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.0001)
+        .p(0.01)
         .i(0)
-        .d(1)
+        .d(0.3)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     flywheelMotorRight.configure(
@@ -233,8 +232,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setShootDist(double dist) {
-    double maxDist = 10;
-    double minDist = 1;
+    double maxDist = 1;
+    double minDist = 0;
 
     double hoodAngleMin = 0;
     double hoodAngleMax = 45;
@@ -248,20 +247,21 @@ public class ShooterSubsystem extends SubsystemBase {
             + hoodAngleMin; // ratio * (maxValue - minValue) + minValue
     double flywheelSpeed = ratio * (flywheelSpeedMax - flywheelSpeedMin) + flywheelSpeedMin;
 
-    setHoodAngle(hoodAngle);
+    setHoodAngle(0);
+    // setHoodAngle(hoodAngle);
     startFlywheel(flywheelSpeed);
   }
 
   /** Lowers the arm and starts the roller at the intake speed. */
   public void setHoodAngle(double angleDegrees) {
-    double angleInRotations =
-        Units.degreesToRotations(
-            MathUtil.clamp(
-                angleDegrees,
-                Constants.Shooter.kHoodMinAngleDegrees,
-                Constants.Shooter.kHoodMaxAngleDegrees));
-    hoodController.setSetpoint(
-        angleInRotations, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
+    // double angleInRotations =
+    //     Units.degreesToRotations(
+    //         MathUtil.clamp(
+    //             angleDegrees,
+    //             Constants.Shooter.kHoodMinAngleDegrees,
+    //             Constants.Shooter.kHoodMaxAngleDegrees));
+    double angleInRotations = Units.degreesToRotations(angleDegrees);
+    hoodController.setSetpoint(angleInRotations, ControlType.kPosition, ClosedLoopSlot.kSlot0);
   }
 
   public void startFlywheel(double speedRPM) {
@@ -304,13 +304,14 @@ public class ShooterSubsystem extends SubsystemBase {
     agitatorController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
   }
 
+  @AutoLogOutput(key = "Shooter/hoodAngleRadians")
   public double getAngleRadians() {
     return hoodMotor.getAbsoluteEncoder().getPosition();
   }
 
   @AutoLogOutput(key = "Shooter/FlywheelVelocityRPM")
   public double getRollerVelocityRPM() {
-    return flywheelMotorLeft.getEncoder().getVelocity();
+    return flywheelMotorRight.getEncoder().getVelocity();
   }
 
   public void simulationPeriodic() {
