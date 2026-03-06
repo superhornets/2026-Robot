@@ -118,7 +118,9 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      Supplier<Rotation2d> rotationSupplier) {
+      Supplier<Rotation2d> rotationSupplier,
+      BooleanSupplier slowModeTrigger,
+      BooleanSupplier fastModeTrigger) {
 
     // Create PID controller
     ProfiledPIDController angleController =
@@ -141,12 +143,24 @@ public class DriveCommands {
                   angleController.calculate(
                       drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
 
+              double speedMultiplier = Constants.DriveConstants.kNormalModeMultiplier;
+              if (fastModeTrigger.getAsBoolean()) {
+                speedMultiplier = Constants.DriveConstants.kFastModeMultiplier;
+              }
+              if (slowModeTrigger.getAsBoolean()) {
+                speedMultiplier = Constants.DriveConstants.kSlowModeMultiplier;
+              }
+
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
                   new ChassisSpeeds(
-                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                      omega);
+                      linearVelocity.getX()
+                          * drive.getMaxLinearSpeedMetersPerSec()
+                          * speedMultiplier,
+                      linearVelocity.getY()
+                          * drive.getMaxLinearSpeedMetersPerSec()
+                          * speedMultiplier,
+                      omega * drive.getMaxAngularSpeedRadPerSec() * speedMultiplier);
               boolean isFlipped =
                   DriverStation.getAlliance().isPresent()
                       && DriverStation.getAlliance().get() == Alliance.Red;
@@ -163,7 +177,12 @@ public class DriveCommands {
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
   }
 
-  public static Command aimAtHub(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+  public static Command aimAtHub(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      BooleanSupplier slowModeTrigger,
+      BooleanSupplier fastModeTrigger) {
 
     // Create PID controller
     ProfiledPIDController angleController =
@@ -204,12 +223,25 @@ public class DriveCommands {
               // Calculate angular speed
               double omega = angleController.calculate(drive.getRotation().getRadians(), Rotation);
 
+              double speedMultiplier = Constants.DriveConstants.kNormalModeMultiplier;
+              if (fastModeTrigger.getAsBoolean()) {
+                speedMultiplier = Constants.DriveConstants.kFastModeMultiplier;
+              }
+              if (slowModeTrigger.getAsBoolean()) {
+                speedMultiplier = Constants.DriveConstants.kSlowModeMultiplier;
+              }
+
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
                   new ChassisSpeeds(
-                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                      omega);
+                      linearVelocity.getX()
+                          * drive.getMaxLinearSpeedMetersPerSec()
+                          * speedMultiplier,
+                      linearVelocity.getY()
+                          * drive.getMaxLinearSpeedMetersPerSec()
+                          * speedMultiplier,
+                      omega * drive.getMaxAngularSpeedRadPerSec() * speedMultiplier);
+
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       speeds,

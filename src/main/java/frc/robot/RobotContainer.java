@@ -160,7 +160,9 @@ public class RobotContainer {
                 drive,
                 () -> -driverController.getLeftY(),
                 () -> -driverController.getLeftX(),
-                () -> Rotation2d.kZero));
+                () -> Rotation2d.kZero,
+                driverController.leftTrigger(),
+                driverController.rightTrigger()));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -187,7 +189,11 @@ public class RobotContainer {
         .whileTrue(
             Commands.parallel(
                 DriveCommands.aimAtHub(
-                    drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX()),
+                    drive,
+                    () -> -driverController.getLeftY(),
+                    () -> -driverController.getLeftX(),
+                    driverController.leftTrigger(),
+                    driverController.rightTrigger()),
                 ShooterCommands.update(shooter, () -> drive.getPose())));
 
     driverController.leftBumper().whileTrue(IntakeCommands.lowerLeft(intake));
