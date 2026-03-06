@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Commands.DriveCommands;
 import frc.robot.Commands.IntakeCommands;
+import frc.robot.Commands.PathCommands;
 import frc.robot.Commands.ShooterCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -34,6 +35,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.util.FlippedSupplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -198,6 +200,8 @@ public class RobotContainer {
 
     driverController.leftBumper().whileTrue(IntakeCommands.lowerLeft(intake));
     driverController.rightBumper().whileTrue(IntakeCommands.lowerRight(intake));
+
+    driverController.start().onTrue(PathCommands.goToHubCommand(new FlippedSupplier()));
 
     operatorController.rightTrigger().onTrue(ShooterCommands.startFlywheel(shooter));
     operatorController.rightTrigger().onFalse(ShooterCommands.stopFlywheel(shooter));
