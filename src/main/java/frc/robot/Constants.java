@@ -8,6 +8,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -41,6 +42,15 @@ public final class Constants {
 
     public static final Pose3d BlueHubCenter =
         new Pose3d(Inches.of(182.11f), Inches.of(158.845f), Inches.of(72), Rotation3d.kZero);
+
+    public static final Pose3d blueLowerTrench =
+        new Pose3d(Meters.of(4.6), Meters.of(0.6), Meters.of(0), Rotation3d.kZero);
+    public static final Pose3d blueUpperTrench =
+        new Pose3d(Meters.of(4.6), Meters.of(7.4), Meters.of(0), Rotation3d.kZero);
+    public static final Pose3d redLowerTrench =
+        new Pose3d(Meters.of(12), Meters.of(0.6), Meters.of(0), Rotation3d.kZero);
+    public static final Pose3d redUpperTrench =
+        new Pose3d(Meters.of(12), Meters.of(7.4), Meters.of(0), Rotation3d.kZero);
   }
 
   public static final class Robot {

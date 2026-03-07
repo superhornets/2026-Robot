@@ -154,16 +154,16 @@ public class RobotContainer {
             driverController.rightTrigger()));
 
     // Lock to 0° when A button is held
-    driverController
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -driverController.getLeftY(),
-                () -> -driverController.getLeftX(),
-                () -> Rotation2d.kZero,
-                driverController.leftTrigger(),
-                driverController.rightTrigger()));
+    // driverController
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //             drive,
+    //             () -> -driverController.getLeftY(),
+    //             () -> -driverController.getLeftX(),
+    //             () -> Rotation2d.kZero,
+    //             driverController.leftTrigger(),
+    //             driverController.rightTrigger()));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -201,6 +201,22 @@ public class RobotContainer {
     driverController.rightBumper().whileTrue(IntakeCommands.lowerRight(intake));
 
     driverController.start().onTrue(PathCommands.goToHubCommand());
+    driverController
+        .back()
+        .whileTrue(
+            PathCommands.ClosestTrench(
+                drive,
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
+                () -> false));
+    driverController
+        .a()
+        .whileTrue(
+            PathCommands.ClosestTrench(
+                drive,
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
+                () -> true));
 
     operatorController.rightTrigger().onTrue(ShooterCommands.startFlywheel(shooter));
     operatorController.rightTrigger().onFalse(ShooterCommands.stopFlywheel(shooter));
