@@ -101,6 +101,30 @@ public final class Constants {
     }
   }
 
+  public static final class Climber {
+    public static final class CAN {
+      public static final int kClimber = 88;
+    }
+
+    // Physical limits for the climber arm (degrees)
+    public static final double kMinAngleDegrees = 0.0;
+    public static final double kMaxAngleDegrees = 90.0;
+
+    // PID gains for position control (tune on robot)
+    public static final double kPositionP = 1.0;
+    public static final double kPositionI = 0.0;
+    public static final double kPositionD = 0.1;
+
+    public static final class SIM {
+      // Motor rotations per arm rotation (gear reduction). Adjust to match your gearbox.
+      public static final double kGearRatio = 100.0;
+
+      // Simple arm model parameters used by simulation. Tune for better sim fidelity.
+      public static final double kArmMassKg = 1.0;
+      public static final double kArmLengthMeters = 1.0;
+    }
+  }
+
   public static final class SIM {
     public static final double interval = 1.0 / 50.0; // 50Hz
   }
