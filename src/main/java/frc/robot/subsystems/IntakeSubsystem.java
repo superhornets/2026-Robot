@@ -4,22 +4,20 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
 
+  // Provide a logScope to each IntakeModule so the module knows which side it
+  // represents and where to emit logs (e.g. "Intake.Left").
   private IntakeModule leftIntake =
-      new IntakeModule(Constants.Intake.CAN.kLeftArm, Constants.Intake.CAN.kLeftRoller);
+      new IntakeModule(
+          Constants.Intake.CAN.kLeftArm, Constants.Intake.CAN.kLeftRoller, "Intake/Left");
   private IntakeModule rightIntake =
-      new IntakeModule(Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller);
-
-  private Mechanism2d Panel =
-      new Mechanism2d(
-          Units.inchesToMeters(Constants.Robot.kWidthMeters), Constants.Robot.kLengthMeters);
+      new IntakeModule(
+          Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller, "Intake/Right");
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
@@ -59,11 +57,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     SmartDashboard.putBoolean("LeftRaised", !leftIntake.isLowered());
     SmartDashboard.putBoolean("RightRaised", !rightIntake.isLowered());
-
-    // double leftAngle = SmartDashboard.getNumber("LeftAngle", false);
-
-    //    SmartDashboard.putBoolean("LeftRaised", true);
-    // This method will be called once per scheduler run during simulation
 
     leftIntake.simulationPeriodic();
     rightIntake.simulationPeriodic();

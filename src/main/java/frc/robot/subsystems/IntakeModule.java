@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class IntakeModule extends SubsystemBase {
   // HARDWARE OBJECTS
@@ -42,8 +43,13 @@ public class IntakeModule extends SubsystemBase {
   private FlywheelSim rollerFlywheelSim;
   private DCMotor rollerGearboxSim;
 
+  // Logging scope/prefix for this module (e.g. "Intake.Left")
+  private final String logScope;
+
   /** Creates a new IntakeModule. */
-  public IntakeModule(int armID, int rollerID) {
+  public IntakeModule(int armID, int rollerID, String logScope) {
+    this.logScope = logScope;
+
     // Setup Motors and Controllers
     armMotor = new SparkMax(armID, MotorType.kBrushless);
 
@@ -154,15 +160,18 @@ public class IntakeModule extends SubsystemBase {
    *
    * @return true if the arm is at the raised setpoint, false otherwise
    */
+  @AutoLogOutput(key = "{logScope}/isRaised")
   public boolean isRaised() {
     return armController.getSetpoint() == Constants.Intake.kRaisedAngle
         && armController.isAtSetpoint();
   }
 
-  public double getAngleRadians() {
+  @AutoLogOutput(key = "{logScope}/ArmAngleRotations")
+  public double getAngleRotations() {
     return armMotor.getAbsoluteEncoder().getPosition();
   }
 
+  @AutoLogOutput(key = "{logScope}/RollerVelocityRPM")
   public double getRollerVelocityRPM() {
     return rollerMotor.getEncoder().getVelocity();
   }
@@ -190,5 +199,10 @@ public class IntakeModule extends SubsystemBase {
             rollerFlywheelSim.getAngularVelocityRadPerSec()),
         RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
         Constants.SIM.interval); // Time interval, in Seconds
+  }
+
+  // Accessor for the logging scope
+  public String getLogScope() {
+    return logScope;
   }
 }

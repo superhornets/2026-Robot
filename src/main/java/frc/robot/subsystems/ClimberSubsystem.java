@@ -8,22 +8,21 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.littletonrobotics.junction.AutoLogOutput;
 import frc.robot.Constants;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class ClimberSubsystem extends SubsystemBase {
   private final SparkMax climberMotor;
@@ -79,15 +78,18 @@ public class ClimberSubsystem extends SubsystemBase {
         MathUtil.clamp(
             degrees, Constants.Climber.kMinAngleDegrees, Constants.Climber.kMaxAngleDegrees);
     double rotations = Units.degreesToRotations(clamped);
-    climberController.setSetpoint(rotations, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
+    climberController.setSetpoint(
+        rotations, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
   }
 
   public void setManual(double duty) {
-    climberController.setSetpoint(duty, ControlType.kDutyCycle, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
+    climberController.setSetpoint(
+        duty, ControlType.kDutyCycle, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
   }
 
   public void stop() {
-    climberController.setSetpoint(0.0, ControlType.kDutyCycle, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
+    climberController.setSetpoint(
+        0.0, ControlType.kDutyCycle, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
   }
 
   @AutoLogOutput(key = "Climber/angleDegrees")
