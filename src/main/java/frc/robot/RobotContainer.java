@@ -23,6 +23,7 @@ import frc.robot.Commands.IntakeCommands;
 import frc.robot.Commands.PathCommands;
 import frc.robot.Commands.ShooterCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.drive.Drive;
@@ -49,6 +50,7 @@ public class RobotContainer {
   private final Vision vision;
   private final ShooterSubsystem shooter;
   private final IntakeSubsystem intake;
+  private final ClimberSubsystem climber; 
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -61,6 +63,7 @@ public class RobotContainer {
   public RobotContainer() {
     shooter = new ShooterSubsystem();
     intake = new IntakeSubsystem();
+    climber = new ClimberSubsystem();
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -226,8 +229,11 @@ public class RobotContainer {
 
     operatorController.y().onTrue(ShooterCommands.startReverse(shooter));
     operatorController.y().onFalse(ShooterCommands.stopReverse(shooter));
-  }
 
+    operatorController.povUp().onTrue(ClimberCommands.climberUp(climber));
+    operatorController.povDown().onTrue(ClimberCommands.climberDown(climber));
+  }
+ 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

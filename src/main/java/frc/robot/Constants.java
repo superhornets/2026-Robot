@@ -113,7 +113,7 @@ public final class Constants {
 
   public static final class Climber {
     public static final class CAN {
-      public static final int kClimber = 88;
+      public static final int kClimber = 60;
     }
 
     // Physical limits for the climber arm (degrees)
@@ -139,7 +139,4 @@ public final class Constants {
     public static final double interval = 1.0 / 50.0; // 50Hz
   }
 
-  public static final class CanIds {
-    public static final int ClimberMotor1 = 89;
-  }
 }
