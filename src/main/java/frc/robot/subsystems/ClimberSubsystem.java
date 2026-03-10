@@ -82,16 +82,6 @@ public class ClimberSubsystem extends SubsystemBase {
         rotations, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
   }
 
-  public void setManual(double duty) {
-    climberController.setSetpoint(
-        duty, ControlType.kDutyCycle, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
-  }
-
-  public void stop() {
-    climberController.setSetpoint(
-        0.0, ControlType.kDutyCycle, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
-  }
-
   @AutoLogOutput(key = "Climber/angleDegrees")
   public double getAngleDegrees() {
     // Encoder position reported in rotations -> convert to degrees
