@@ -87,11 +87,12 @@ public class ClimberSubsystem extends SubsystemBase {
   @AutoLogOutput(key = "Climber/angleDegrees")
   public double getAngleDegrees() {
     // Encoder position reported in rotations -> convert to degrees
-    double rotations = climberMotor.getEncoder().getPosition();
+    double rotations = climberMotor.getAbsoluteEncoder().getPosition();
     return Units.rotationsToDegrees(rotations);
   }
 
   public void simulationPeriodic() {
+    getAngleDegrees();
     // Apply motor voltage to the simulated arm
     climberSim.setInput(climberMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
     climberSim.update(Constants.SIM.interval);
@@ -105,6 +106,5 @@ public class ClimberSubsystem extends SubsystemBase {
         Units.radiansPerSecondToRotationsPerMinute(climberSim.getVelocityRadPerSec())
             / Constants.Climber.SIM.kGearRatio,
         Constants.SIM.interval);
-    climberMotor.getEncoder().setPosition(climberEncoderSim.getPosition());
   }
 }
