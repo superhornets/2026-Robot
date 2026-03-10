@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.robot.util.MOI;
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -69,7 +70,7 @@ public final class Constants {
 
   public static final class Shooter {
     public static final class SIM {
-      public static final double kFlywheelMOI = 0.0000117;
+      public static final double kFlywheelMOI = MOI.in2lbToKgM2(10.7);
       public static final double kFlywheelGearRatio = 1.0;
       public static final double kHoodGearRatio = 1.0;
     }
@@ -90,7 +91,7 @@ public final class Constants {
 
   public static final class Intake {
     public static final class SIM {
-      public static final double kRollerMOI = 0.00117;
+      public static final double kRollerMOI = MOI.in2lbToKgM2(0.225446);
       public static final double kRollerGearRatio = 1.0;
 
       public static final double kArmLengthMeters = Units.inchesToMeters(14);
