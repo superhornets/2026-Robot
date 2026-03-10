@@ -8,7 +8,6 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -30,6 +29,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   // Simulation
   private final SparkMaxSim climberMotorSim;
+  // private final SparkAbsoluteEncoderSim climberEncoderSim;
   private final SparkAbsoluteEncoderSim climberEncoderSim;
   private final DCMotor climberGearboxSim;
   private final SingleJointedArmSim climberSim;
@@ -41,7 +41,7 @@ public class ClimberSubsystem extends SubsystemBase {
     climberConfig
         .idleMode(IdleMode.kBrake)
         .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        //   .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(1.0)
         .i(0.0)
         .d(0.1)
@@ -62,10 +62,12 @@ public class ClimberSubsystem extends SubsystemBase {
             Constants.Climber.SIM.kGearRatio,
             1.0, // mass kg (approx)
             1.0, // length meters (approx)
-            Units.degreesToRadians(Constants.Climber.kMaxAngleDegrees),
             Units.degreesToRadians(Constants.Climber.kMinAngleDegrees),
+            Units.degreesToRadians(Constants.Climber.kMaxAngleDegrees),
             true,
-            Units.degreesToRadians(Constants.Climber.kMaxAngleDegrees));
+            Units.degreesToRadians(Constants.Climber.kMinAngleDegrees));
+
+    //  climberSim = new SingleJointedArmSim()
   }
 
   @Override
@@ -103,5 +105,6 @@ public class ClimberSubsystem extends SubsystemBase {
         Units.radiansPerSecondToRotationsPerMinute(climberSim.getVelocityRadPerSec())
             / Constants.Climber.SIM.kGearRatio,
         Constants.SIM.interval);
+    climberMotor.getEncoder().setPosition(climberEncoderSim.getPosition());
   }
 }
