@@ -21,7 +21,7 @@ public class ShooterCommands {
           shooter.update(robotPose.get());
         },
         () -> {
-          shooter.stopFlywheel();
+          shooter.stopFlywheel(true);
         },
         shooter);
   }
@@ -37,7 +37,7 @@ public class ShooterCommands {
   public static Command stopFlywheel(ShooterSubsystem shooter) {
     return Commands.runOnce(
         () -> {
-          shooter.stopFlywheel();
+          shooter.stopFlywheel(true);
         },
         shooter);
   }
