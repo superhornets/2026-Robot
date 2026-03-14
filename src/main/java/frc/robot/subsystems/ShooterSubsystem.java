@@ -311,7 +311,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @AutoLogOutput(key = "Shooter/FlywheelVelocityRPM")
   public double getRollerVelocityRPM() {
-    return flywheelMotorRight.getEncoder().getVelocity();
+    return Math.max(flywheelMotorLeft.getEncoder().getVelocity(), flywheelMotorRight.getEncoder().getVelocity());
   }
 
   public void simulationPeriodic() {
