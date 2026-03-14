@@ -128,9 +128,9 @@ public class ShooterSubsystem extends SubsystemBase {
         .inverted(true)
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.001)
+        .p(0.0005)
         .i(0)
-        .d(0)
+        .d(0.1)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     feederMotor.configure(
