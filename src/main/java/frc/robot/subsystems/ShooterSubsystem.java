@@ -127,11 +127,10 @@ public class ShooterSubsystem extends SubsystemBase {
     feederConfig
         .inverted(true)
         .idleMode(IdleMode.kCoast)
-        .inverted(true)
         .closedLoop
-        .p(0.1)
+        .p(0.001)
         .i(0)
-        .d(0.1)
+        .d(0)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     feederMotor.configure(
@@ -143,9 +142,9 @@ public class ShooterSubsystem extends SubsystemBase {
     agigitatorConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.1)
+        .p(0.001)
         .i(0)
-        .d(0.1)
+        .d(0)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     agitatorMotor.configure(
@@ -309,9 +308,17 @@ public class ShooterSubsystem extends SubsystemBase {
     return hoodMotor.getAbsoluteEncoder().getPosition();
   }
 
-  @AutoLogOutput(key = "Shooter/FlywheelVelocityRPM")
-  public double getRollerVelocityRPM() {
-    return Math.max(flywheelMotorLeft.getEncoder().getVelocity(), flywheelMotorRight.getEncoder().getVelocity());
+//   @AutoLogOutput(key = "Shooter/FlywheelVelocityRPM")
+//   public double getRollerVelocityRPM() {
+//     return Math.max(flywheelMotorLeft.getEncoder().getVelocity(), flywheelMotorRight.getEncoder().getVelocity());
+//   }
+  @AutoLogOutput(key = "Shooter/FlywheelRightVelocityRPM")
+  public double getShooterRightVelocityRPM() {
+    return flywheelMotorRight.getEncoder().getVelocity();
+  }
+  @AutoLogOutput(key = "Shooter/FlywheelLeftVelocityRPM")
+  public double getShooterLeftVelocityRPM() {
+    return flywheelMotorLeft.getEncoder().getVelocity();
   }
 
   public void simulationPeriodic() {
