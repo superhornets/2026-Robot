@@ -138,5 +138,4 @@ public final class Constants {
   public static final class SIM {
     public static final double interval = 1.0 / 50.0; // 50Hz
   }
-
 }

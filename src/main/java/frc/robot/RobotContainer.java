@@ -51,7 +51,7 @@ public class RobotContainer {
   private final Vision vision;
   private final ShooterSubsystem shooter;
   private final IntakeSubsystem intake;
-  private final ClimberSubsystem climber; 
+  private final ClimberSubsystem climber;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -234,7 +234,7 @@ public class RobotContainer {
     operatorController.povUp().onTrue(ClimberCommands.climberUp(climber));
     operatorController.povDown().onTrue(ClimberCommands.climberDown(climber));
   }
- 
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
