@@ -2,7 +2,10 @@ plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2026.2.1"
     id "com.peterabeles.gversion" version "1.10"
-    id "com.diffplug.spotless" version "6.12.0"
+    // Spotless disabled to avoid modifying files during automated builds.
+    // If you want to re-enable code formatting on build, restore the plugin
+    // and the spotless block below.
+    // id "com.diffplug.spotless" version "6.12.0"
 }
 
 java {
@@ -176,43 +179,9 @@ task(eventDeploy) {
 createVersionFile.dependsOn(eventDeploy)
 
 // Spotless formatting
-project.compileJava.dependsOn(spotlessApply)
-spotless {
-    java {
-        target fileTree(".") {
-            include "**/*.java"
-            exclude "**/build/**", "**/build-*/**"
-        }
-        toggleOffOn()
-        googleJavaFormat()
-        removeUnusedImports()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-    groovyGradle {
-        target fileTree(".") {
-            include "**/*.gradle"
-            exclude "**/build/**", "**/build-*/**"
-        }
-        greclipse()
-        indentWithSpaces(4)
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-    json {
-        target fileTree(".") {
-            include "**/*.json"
-            exclude "**/build/**", "**/build-*/**", ".wpilib/**"
-        }
-        gson().indentWithSpaces(2)
-    }
-    format "misc", {
-        target fileTree(".") {
-            include "**/*.md", "**/.gitignore"
-            exclude "**/build/**", "**/build-*/**"
-        }
-        trimTrailingWhitespace()
-        indentWithSpaces(2)
-        endWithNewline()
-    }
-}
+// By default we don't run Spotless automatically as part of compile to avoid
+// modifying files during a build. If you want to check formatting as part of
+// CI, run `./gradlew spotlessCheck` or enable the line below.
+// project.compileJava.dependsOn(spotlessCheck)
+// Spotless configuration removed to prevent formatting/import changes during builds.
+// To restore formatting, re-add the Spotless plugin and configuration.
