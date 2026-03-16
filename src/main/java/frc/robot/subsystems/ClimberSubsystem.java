@@ -29,7 +29,6 @@ public class ClimberSubsystem extends SubsystemBase {
 
   // Simulation
   private final SparkMaxSim climberMotorSim;
-  // private final SparkAbsoluteEncoderSim climberEncoderSim;
   private final SparkAbsoluteEncoderSim climberEncoderSim;
   private final DCMotor climberGearboxSim;
   private final SingleJointedArmSim climberSim;
@@ -41,7 +40,6 @@ public class ClimberSubsystem extends SubsystemBase {
     climberConfig
         .idleMode(IdleMode.kBrake)
         .closedLoop
-        //   .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(1.0)
         .i(0.0)
         .d(0.1)

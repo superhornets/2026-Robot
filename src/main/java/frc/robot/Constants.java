@@ -128,7 +128,7 @@ public final class Constants {
 
     public static final class SIM {
       // Motor rotations per arm rotation (gear reduction). Adjust to match your gearbox.
-      public static final double kGearRatio = 100.0;
+      public static final double kGearRatio = 25.0;
 
       // Simple arm model parameters used by simulation. Tune for better sim fidelity.
       public static final double kArmMassKg = 1.0;
