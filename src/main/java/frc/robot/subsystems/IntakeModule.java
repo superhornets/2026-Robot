@@ -62,6 +62,7 @@ public class IntakeModule extends SubsystemBase {
         .i(0)
         .d(1)
         .positionWrappingEnabled(true)
+        .positionWrappingInputRange(0, 1)
         .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0)
         .maxMotion
         .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
@@ -78,9 +79,9 @@ public class IntakeModule extends SubsystemBase {
     rollerConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(10)
+        .p(0.001)
         .i(0)
-        .d(0.1)
+        .d(0)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     rollerMotor.configure(
