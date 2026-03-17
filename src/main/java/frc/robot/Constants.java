@@ -102,7 +102,7 @@ public final class Constants {
 
     public static final double kRaisedAngle = (0.25);
     public static final double kLoweredAngle = (0.5);
-    public static final double kIntakeRollerSpeed = 2000.0; // RPM
+    public static final double kIntakeRollerSpeed = 4000.0; // RPM
 
     public static final class CAN {
       public static final int kLeftArm = 54;

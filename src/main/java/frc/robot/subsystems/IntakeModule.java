@@ -79,7 +79,7 @@ public class IntakeModule extends SubsystemBase {
     rollerConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.0001)
+        .p(0.0005)
         .i(0)
         .d(0)
         .maxMotion
