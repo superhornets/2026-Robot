@@ -138,6 +138,9 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+
+    ClimberCommands.climberDown(climber).schedule();
+    intake.raiseAll();
   }
 
   /**
