@@ -100,8 +100,8 @@ public final class Constants {
       public static final double kArmGearRatio = 5.0;
     }
 
-    public static final double kRaisedAngle = Units.degreesToRotations(0.0);
-    public static final double kLoweredAngle = Units.degreesToRotations(90.0);
+    public static final double kRaisedAngle = (3.45);
+    public static final double kLoweredAngle = (1.45);
     public static final double kIntakeRollerSpeed = 2000.0; // RPM
 
     public static final class CAN {
