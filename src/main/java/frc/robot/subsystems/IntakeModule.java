@@ -47,7 +47,7 @@ public class IntakeModule extends SubsystemBase {
   private final String logScope;
 
   /** Creates a new IntakeModule. */
-  public IntakeModule(int armID, int rollerID, String logScope) {
+  public IntakeModule(int armID, int rollerID, boolean inverted, String logScope) {
     this.logScope = logScope;
 
     // Setup Motors and Controllers
@@ -56,13 +56,13 @@ public class IntakeModule extends SubsystemBase {
     SparkMaxConfig armConfig = new SparkMaxConfig();
     armConfig
         .idleMode(IdleMode.kBrake)
+        .inverted(inverted)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .p(10)
+        .p(8)
         .i(0)
-        .d(1)
-        .positionWrappingEnabled(true)
-        .positionWrappingInputRange(0, 1)
+        .d(0.1)
+        .positionWrappingEnabled(false)
         .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0)
         .maxMotion
         .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
@@ -79,7 +79,7 @@ public class IntakeModule extends SubsystemBase {
     rollerConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.001)
+        .p(0.0005)
         .i(0)
         .d(0)
         .maxMotion

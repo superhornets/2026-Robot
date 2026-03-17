@@ -14,10 +14,10 @@ public class IntakeSubsystem extends SubsystemBase {
   // represents and where to emit logs (e.g. "Intake.Left").
   private IntakeModule leftIntake =
       new IntakeModule(
-          Constants.Intake.CAN.kLeftArm, Constants.Intake.CAN.kLeftRoller, "Intake/Left");
+          Constants.Intake.CAN.kLeftArm, Constants.Intake.CAN.kLeftRoller, false, "Intake/Left");
   private IntakeModule rightIntake =
       new IntakeModule(
-          Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller, "Intake/Right");
+          Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller, true, "Intake/Right");
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
