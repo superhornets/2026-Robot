@@ -5,6 +5,7 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -29,7 +30,7 @@ public class ShooterCommands {
   public static Command startFlywheel(ShooterSubsystem shooter) {
     return Commands.runOnce(
         () -> {
-          shooter.startFlywheel(24);
+          shooter.startFlywheel(SmartDashboard.getNumber("ShooterValue", 0));
         },
         shooter);
   }
