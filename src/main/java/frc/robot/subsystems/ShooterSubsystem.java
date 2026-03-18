@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -162,10 +163,10 @@ public class ShooterSubsystem extends SubsystemBase {
             Constants.Shooter.SIM.kHoodGearRatio,
             1,
             1,
-            Units.degreesToRadians(Constants.Shooter.kHoodMaxAngleDegrees),
-            Units.degreesToRadians(Constants.Shooter.kHoodMinAngleDegrees),
+            Constants.Shooter.kHoodMaxAngle,
+            Constants.Shooter.kHoodMinAngle,
             true,
-            Units.degreesToRadians(Constants.Shooter.kHoodMaxAngleDegrees));
+            Constants.Shooter.kHoodMaxAngle);
 
     // Flywheel sim
     flywheelGearboxSim = DCMotor.getNeoVortex(2);
@@ -202,8 +203,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void periodic() {
-    // Nothing to do here, as the subsystem is fully closed-loop in simulation and on the real
-    // robot. The only thing we need to do is update the simulation objects in simulationPeriodic().
+    setHoodAngle(SmartDashboard.getNumber("Shooter/HoodAngle", 0));
   }
 
   public void update(Pose2d robotPose) {
@@ -250,9 +250,8 @@ public class ShooterSubsystem extends SubsystemBase {
     startFlywheel(flywheelSpeed);
   }
 
-  public void setHoodAngle(double angleDegrees) {
-    double angleInRotations = Units.degreesToRotations(angleDegrees);
-    hoodController.setSetpoint(angleInRotations, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+  public void setHoodAngle(double angleRotations) {
+    hoodController.setSetpoint(angleRotations, ControlType.kPosition, ClosedLoopSlot.kSlot0);
   }
 
   public void startFlywheel(double speedRPM) {
@@ -301,8 +300,8 @@ public class ShooterSubsystem extends SubsystemBase {
     agitatorController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
   }
 
-  @AutoLogOutput(key = "Shooter/hoodAngleRadians")
-  public double getAngleRadians() {
+  @AutoLogOutput(key = "Shooter/hoodAngleLogged")
+  public double getHoodAngle() {
     return hoodMotor.getAbsoluteEncoder().getPosition();
   }
 
