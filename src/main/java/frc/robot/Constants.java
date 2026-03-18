@@ -61,8 +61,8 @@ public final class Constants {
 
   public static final class DriveConstants {
     public static final double kSlowModeMultiplier = 0.25; // slow is 0.25
-    public static final double kNormalModeMultiplier = 0.25; // normal is 0.40
-    public static final double kFastModeMultiplier = 0.25;  // fast is 0.60
+    public static final double kNormalModeMultiplier = 0.40; // normal is 0.40
+    public static final double kFastModeMultiplier = 0.60;  // fast is 0.60
 
     public static final double kWidthMeters = Units.inchesToMeters(20.5);
     public static final double kLengthMeters = Units.inchesToMeters(29.25);
