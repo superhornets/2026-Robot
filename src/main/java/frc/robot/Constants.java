@@ -77,8 +77,8 @@ public final class Constants {
 
     public static final double kFlywheelMaxSpeed = 6000.0; // RPM
     public static final double kFlywheelMinSpeed = -200.0; // RPM
-    public static final double kHoodMinAngleDegrees = 0;
-    public static final double kHoodMaxAngleDegrees = 90;
+    public static final double kHoodMinAngle = -0.65;
+    public static final double kHoodMaxAngle = 0.65;
 
     public static final class CAN {
       public static final int kFlywheelLeft = 49;

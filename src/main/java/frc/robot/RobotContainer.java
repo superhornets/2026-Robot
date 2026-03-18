@@ -63,7 +63,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    SmartDashboard.putNumber("ShooterValue",0);
+    SmartDashboard.putNumber("Shooter/Speed",0);
+    SmartDashboard.putNumber("Shooter/HoodAngle",0);
     shooter = new ShooterSubsystem();
     intake = new IntakeSubsystem();
     climber = new ClimberSubsystem();
