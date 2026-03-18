@@ -118,8 +118,8 @@ public final class Constants {
     }
 
     // Physical limits for the climber arm (degrees)
-    public static final double kMinAngleDegrees = 0.0;
-    public static final double kMaxAngleDegrees = 90.0;
+    public static final double kMinAngleDegrees = -9000.0;
+    public static final double kMaxAngleDegrees = 0.0;
 
     // PID gains for position control (tune on robot)
     public static final double kPositionP = 1.0;

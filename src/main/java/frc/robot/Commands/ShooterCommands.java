@@ -29,7 +29,7 @@ public class ShooterCommands {
   public static Command startFlywheel(ShooterSubsystem shooter) {
     return Commands.runOnce(
         () -> {
-          shooter.startFlywheel(6000);
+          shooter.startFlywheel(24);
         },
         shooter);
   }

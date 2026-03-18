@@ -128,9 +128,11 @@ public class ShooterSubsystem extends SubsystemBase {
         .inverted(true)
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.0005)
+        .p(0.0006)
         .i(0)
-        .d(0.001, ClosedLoopSlot.kSlot0);
+        .d(0.001)
+        .maxMotion
+        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     feederMotor.configure(
         feederConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     feederController = feederMotor.getClosedLoopController();
@@ -140,9 +142,9 @@ public class ShooterSubsystem extends SubsystemBase {
     agigitatorConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.001)
+        .p(0.0005)
         .i(0)
-        .d(0)
+        .d(0.001)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     agitatorMotor.configure(
@@ -277,8 +279,10 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void startFeeder() {
-    feederController.setSetpoint(1500, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-    agitatorController.setSetpoint(500, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    feederController.setSetpoint(
+        3000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+    agitatorController.setSetpoint(
+        1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
   }
 
   public void startReverseFeeder() {
