@@ -9,6 +9,7 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
 import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.sim.SparkMaxSim;
+import com.revrobotics.sim.SparkRelativeEncoderSim;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -28,12 +29,16 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -55,9 +60,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // SIMULATION OBJECTS
   private SparkMaxSim hoodMotorSim;
-  private SparkAbsoluteEncoderSim hoodEncoderSim;
   private DCMotor hoodGearboxSim;
-  private SingleJointedArmSim hoodSim;
+  private ElevatorSim hoodSim;
+  private SparkRelativeEncoderSim hoodEncoderSim;
   private SparkFlexSim flywheelMotorSim;
   private FlywheelSim flywheelSim;
   private DCMotor flywheelGearboxSim;
@@ -78,18 +83,13 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkMaxConfig hoodConfig = new SparkMaxConfig();
     hoodConfig
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(10, 20, 1000)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(100)
+        .p(.01)
         .i(0)
-        .d(0.5)
+        .d(0.01)
+        .outputRange(-1, 1)
         .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0);
-        // .maxMotion
-        // .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-        // .allowedProfileError(Units.degreesToRotations(0.2))
-        // .cruiseVelocity(120)
-        // .maxAcceleration(6_000.0, ClosedLoopSlot.kSlot0);
 
     hoodMotor.configure(
         hoodConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -98,7 +98,7 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelMotorRight = new SparkFlex(Constants.Shooter.CAN.kFlywheelRight, MotorType.kBrushless);
     SparkFlexConfig flywheelConfigRight = new SparkFlexConfig();
     flywheelConfigRight
-        .smartCurrentLimit(20, 40, 1000)
+        .smartCurrentLimit(20, 40)
         .closedLoop
         .p(0.0002)
         .i(0)
@@ -154,20 +154,11 @@ public class ShooterSubsystem extends SubsystemBase {
     agitatorController = agitatorMotor.getClosedLoopController();
 
     // SIMULATION OBJECTS
-    hoodGearboxSim = DCMotor.getNEO(1);
+    hoodGearboxSim = DCMotor.getNeo550(1);
     hoodMotorSim = new SparkMaxSim(hoodMotor, hoodGearboxSim);
-    hoodEncoderSim = new SparkAbsoluteEncoderSim(hoodMotor);
+    hoodEncoderSim = hoodMotorSim.getRelativeEncoderSim();
+    hoodSim = new ElevatorSim(hoodGearboxSim, 9, .01, Units.inchesToMeters(1.5), 0, Units.inchesToMeters(6), true, 0);
 
-    hoodSim =
-        new SingleJointedArmSim(
-            hoodGearboxSim,
-            Constants.Shooter.SIM.kHoodGearRatio,
-            1,
-            1,
-            Constants.Shooter.kHoodMaxAngle,
-            Constants.Shooter.kHoodMinAngle,
-            true,
-            Constants.Shooter.kHoodMaxAngle);
 
     // Flywheel sim
     flywheelGearboxSim = DCMotor.getNeoVortex(2);
@@ -281,10 +272,12 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void startFeeder() {
-    feederController.setSetpoint(
+    if (flywheelMotorRight.getEncoder().getVelocity() > 300) {
+      feederController.setSetpoint(
         3000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
-    agitatorController.setSetpoint(
+      agitatorController.setSetpoint(
         1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+    }
   }
 
   public void startReverseFeeder() {
@@ -311,6 +304,11 @@ public class ShooterSubsystem extends SubsystemBase {
     @AutoLogOutput(key = "Shooter/hoodAngleSetpoint")
   public double getHoodAngleSet() {
     return hoodController.getSetpoint();
+  }
+
+  @AutoLogOutput(key = "Shooter/hoodMotorOutput")
+  public double getHoodOutput() {
+    return hoodMotor.getAppliedOutput();
   }
 
   @AutoLogOutput(key = "Shooter/FlywheelVelocitySetpointRPM")
@@ -340,18 +338,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void simulationPeriodic() {
     // Hood
-    hoodSim.setInput(hoodMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+    hoodSim.setInput(hoodMotor.getAppliedOutput() * RoboRioSim.getVInVoltage());
     hoodSim.update(Constants.SIM.interval);
-    hoodMotorSim.iterate(
-        Units.radiansPerSecondToRotationsPerMinute( // motor velocity, in RPM
-            hoodSim.getVelocityRadPerSec()),
-        RoboRioSim.getVInVoltage(),
-        Constants.SIM.interval);
-
-    hoodEncoderSim.iterate(
-        Units.radiansPerSecondToRotationsPerMinute(hoodSim.getVelocityRadPerSec())
-            / Constants.Shooter.SIM.kHoodGearRatio,
-        Constants.SIM.interval);
+    hoodMotorSim.iterate(hoodSim.getVelocityMetersPerSecond(), hoodSim.getPositionMeters(), Constants.SIM.interval);
 
     // Flywheel
     flywheelMotorSim.iterate(

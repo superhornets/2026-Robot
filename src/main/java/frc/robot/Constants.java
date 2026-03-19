@@ -72,7 +72,7 @@ public final class Constants {
     public static final class SIM {
       public static final double kFlywheelMOI = MOI.in2lbToKgM2(10.7);
       public static final double kFlywheelGearRatio = 1.0;
-      public static final double kHoodGearRatio = 1.0;
+      public static final double kHoodGearRatio = 9.0;
     }
 
     public static final double kFlywheelMaxSpeed = 6000.0; // RPM
