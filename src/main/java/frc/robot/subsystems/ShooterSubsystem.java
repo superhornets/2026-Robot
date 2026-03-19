@@ -78,6 +78,7 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkMaxConfig hoodConfig = new SparkMaxConfig();
     hoodConfig
         .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(10, 20, 1000)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(100)
