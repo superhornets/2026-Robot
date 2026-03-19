@@ -79,8 +79,8 @@ public class ShooterSubsystem extends SubsystemBase {
     hoodConfig
         .idleMode(IdleMode.kBrake)
         .closedLoop
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .p(100)
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(500)
         .i(0)
         .d(0.5)
         .positionWrappingEnabled(false)
@@ -88,7 +88,7 @@ public class ShooterSubsystem extends SubsystemBase {
         .maxMotion
         .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
         .allowedProfileError(Units.degreesToRotations(0.2))
-        .cruiseVelocity(120)
+        .cruiseVelocity(3000)
         .maxAcceleration(6_000.0, ClosedLoopSlot.kSlot0);
 
     hoodMotor.configure(

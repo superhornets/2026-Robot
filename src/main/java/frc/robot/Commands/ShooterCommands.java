@@ -30,7 +30,8 @@ public class ShooterCommands {
   public static Command startFlywheel(ShooterSubsystem shooter) {
     return Commands.runOnce(
         () -> {
-          shooter.startFlywheel(SmartDashboard.getNumber("ShooterValue", 0));
+         shooter.startFlywheel(SmartDashboard.getNumber("Shooter/Speed", 0));
+        //  shooter.startFlywheel(1000);
         },
         shooter);
   }
