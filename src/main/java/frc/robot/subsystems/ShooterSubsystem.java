@@ -80,16 +80,16 @@ public class ShooterSubsystem extends SubsystemBase {
         .idleMode(IdleMode.kBrake)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(500)
+        .p(100)
         .i(0)
         .d(0.5)
         .positionWrappingEnabled(false)
         .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0)
-        .maxMotion
-        .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-        .allowedProfileError(Units.degreesToRotations(0.2))
-        .cruiseVelocity(3000)
-        .maxAcceleration(6_000.0, ClosedLoopSlot.kSlot0);
+        // .maxMotion
+        // .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
+        // .allowedProfileError(Units.degreesToRotations(0.2))
+        // .cruiseVelocity(120)
+        // .maxAcceleration(6_000.0, ClosedLoopSlot.kSlot0);
 
     hoodMotor.configure(
         hoodConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -254,7 +254,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setHoodAngle(double angleRotations) {
-    hoodController.setSetpoint(angleRotations, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
+    hoodController.setSetpoint(angleRotations, ControlType.kPosition, ClosedLoopSlot.kSlot0);
   }
 
   public void startFlywheel(double speedRPM) {
