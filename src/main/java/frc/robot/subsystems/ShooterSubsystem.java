@@ -79,7 +79,7 @@ public class ShooterSubsystem extends SubsystemBase {
         .idleMode(IdleMode.kBrake)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .p(15)
+        .p(100)
         .i(0)
         .d(0.5)
         .positionWrappingEnabled(false)
