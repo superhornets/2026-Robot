@@ -16,6 +16,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -79,16 +80,16 @@ public class ShooterSubsystem extends SubsystemBase {
         .idleMode(IdleMode.kBrake)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .p(15)
+        .p(100)
         .i(0)
         .d(0.5)
         .positionWrappingEnabled(false)
-        .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0);
-    //   .maxMotion
-    //   .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-    //   .allowedProfileError(Units.degreesToRotations(0.2))
-    //   .cruiseVelocity(120)
-    //   .maxAcceleration(6_000.0, ClosedLoopSlot.kSlot0);
+        .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0)
+        .maxMotion
+        .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
+        .allowedProfileError(Units.degreesToRotations(0.2))
+        .cruiseVelocity(120)
+        .maxAcceleration(6_000.0, ClosedLoopSlot.kSlot0);
 
     hoodMotor.configure(
         hoodConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -251,7 +252,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setHoodAngle(double angleRotations) {
-    hoodController.setSetpoint(angleRotations, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    hoodController.setSetpoint(angleRotations, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
   }
 
   public void startFlywheel(double speedRPM) {
@@ -303,6 +304,11 @@ public class ShooterSubsystem extends SubsystemBase {
   @AutoLogOutput(key = "Shooter/hoodAngleLogged")
   public double getHoodAngle() {
     return hoodMotor.getAbsoluteEncoder().getPosition();
+  }
+
+    @AutoLogOutput(key = "Shooter/hoodAngleSetpoint")
+  public double getHoodAngleSet() {
+    return hoodController.getSetpoint();
   }
 
   @AutoLogOutput(key = "Shooter/FlywheelVelocitySetpointRPM")
