@@ -85,7 +85,7 @@ public class ShooterSubsystem extends SubsystemBase {
         .i(0)
         .d(0.5)
         .positionWrappingEnabled(false)
-        .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0)
+        .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0);
         // .maxMotion
         // .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
         // .allowedProfileError(Units.degreesToRotations(0.2))
