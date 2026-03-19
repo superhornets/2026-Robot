@@ -78,7 +78,7 @@ public class ShooterSubsystem extends SubsystemBase {
     hoodConfig
         .idleMode(IdleMode.kBrake)
         .closedLoop
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(15)
         .i(0)
         .d(0.5)
@@ -200,6 +200,8 @@ public class ShooterSubsystem extends SubsystemBase {
                 Constants.Shooter.SIM.kFlywheelMOI * 10,
                 Constants.Shooter.SIM.kFlywheelGearRatio),
             agitatorGearboxSim);
+
+    hoodMotor.getEncoder().setPosition(0);
   }
 
   public void periodic() {
@@ -302,7 +304,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @AutoLogOutput(key = "Shooter/hoodAngleLogged")
   public double getHoodAngle() {
-    return hoodMotor.getAbsoluteEncoder().getPosition();
+    return hoodMotor.getEncoder().getPosition();
   }
 
   @AutoLogOutput(key = "Shooter/FlywheelVelocitySetpointRPM")
