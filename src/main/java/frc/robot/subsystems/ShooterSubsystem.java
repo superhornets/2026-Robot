@@ -78,8 +78,8 @@ public class ShooterSubsystem extends SubsystemBase {
     hoodConfig
         .idleMode(IdleMode.kBrake)
         .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(15)
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        .p(100)
         .i(0)
         .d(0.5)
         .positionWrappingEnabled(false)
