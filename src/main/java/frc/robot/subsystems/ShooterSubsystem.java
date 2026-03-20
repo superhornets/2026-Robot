@@ -229,7 +229,7 @@ public class ShooterSubsystem extends SubsystemBase {
     double minDist = 0;
 
     double hoodAngleMin = 0;
-    double hoodAngleMax = 45;
+    double hoodAngleMax = 25;
 
     double flywheelSpeedMin = 300;
     double flywheelSpeedMax = 4000;
