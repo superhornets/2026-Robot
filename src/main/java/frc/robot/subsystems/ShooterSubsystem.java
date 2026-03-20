@@ -272,12 +272,10 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void startFeeder() {
-    if (flywheelMotorRight.getEncoder().getVelocity() > 300) {
       feederController.setSetpoint(
         3000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
       agitatorController.setSetpoint(
         1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
-    }
   }
 
   public void startReverseFeeder() {
