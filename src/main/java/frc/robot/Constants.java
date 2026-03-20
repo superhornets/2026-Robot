@@ -72,13 +72,13 @@ public final class Constants {
     public static final class SIM {
       public static final double kFlywheelMOI = MOI.in2lbToKgM2(10.7);
       public static final double kFlywheelGearRatio = 1.0;
-      public static final double kHoodGearRatio = 9.0;
+      public static final double kHoodGearRatio = 25.0;
     }
 
     public static final double kFlywheelMaxSpeed = 6000.0; // RPM
     public static final double kFlywheelMinSpeed = -200.0; // RPM
     public static final double kHoodMinAngle = 0;
-    public static final double kHoodMaxAngle = 10;
+    public static final double kHoodMaxAngle = 25;
 
     public static final class CAN {
       public static final int kFlywheelLeft = 49;
@@ -100,7 +100,7 @@ public final class Constants {
       public static final double kArmGearRatio = 5.0;
     }
 
-    public static final double kRaisedAngle = (0.2);
+    public static final double kRaisedAngle = (0.25);
     public static final double kLoweredAngle = (0.6);
     public static final double kIntakeRollerSpeed = 4000.0; // RPM
 
