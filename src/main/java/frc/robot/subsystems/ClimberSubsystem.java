@@ -29,7 +29,7 @@ public class ClimberSubsystem extends SubsystemBase {
   private final SparkMax climberMotor;
   private final SparkClosedLoopController climberController;
 
-  private boolean lowering = false;
+  private int lowering = 0;
 
   // Simulation
   private final SparkMaxSim climberMotorSim;
@@ -76,11 +76,12 @@ public class ClimberSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Nothing required for now.
-    if (lowering && getVelocity() < 0.1) {
+    if (lowering > 30 && Math.abs(getVelocity()) < 0.1) {
       climberStop();
-      lowering = false;
+      lowering = 0;
       climberMotor.getEncoder().setPosition(0);
     }
+    if (lowering > 0) lowering++;
   }
 
   public void setPositionDegrees(double degrees) {
@@ -97,11 +98,15 @@ public class ClimberSubsystem extends SubsystemBase {
   }
   public void climberDown() {
     climberController.setSetpoint(-2, ControlType.kVelocity, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
-    lowering = true;
+    lowering = 1;
   }
-
   public double getVelocity() {
     return climberMotor.getEncoder().getVelocity();
+  }
+
+  @AutoLogOutput(key = "Climber/Position")
+  public double getPosition() {
+    return climberMotor.getEncoder().getPosition();
   }
 
   public void climberStop() {
