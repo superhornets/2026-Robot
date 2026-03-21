@@ -181,15 +181,13 @@ public class RobotContainer {
     driverController
         .y()
         .whileTrue(
-                Commands.parallel(
-                    DriveCommands.joystickDriveAtAngle(
-                        drive,
-                        () -> -driverController.getLeftY(),
-                        () -> -driverController.getLeftX(),
-                        () -> RebuiltField.getTranslationToHub2D().getAngle(),
-                        speedSupplier),
-                    ShooterCommands.update(shooter, () -> drive.getPose())
-                ));
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
+                () -> RebuiltField.getTranslationToHub2D().getAngle(),
+                speedSupplier));
+    driverController.y().onTrue(ShooterCommands.update(shooter, () -> drive.getPose()));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
