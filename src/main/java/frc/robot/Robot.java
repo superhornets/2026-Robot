@@ -7,10 +7,14 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.revrobotics.util.StatusLogger;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -28,6 +32,11 @@ import org.littletonrobotics.urcl.URCL;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+
+
+  // Dashboard Outputs
+  @AutoLogOutput(key = "Game/Field") 
+  private Field2d field = new Field2d();
 
   public Robot() {
     // Record metadata
@@ -69,13 +78,12 @@ public class Robot extends LoggedRobot {
     DataLogManager.start();
 
     // Initialize URCL
-    Logger.registerURCL(URCL.startExternal());
-    StatusLogger.disableAutoLogging(); // Disable REVLib's built-in logging
+    // Logger.registerURCL(URCL.startExternal());
+    // StatusLogger.disableAutoLogging(); // Disable REVLib's built-in logging
 
     // Start AdvantageKit logger
     Logger.start();
-
-    // StatusLogger.start();
+    StatusLogger.start();
     // URCL.start();
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
@@ -96,6 +104,8 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    field.setRobotPose(robotContainer.getPose());
 
     // Return to non-RT thread priority (do not modify the first argument)
     // Threads.setCurrentThreadPriority(false, 10);
