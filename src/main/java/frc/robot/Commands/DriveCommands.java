@@ -33,6 +33,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
   private static final double ANGLE_KP = 10.0;
@@ -68,8 +70,7 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
-      BooleanSupplier slowModeTrigger,
-      BooleanSupplier fastModeTrigger) {
+      DoubleSupplier speedMultiplierSupplier) {
     return Commands.run(
         () -> {
           // Get linear velocity
@@ -82,13 +83,7 @@ public class DriveCommands {
           // Square rotation value for more precise control
           omega = Math.copySign(omega * omega, omega);
 
-          double speedMultiplier = Constants.DriveConstants.kNormalModeMultiplier;
-          if (fastModeTrigger.getAsBoolean()) {
-            speedMultiplier = Constants.DriveConstants.kFastModeMultiplier;
-          }
-          if (slowModeTrigger.getAsBoolean()) {
-            speedMultiplier = Constants.DriveConstants.kSlowModeMultiplier;
-          }
+          double speedMultiplier = speedMultiplierSupplier.getAsDouble();
 
           // Convert to field relative speeds & send command
           ChassisSpeeds speeds =
@@ -119,8 +114,7 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       Supplier<Rotation2d> rotationSupplier,
-      BooleanSupplier slowModeTrigger,
-      BooleanSupplier fastModeTrigger) {
+      DoubleSupplier speedMultiplierSupplier) {
 
     // Create PID controller
     ProfiledPIDController angleController =
@@ -143,13 +137,7 @@ public class DriveCommands {
                   angleController.calculate(
                       drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
 
-              double speedMultiplier = Constants.DriveConstants.kNormalModeMultiplier;
-              if (fastModeTrigger.getAsBoolean()) {
-                speedMultiplier = Constants.DriveConstants.kFastModeMultiplier;
-              }
-              if (slowModeTrigger.getAsBoolean()) {
-                speedMultiplier = Constants.DriveConstants.kSlowModeMultiplier;
-              }
+              double speedMultiplier = speedMultiplierSupplier.getAsDouble();
 
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
@@ -164,84 +152,6 @@ public class DriveCommands {
               boolean isFlipped =
                   DriverStation.getAlliance().isPresent()
                       && DriverStation.getAlliance().get() == Alliance.Red;
-              drive.runVelocity(
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      speeds,
-                      isFlipped
-                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                          : drive.getRotation()));
-            },
-            drive)
-
-        // Reset PID controller when command starts
-        .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
-  }
-
-  public static Command aimAtHub(
-      Drive drive,
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      BooleanSupplier slowModeTrigger,
-      BooleanSupplier fastModeTrigger) {
-
-    // Create PID controller
-    ProfiledPIDController angleController =
-        new ProfiledPIDController(
-            ANGLE_KP,
-            0.0,
-            ANGLE_KD,
-            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
-    angleController.enableContinuousInput(-Math.PI, Math.PI);
-
-    // Construct command
-    return Commands.run(
-            () -> {
-              Pose2d RobotPose = drive.getPose();
-
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
-
-              Pose3d hubCenter =
-                  isFlipped
-                      ? Constants.FieldConstants.RedHubCenter
-                      : Constants.FieldConstants.BlueHubCenter;
-
-              double relativeHubX = hubCenter.getX() - RobotPose.getX();
-              double relativeHubY = hubCenter.getY() - RobotPose.getY();
-              double HubZ = hubCenter.getZ();
-
-              double Length = Math.sqrt(relativeHubX * relativeHubX + relativeHubY * relativeHubY);
-              relativeHubX /= Length;
-              relativeHubY /= Length;
-
-              double Rotation = Math.atan2(relativeHubY, relativeHubX);
-              // Get linear velocity
-              Translation2d linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-
-              // Calculate angular speed
-              double omega = angleController.calculate(drive.getRotation().getRadians(), Rotation);
-
-              double speedMultiplier = Constants.DriveConstants.kNormalModeMultiplier;
-              if (fastModeTrigger.getAsBoolean()) {
-                speedMultiplier = Constants.DriveConstants.kFastModeMultiplier;
-              }
-              if (slowModeTrigger.getAsBoolean()) {
-                speedMultiplier = Constants.DriveConstants.kSlowModeMultiplier;
-              }
-
-              // Convert to field relative speeds & send command
-              ChassisSpeeds speeds =
-                  new ChassisSpeeds(
-                      linearVelocity.getX()
-                          * drive.getMaxLinearSpeedMetersPerSec()
-                          * speedMultiplier,
-                      linearVelocity.getY()
-                          * drive.getMaxLinearSpeedMetersPerSec()
-                          * speedMultiplier,
-                      omega * drive.getMaxAngularSpeedRadPerSec() * speedMultiplier);
-
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       speeds,

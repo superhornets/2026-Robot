@@ -9,11 +9,15 @@ package frc.robot;
 
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
+import java.lang.reflect.Field;
+import java.util.function.BooleanSupplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -38,6 +42,11 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.util.FlippedSupplier;
+import frc.robot.util.RebuiltField;
+import frc.robot.util.SpeedSupplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -57,6 +66,9 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
+
+  // Value Suppliers
+  private final SpeedSupplier speedSupplier = new SpeedSupplier();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -120,6 +132,9 @@ public class RobotContainer {
         break;
     }
 
+    RebuiltField.setGlobalFlippedSupplier(new FlippedSupplier());
+    RebuiltField.setGlobalRobotPoseSupplier(() -> drive.getPose());
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -160,23 +175,26 @@ public class RobotContainer {
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX(),
-            driverController.leftTrigger(),
-            driverController.rightTrigger()));
+            speedSupplier));
 
-    // Lock to 0° when A button is held
-    // driverController
-    //     .a()
-    //     .whileTrue(
-    //         DriveCommands.joystickDriveAtAngle(
-    //             drive,
-    //             () -> -driverController.getLeftY(),
-    //             () -> -driverController.getLeftX(),
-    //             () -> Rotation2d.kZero,
-    //             driverController.leftTrigger(),
-    //             driverController.rightTrigger()));
+    // Lock to Hub when Y button is held
+    driverController
+        .y()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
+                () -> RebuiltField.getTranslationToHub2D().getAngle(),
+                speedSupplier));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    driverController.leftTrigger().onTrue(Commands.runOnce(() -> { speedSupplier.setSlow(); }));
+    driverController.leftTrigger().onFalse(Commands.runOnce(() -> { speedSupplier.reset(); }));
+    driverController.rightTrigger().onTrue(Commands.runOnce(() -> { speedSupplier.setFast(); }));
+    driverController.rightTrigger().onFalse(Commands.runOnce(() -> { speedSupplier.reset(); }));
 
     // Reset gyro to 0° when B button is pressed
     driverController
@@ -188,24 +206,6 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
-
-    // driverController
-    //     .y()
-    //     .whileTrue(
-    //         DriveCommands.aimAtHub(
-    //             drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX()));
-
-    driverController
-        .y()
-        .whileTrue(
-            Commands.parallel(
-                DriveCommands.aimAtHub(
-                    drive,
-                    () -> -driverController.getLeftY(),
-                    () -> -driverController.getLeftX(),
-                    driverController.leftTrigger(),
-                    driverController.rightTrigger()),
-                ShooterCommands.update(shooter, () -> drive.getPose())));
 
     driverController.leftBumper().whileTrue(IntakeCommands.lowerLeft(intake));
     driverController.rightBumper().whileTrue(IntakeCommands.lowerRight(intake));
@@ -248,5 +248,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public Pose2d getPose() {
+    return drive.getPose();
   }
 }
