@@ -245,7 +245,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setHoodAngle(double angleRotations) {
-    hoodController.setSetpoint(angleRotations, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    double value = Math.max(Constants.Shooter.kHoodMinAngle, Math.min(Constants.Shooter.kHoodMaxAngle, angleRotations));
+    hoodController.setSetpoint(value, ControlType.kPosition, ClosedLoopSlot.kSlot0);
   }
 
   public void startFlywheel(double speedRPM) {
