@@ -225,14 +225,14 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setShootDist(double dist) {
-    double maxDist = 1;
-    double minDist = 0;
+    double maxDist = 5.21;
+    double minDist = 1.32;
 
     double hoodAngleMin = 0;
-    double hoodAngleMax = 25;
+    double hoodAngleMax = 21.28;
 
-    double flywheelSpeedMin = 300;
-    double flywheelSpeedMax = 4000;
+    double flywheelSpeedMin = 36.82;
+    double flywheelSpeedMax = 49.17;
 
     double ratio = (dist - minDist) / (maxDist - minDist);
     double hoodAngle =
