@@ -181,7 +181,6 @@ public class RobotContainer {
     driverController
         .y()
         .whileTrue(
-            Commands.run(()->{
                 Commands.parallel(
                     DriveCommands.joystickDriveAtAngle(
                         drive,
@@ -190,8 +189,7 @@ public class RobotContainer {
                         () -> RebuiltField.getTranslationToHub2D().getAngle(),
                         speedSupplier),
                     ShooterCommands.update(shooter, () -> drive.getPose())
-                );
-            }, shooter));
+                ));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
