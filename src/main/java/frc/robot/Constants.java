@@ -60,7 +60,7 @@ public final class Constants {
   }
 
   public static final class DriveConstants {
-    public static final double kSlowModeMultiplier = 0.25; // slow is 0.25
+    public static final double kSlowModeMultiplier = 0.20; // slow is 0.25
     public static final double kNormalModeMultiplier = 0.40; // normal is 0.40
     public static final double kFastModeMultiplier = 0.60;  // fast is 0.60
 
@@ -101,7 +101,7 @@ public final class Constants {
     }
 
     public static final double kRaisedAngle = (0.25);
-    public static final double kLoweredAngle = (0.6);
+    public static final double kLoweredAngle = (0.52);
     public static final double kIntakeRollerSpeed = 4000.0; // RPM
 
     public static final class CAN {
