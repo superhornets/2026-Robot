@@ -99,9 +99,9 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkFlexConfig flywheelConfigRight = new SparkFlexConfig();
     flywheelConfigRight
         .closedLoop
-        .p(0.0002)
+        .p(0.0001)
         .i(0)
-        .d(0)
+        .d(0.0002)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     flywheelConfigRight.encoder.velocityConversionFactor(1.0);
@@ -114,9 +114,9 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelConfigLeft
         .inverted(true)
         .closedLoop
-        .p(0.0002)
+        .p(0.0001)
         .i(0)
-        .d(0)
+        .d(0.0002)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     flywheelConfigLeft.encoder.velocityConversionFactor(1.0);
