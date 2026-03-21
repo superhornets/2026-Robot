@@ -197,7 +197,6 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void periodic() {
-    setHoodAngle(SmartDashboard.getNumber("Shooter/HoodAngle", 0));
   }
 
   public void update(Pose2d robotPose) {
