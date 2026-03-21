@@ -97,8 +97,10 @@ public class ClimberSubsystem extends SubsystemBase {
     climberController.setSetpoint(Climber.kMaxAngleDegrees, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
   }
   public void climberDown() {
-    climberController.setSetpoint(-2, ControlType.kVelocity, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
-    lowering = 1;
+        climberController.setSetpoint(-Climber.kMaxAngleDegrees, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
+
+    // climberController.setSetpoint(-2, ControlType.kVelocity, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
+    // lowering = 1;
   }
   public double getVelocity() {
     return climberMotor.getEncoder().getVelocity();
