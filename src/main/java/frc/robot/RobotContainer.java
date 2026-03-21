@@ -181,12 +181,17 @@ public class RobotContainer {
     driverController
         .y()
         .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -driverController.getLeftY(),
-                () -> -driverController.getLeftX(),
-                () -> RebuiltField.getTranslationToHub2D().getAngle(),
-                speedSupplier));
+            Commands.run(()->{
+                Commands.parallel(
+                    DriveCommands.joystickDriveAtAngle(
+                        drive,
+                        () -> -driverController.getLeftY(),
+                        () -> -driverController.getLeftX(),
+                        () -> RebuiltField.getTranslationToHub2D().getAngle(),
+                        speedSupplier),
+                    ShooterCommands.update(shooter, () -> drive.getPose())
+                );
+            }, shooter));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -239,6 +244,8 @@ public class RobotContainer {
 
     operatorController.povUp().onTrue(ClimberCommands.climberUp(climber));
     operatorController.povDown().onTrue(ClimberCommands.climberDown(climber));
+
+    // operatorController.
   }
 
   /**
