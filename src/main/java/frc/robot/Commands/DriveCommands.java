@@ -85,6 +85,8 @@ public class DriveCommands {
 
           double speedMultiplier = speedMultiplierSupplier.getAsDouble();
 
+          Logger.recordOutput("Drive/SpeedMultiplier", speedMultiplier);
+
           // Convert to field relative speeds & send command
           ChassisSpeeds speeds =
               new ChassisSpeeds(
