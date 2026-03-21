@@ -98,13 +98,13 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelMotorRight = new SparkFlex(Constants.Shooter.CAN.kFlywheelRight, MotorType.kBrushless);
     SparkFlexConfig flywheelConfigRight = new SparkFlexConfig();
     flywheelConfigRight
-        .smartCurrentLimit(20, 40)
         .closedLoop
         .p(0.0002)
         .i(0)
         .d(0)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
+    flywheelConfigRight.encoder.velocityConversionFactor(1.0);
     flywheelMotorRight.configure(
         flywheelConfigRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     flywheelControllerRight = flywheelMotorRight.getClosedLoopController();
@@ -113,13 +113,13 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkFlexConfig flywheelConfigLeft = new SparkFlexConfig();
     flywheelConfigLeft
         .inverted(true)
-        .smartCurrentLimit(20, 40, 1000)
         .closedLoop
         .p(0.0002)
         .i(0)
         .d(0)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
+    flywheelConfigLeft.encoder.velocityConversionFactor(1.0);
     flywheelMotorLeft.configure(
         flywheelConfigLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     flywheelControllerLeft = flywheelMotorLeft.getClosedLoopController();
@@ -294,7 +294,7 @@ public class ShooterSubsystem extends SubsystemBase {
     agitatorController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
   }
 
-  @AutoLogOutput(key = "Shooter/hoodAngleLogged")
+  @AutoLogOutput(key = "Shooter/hoodAngle")
   public double getHoodAngle() {
     return hoodMotor.getEncoder().getPosition();
   }
@@ -302,11 +302,6 @@ public class ShooterSubsystem extends SubsystemBase {
     @AutoLogOutput(key = "Shooter/hoodAngleSetpoint")
   public double getHoodAngleSet() {
     return hoodController.getSetpoint();
-  }
-
-  @AutoLogOutput(key = "Shooter/hoodMotorOutput")
-  public double getHoodOutput() {
-    return hoodMotor.getAppliedOutput();
   }
 
   @AutoLogOutput(key = "Shooter/FlywheelVelocitySetpointRPM")
@@ -319,19 +314,9 @@ public class ShooterSubsystem extends SubsystemBase {
     return flywheelMotorRight.getEncoder().getVelocity();
   }
 
-  @AutoLogOutput(key = "Shooter/FlywheelLeftAmps")
-  public double getLeftAmps() {
-    return flywheelMotorLeft.getOutputCurrent();
-  }
-
-  @AutoLogOutput(key = "Shooter/FlywheelRightAmps")
-  public double getRightAmps() {
-    return flywheelMotorRight.getOutputCurrent();
-  }
-
-  @AutoLogOutput(key = "Shooter/FlywheelRightOutput")
-  public double getRightOutput() {
-    return flywheelMotorRight.getAppliedOutput();
+  @AutoLogOutput(key = "Shooter/isAtSpeed")
+  public boolean getIsAtSpeed() {
+    return flywheelControllerRight.isAtSetpoint();
   }
 
   public void simulationPeriodic() {
