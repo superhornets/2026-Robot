@@ -45,7 +45,7 @@ public class ClimberSubsystem extends SubsystemBase {
         .inverted(true)
         .idleMode(IdleMode.kBrake)
         .closedLoop
-        .p(1.0)
+        .p(0.05)
         .i(0.0)
         .d(0.1)
         .positionWrappingEnabled(false);
