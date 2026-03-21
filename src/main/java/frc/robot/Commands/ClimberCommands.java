@@ -21,7 +21,7 @@ public class ClimberCommands {
   public static Command climberUp(ClimberSubsystem climber) {
     return Commands.run(
         () -> {
-          climber.setPositionDegrees(Constants.Climber.kMaxAngleDegrees);
+          climber.climberUp();
         },
         climber);
   }
@@ -29,7 +29,7 @@ public class ClimberCommands {
   public static Command climberDown(ClimberSubsystem climber) {
     return Commands.run(
         () -> {
-          climber.setPositionDegrees(Constants.Climber.kMinAngleDegrees);
+          climber.climberDown();
         },
         climber);
   }

@@ -21,11 +21,15 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Climber;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class ClimberSubsystem extends SubsystemBase {
   private final SparkMax climberMotor;
   private final SparkClosedLoopController climberController;
+
+  private boolean lowering = false;
 
   // Simulation
   private final SparkMaxSim climberMotorSim;
@@ -71,6 +75,11 @@ public class ClimberSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Nothing required for now.
+    if (lowering && getVelocity() < 0.1) {
+      climberStop();
+      lowering = false;
+      climberMotor.getEncoder().setPosition(0);
+    }
   }
 
   public void setPositionDegrees(double degrees) {
@@ -82,6 +91,22 @@ public class ClimberSubsystem extends SubsystemBase {
         rotations, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
   }
 
+  public void climberUp() {
+    climberController.setSetpoint(Climber.kMaxAngleDegrees, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
+  }
+  public void climberDown() {
+    climberController.setSetpoint(-600, ControlType.kVelocity, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
+    lowering = true;
+  }
+
+  public double getVelocity() {
+    return climberMotor.getEncoder().getVelocity();
+  }
+
+  public void climberStop() {
+    climberController.setSetpoint(0, ControlType.kVelocity, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
+  }
+
   @AutoLogOutput(key = "Climber/angleDegrees")
   public double getAngleDegrees() {
     // Encoder position reported in rotations -> convert to degrees
@@ -89,6 +114,7 @@ public class ClimberSubsystem extends SubsystemBase {
     return Units.rotationsToDegrees(rotations);
   }
 
+  
   public void simulationPeriodic() {
     getAngleDegrees();
     // Apply motor voltage to the simulated arm
