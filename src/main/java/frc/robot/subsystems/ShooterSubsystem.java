@@ -252,8 +252,6 @@ public class ShooterSubsystem extends SubsystemBase {
     double speedClamped =
         MathUtil.clamp(
             speedRPM, Constants.Shooter.kFlywheelMinSpeed, Constants.Shooter.kFlywheelMaxSpeed);
-    flywheelControllerRight.setSetpoint(
-        speedClamped, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
     flywheelControllerLeft.setSetpoint(
         speedClamped, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
     flywheelControllerRight.setSetpoint(
