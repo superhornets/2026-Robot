@@ -57,7 +57,7 @@ public class IntakeModule extends SubsystemBase {
     armConfig
         .idleMode(IdleMode.kBrake)
         .inverted(inverted)
-        .smartCurrentLimit(10)
+        .smartCurrentLimit(20)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .p(8)
@@ -80,9 +80,9 @@ public class IntakeModule extends SubsystemBase {
     rollerConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.0005)
+        .p(0.001)
         .i(0)
-        .d(0)
+        .d(0.001)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     rollerMotor.configure(
