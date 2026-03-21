@@ -57,6 +57,7 @@ public class IntakeModule extends SubsystemBase {
     armConfig
         .idleMode(IdleMode.kBrake)
         .inverted(inverted)
+        .smartCurrentLimit(10)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .p(8)
