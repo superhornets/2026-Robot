@@ -42,6 +42,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     SparkMaxConfig climberConfig = new SparkMaxConfig();
     climberConfig
+        .inverted(true)
         .idleMode(IdleMode.kBrake)
         .closedLoop
         .p(1.0)
@@ -95,7 +96,7 @@ public class ClimberSubsystem extends SubsystemBase {
     climberController.setSetpoint(Climber.kMaxAngleDegrees, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
   }
   public void climberDown() {
-    climberController.setSetpoint(-600, ControlType.kVelocity, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
+    climberController.setSetpoint(-2, ControlType.kVelocity, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
     lowering = true;
   }
 
