@@ -33,13 +33,18 @@ public class ShooterCommands {
   }
 
   public static Command manual(ShooterStateStore state, DoubleSupplier hoodChange, DoubleSupplier speedChange) {
-    return Commands.runEnd(
-      () -> {
-        state.set(RebuiltField.shooterStateForHub());
-      },
-      () -> {
-        state.reset();
-      }
+    return 
+    Commands.sequence(
+      Commands.runOnce(() -> { state.returnToLast();}),
+      Commands.runEnd(
+        () -> {
+          state.modifyAngle(hoodChange.getAsDouble());
+          state.modifySpeed(speedChange.getAsDouble());
+        },
+        () -> {
+          state.reset();
+        }
+      )
     );
   }
 

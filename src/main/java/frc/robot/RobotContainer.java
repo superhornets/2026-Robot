@@ -86,7 +86,7 @@ public class RobotContainer {
     public RobotContainer() {
         SmartDashboard.putNumber("Shooter/Speed",55);
         SmartDashboard.putNumber("Shooter/HoodAngle",0);
-        shooter = new ShooterSubsystem();
+        shooter = new ShooterSubsystem(shooterState);
         intake = new IntakeSubsystem();
         climber = new ClimberSubsystem();
         switch (Constants.currentMode) {

@@ -136,17 +136,8 @@ public class ClimberSubsystem extends SubsystemBase {
   public void climberStop() {
     climberController.setSetpoint(0, ControlType.kVelocity, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
   }
-
-  @AutoLogOutput(key = "Climber/angleDegrees")
-  public double getAngleDegrees() {
-    // Encoder position reported in rotations -> convert to degrees
-    double rotations = climberMotor.getAbsoluteEncoder().getPosition();
-    return Units.rotationsToDegrees(rotations);
-  }
-
   
   public void simulationPeriodic() {
-    getAngleDegrees();
     // Apply motor voltage to the simulated arm
     climberSim.setInput(climberMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
     climberSim.update(Constants.SIM.interval);

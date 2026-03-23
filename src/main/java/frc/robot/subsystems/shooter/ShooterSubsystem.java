@@ -38,10 +38,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Constants.Shooter;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class ShooterSubsystem extends SubsystemBase {
+
+  ShooterStateStore stateStore;;
   // HARDWARE OBJECTS
 
   // flywheel
@@ -76,7 +79,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private DCMotor agitatorGearboxSim;
 
   /** Creates a new ShooterSubsystem. */
-  public ShooterSubsystem() {
+  public ShooterSubsystem(ShooterStateStore store) {
+    this.stateStore = store;
     // Setup Motors and Controllers
     hoodMotor = new SparkMax(Constants.Shooter.CAN.kHood, MotorType.kBrushless);
 
@@ -189,7 +193,12 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void periodic() {
-    
+    setState(stateStore.get());
+  }
+
+  public void setState(ShooterState state) {
+    setHoodAngle(state.angle);
+    startFlywheel(state.speed);
   }
 
   public void setHoodAngle(double angleRotations) {
