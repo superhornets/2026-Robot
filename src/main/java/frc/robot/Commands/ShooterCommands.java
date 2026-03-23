@@ -38,7 +38,7 @@ public class ShooterCommands {
       Commands.runOnce(() -> { state.returnToLast();}),
       Commands.runEnd(
         () -> {
-          state.modifyAngle(hoodChange.getAsDouble());
+          state.modifyAngle(-hoodChange.getAsDouble());
           state.modifySpeed(speedChange.getAsDouble());
         },
         () -> {
