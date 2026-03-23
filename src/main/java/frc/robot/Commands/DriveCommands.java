@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.SpeedSupplier;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -60,6 +62,36 @@ public class DriveCommands {
     return new Pose2d(Translation2d.kZero, linearDirection)
         .transformBy(new Transform2d(linearMagnitude, 0.0, Rotation2d.kZero))
         .getTranslation();
+  }
+
+  public static Command slowCommand(SpeedSupplier speed) {
+    return Commands.startEnd(
+      () -> {
+        speed.setSlow();
+      }, 
+      () -> {
+        speed.reset();
+      });
+  }
+
+  public static Command fastCommand(SpeedSupplier speed) {
+    return Commands.startEnd(
+      () -> {
+        speed.setFast();
+      }, 
+      () -> {
+        speed.reset();
+      });
+  }
+
+  public static Command intakeCommand(SpeedSupplier speed) {
+    return Commands.startEnd(
+      () -> {
+        speed.setIntake();
+      }, 
+      () -> {
+        speed.reset();
+      });
   }
 
   /**

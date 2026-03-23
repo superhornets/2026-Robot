@@ -8,7 +8,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.shooter.ShooterState;
+import frc.robot.subsystems.shooter.ShooterStateStore;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.util.RebuiltField;
+
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -16,17 +21,57 @@ public class ShooterCommands {
 
   public ShooterCommands() {}
 
-  public static Command update(ShooterSubsystem shooter, Supplier<Pose2d> robotPose) {
+  public static Command autoHub(ShooterStateStore state) {
+    return Commands.runEnd(
+      () -> {
+        state.set(RebuiltField.shooterStateForHub());
+      },
+      () -> {
+        state.reset();
+      }
+    );
+  }
+
+  public static Command manual(ShooterStateStore state, DoubleSupplier hoodChange, DoubleSupplier speedChange) {
+    return Commands.runEnd(
+      () -> {
+        state.set(RebuiltField.shooterStateForHub());
+      },
+      () -> {
+        state.reset();
+      }
+    );
+  }
+
+  public static Command shoot(ShooterSubsystem shooter) {
     return Commands.runEnd(
         () -> {
-          shooter.update(robotPose.get());
+          shooter.startFeeder();
         },
         () -> {
-          shooter.stopFlywheel(true);
+          shooter.stopFeeder();
         },
         shooter);
   }
 
+
+  public static Command rangeForHub(ShooterStateStore state) {
+    return Commands.run(
+      () -> {
+        state.set(RebuiltField.shooterStateForHub());
+      }
+    );
+  }
+
+  public static Command lower(ShooterStateStore state) {
+    return Commands.runOnce(
+      () -> {
+        state.set(ShooterState.min);
+      }
+    );
+  }
+
+  
   public static Command startFlywheel(ShooterSubsystem shooter) {
     return Commands.runOnce(
         () -> {
@@ -74,5 +119,16 @@ public class ShooterCommands {
           shooter.stopReverseFeeder();
         },
         shooter);
+  }
+
+  /** Zero the hood using a stall-based zeroing routine (start -> wait until stalled -> set zero). */
+  public static Command zeroHood(ShooterSubsystem shooter) {
+    return Commands.sequence(
+        // Start moving slowly toward the mechanical stop
+        Commands.runOnce(() -> shooter.startHoodZeroing(), shooter),
+        // Wait until stall condition is detected
+        Commands.waitUntil(() -> shooter.isHoodStalled()),
+        // Stop and set encoder zero
+        Commands.runOnce(() -> shooter.setHoodZero(), shooter));
   }
 }

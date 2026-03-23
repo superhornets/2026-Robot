@@ -11,9 +11,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
+import frc.robot.Constants.Shooter;
+import frc.robot.subsystems.shooter.ShooterState;
 
 /** Add your docs here. */
 public class RebuiltField {
@@ -47,5 +50,23 @@ public class RebuiltField {
         double relativeHubY = hubCenter.getY() - pose.getY();
 
         return new Translation2d(relativeHubX, relativeHubY);
+    }
+
+    public static ShooterState shooterStateForHub() {
+        // minimum shooting distance
+        double minDist = 1.32;
+        ShooterState min = new ShooterState(37, 0);
+
+        // Maximum shooting distance
+        double maxDist = 5.21;
+        ShooterState max = new ShooterState(49, 21);
+
+        // get the distance from the hub
+        double distance = getTranslationToHub2D().getNorm();
+        // calculate the ratio between our min and max that we are at
+        double ratio = InverseInterpolator.forDouble().inverseInterpolate(minDist, maxDist, distance);
+
+        // interpolate our shooter configuration between the min and max based on the ratio
+        return min.interpolate(max, ratio);
     }
 }

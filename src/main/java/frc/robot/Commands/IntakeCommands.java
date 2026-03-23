@@ -13,6 +13,14 @@ public class IntakeCommands {
 
   private IntakeCommands() {}
 
+  public static Command raiseAll(IntakeSubsystem intake) {
+    return Commands.run(
+        () -> {
+          intake.raiseAll();
+        },
+        intake);
+  }
+
   public static Command lowerLeft(IntakeSubsystem intake) {
     return Commands.startEnd(
         () -> {

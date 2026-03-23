@@ -58,23 +58,6 @@
         ],
         "containers": [
           {
-            "title": "connected",
-            "x": 0.0,
-            "y": 448.0,
-            "width": 128.0,
-            "height": 64.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/CameraPublisher/photonvision_Port_1181_Input_MJPEG_Server/connected",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "Checkmark",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "FMSInfo",
             "x": 768.0,
             "y": 0.0,
@@ -88,8 +71,8 @@
           },
           {
             "title": "photonvision_Port_1182_Output_MJPEG_Server",
-            "x": 512.0,
-            "y": 512.0,
+            "x": 448.0,
+            "y": 448.0,
             "width": 320.0,
             "height": 256.0,
             "type": "Camera Stream",
@@ -97,38 +80,6 @@
               "topic": "/CameraPublisher/photonvision_Port_1182_Output_MJPEG_Server",
               "period": 0.06,
               "rotation_turns": 0
-            }
-          },
-          {
-            "title": "TotalCurrent",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Graph",
-            "properties": {
-              "topic": "/AdvantageKit/PowerDistribution/TotalCurrent",
-              "period": 0.033,
-              "data_type": "double",
-              "time_displayed": 15.0,
-              "color": 4278238420,
-              "line_width": 2.0
-            }
-          },
-          {
-            "title": "Voltage",
-            "x": 256.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Graph",
-            "properties": {
-              "topic": "/AdvantageKit/PowerDistribution/Voltage",
-              "period": 0.033,
-              "data_type": "double",
-              "time_displayed": 15.0,
-              "color": 4292106496,
-              "line_width": 2.0
             }
           },
           {
@@ -148,38 +99,53 @@
               "show_trajectories": true,
               "field_rotation": 0.0,
               "robot_color": 4294198070,
-              "trajectory_color": 4294967295,
+              "trajectory_color": 4286447361,
               "show_robot_outside_widget": true
             }
           },
           {
-            "title": "FlywheelVelocitySetpointRPM",
-            "x": 1792.0,
-            "y": 320.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Shooter/FlywheelVelocitySetpointRPM",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "SpeedMultiplier",
-            "x": 832.0,
-            "y": 512.0,
-            "width": 384.0,
+            "title": "FlywheelVelocityRPM",
+            "x": 0.0,
+            "y": 448.0,
+            "width": 448.0,
             "height": 256.0,
             "type": "Graph",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Drive/SpeedMultiplier",
+              "topic": "/AdvantageKit/RealOutputs/Shooter/FlywheelVelocityRPM",
               "period": 0.033,
               "data_type": "double",
-              "time_displayed": 15.0,
+              "time_displayed": 5.0,
               "color": 4278238420,
               "line_width": 2.0
+            }
+          },
+          {
+            "title": "MatchTime",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 448.0,
+            "height": 128.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/AdvantageKit/DriverStation/MatchTime",
+              "period": 0.06,
+              "data_type": "double",
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 20,
+              "yellow_start_time": 30
+            }
+          },
+          {
+            "title": "Hub Status",
+            "x": 768.0,
+            "y": 512.0,
+            "width": 448.0,
+            "height": 192.0,
+            "type": "Single Color View",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Match/HubDisplayColor",
+              "period": 0.06,
+              "data_type": "string"
             }
           }
         ]
@@ -212,6 +178,142 @@
             }
           }
         ]
+      }
+    },
+    {
+      "name": "Adjustments",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "Drive",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 640.0,
+            "height": 512.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "FastMultiplier",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "Drive/FastMultiplier",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 1.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              },
+              {
+                "title": "IntakeMultiplier",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "Drive/IntakeMultiplier",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 1.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              },
+              {
+                "title": "NormalMultiplier",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "Drive/NormalMultiplier",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 1.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              },
+              {
+                "title": "SlowMultiplier",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "Drive/SlowMultiplier",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 1.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "Shooter",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 576.0,
+            "height": 320.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "HoodAdjustment",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "Shooter/HoodAdjustment",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 5.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              },
+              {
+                "title": "SpeedAdjustment",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "Shooter/SpeedAdjustment",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 1000.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              }
+            ]
+          }
+        ],
+        "containers": []
       }
     },
     {
@@ -282,6 +384,46 @@
               "data_type": "double",
               "time_displayed": 16.0,
               "color": 4278238420,
+              "line_width": 2.0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Power",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "BatteryCurrent",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 896.0,
+            "height": 256.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/AdvantageKit/SystemStats/BatteryCurrent",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 15.0,
+              "color": 4278238420,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "BatteryVoltage",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 896.0,
+            "height": 256.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/AdvantageKit/SystemStats/BatteryVoltage",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 15.0,
+              "color": 4285333716,
               "line_width": 2.0
             }
           }

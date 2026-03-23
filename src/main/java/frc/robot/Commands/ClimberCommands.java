@@ -19,7 +19,7 @@ public class ClimberCommands {
   }
 
   public static Command climberUp(ClimberSubsystem climber) {
-    return Commands.run(
+    return Commands.runOnce(
         () -> {
           climber.climberUp();
         },
@@ -27,10 +27,18 @@ public class ClimberCommands {
   }
 
   public static Command climberDown(ClimberSubsystem climber) {
-    return Commands.run(
+    return Commands.runOnce(
         () -> {
           climber.climberDown();
         },
         climber);
+  }
+
+  public static Command zero(ClimberSubsystem climber) {
+    return Commands.sequence(
+      Commands.runOnce(() -> { climber.startZeroing(); }, climber),
+      Commands.waitUntil(() -> { return climber.isStalled(); }),
+      Commands.runOnce(() -> { climber.setZero(); }, climber)
+    );
   }
 }

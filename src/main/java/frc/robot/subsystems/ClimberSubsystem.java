@@ -29,8 +29,6 @@ public class ClimberSubsystem extends SubsystemBase {
   private final SparkMax climberMotor;
   private final SparkClosedLoopController climberController;
 
-  private int lowering = 0;
-
   // Simulation
   private final SparkMaxSim climberMotorSim;
   private final SparkAbsoluteEncoderSim climberEncoderSim;
@@ -75,13 +73,37 @@ public class ClimberSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Nothing required for now.
-    if (lowering > 30 && Math.abs(getVelocity()) < 0.1) {
-      climberStop();
-      lowering = 0;
-      climberMotor.getEncoder().setPosition(0);
-    }
-    if (lowering > 0) lowering++;
+    // Nothing required for now. Zeroing is performed via the zero command:
+    // startZeroing() -> waitUntil(isStalled()) -> setZero()
+  }
+
+  /** Begin moving the climber slowly toward its mechanical zero (applies small % output). */
+  public void startZeroing() {
+    climberMotor.set(-0.10); // conservative seek power, matches hood zeroing behavior
+  }
+
+  /** Stop zeroing motion (stop motor). */
+  public void stopZeroing() {
+    climberMotor.set(0.0);
+  }
+
+  /**
+   * Returns true when the climber appears to be stalled against the mechanical stop.
+   * Uses a heuristic: current above threshold AND near-zero encoder velocity.
+   */
+  public boolean isStalled() {
+    double current = climberMotor.getOutputCurrent();
+    double velocity = climberMotor.getEncoder().getVelocity(); // RPM
+    // thresholds chosen to match the shooter hood zeroing pattern (conservative)
+    return (current > 8.0) && (Math.abs(velocity) < 5.0);
+  }
+
+  /** Stop the motor and set the climber encoder position to zero. */
+  public void setZero() {
+    climberMotor.set(0.0);
+    climberMotor.getEncoder().setPosition(0.0);
+    // Reset controller setpoint to 0 to avoid unintended motion after zeroing
+    climberController.setSetpoint(0.0, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
   }
 
   public void setPositionDegrees(double degrees) {

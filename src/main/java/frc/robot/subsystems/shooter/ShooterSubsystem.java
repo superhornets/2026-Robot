@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.shooter;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -95,33 +95,25 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     hoodController = hoodMotor.getClosedLoopController();
 
-    flywheelMotorRight = new SparkFlex(Constants.Shooter.CAN.kFlywheelRight, MotorType.kBrushless);
-    SparkFlexConfig flywheelConfigRight = new SparkFlexConfig();
-    flywheelConfigRight
+  SparkFlexConfig flywheelConfig = new SparkFlexConfig();
+    flywheelConfig
         .closedLoop
         .p(0.0001)
         .i(0)
         .d(0.0002)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
-    flywheelConfigRight.encoder.velocityConversionFactor(1.0);
+    flywheelConfig.encoder.velocityConversionFactor(1.0);
+
+
+    flywheelMotorRight = new SparkFlex(Constants.Shooter.CAN.kFlywheelRight, MotorType.kBrushless);
     flywheelMotorRight.configure(
-        flywheelConfigRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        flywheelConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     flywheelControllerRight = flywheelMotorRight.getClosedLoopController();
 
     flywheelMotorLeft = new SparkFlex(Constants.Shooter.CAN.kFlywheelLeft, MotorType.kBrushless);
-    SparkFlexConfig flywheelConfigLeft = new SparkFlexConfig();
-    flywheelConfigLeft
-        .inverted(true)
-        .closedLoop
-        .p(0.0001)
-        .i(0)
-        .d(0.0002)
-        .maxMotion
-        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
-    flywheelConfigLeft.encoder.velocityConversionFactor(1.0);
     flywheelMotorLeft.configure(
-        flywheelConfigLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        flywheelConfig.inverted(true), ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     flywheelControllerLeft = flywheelMotorLeft.getClosedLoopController();
 
     feederMotor = new SparkFlex(Constants.Shooter.CAN.kFeeder, MotorType.kBrushless);
@@ -197,50 +189,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void periodic() {
-  }
-
-  public void update(Pose2d robotPose) {
-    double dist = getDistance(robotPose);
-
-    setShootDist(dist);
-  }
-
-  public double getDistance(Pose2d RobotPose) {
-    boolean isFlipped =
-        DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
-
-    Pose3d hubCenter =
-        isFlipped ? Constants.FieldConstants.RedHubCenter : Constants.FieldConstants.BlueHubCenter;
-
-    double relativeHubX = hubCenter.getX() - RobotPose.getX();
-    double relativeHubY = hubCenter.getY() - RobotPose.getY();
-    System.out.println("relativeX: " + relativeHubX + ", relativeY: " + relativeHubY);
-    // double HubZ = hubCenter.getZ();
-
-    double dist = Math.sqrt(relativeHubX * relativeHubX + relativeHubY * relativeHubY);
-
-    return dist;
-  }
-
-  public void setShootDist(double dist) {
-    double maxDist = 5.21;
-    double minDist = 1.32;
-
-    double hoodAngleMin = 0;
-    double hoodAngleMax = 21.28;
-
-    double flywheelSpeedMin = 36.82 + 2.3;
-    double flywheelSpeedMax = 49.17 + 1.4;
-
-    double ratio = (dist - minDist) / (maxDist - minDist);
-    double hoodAngle =
-        ratio * (hoodAngleMax - hoodAngleMin)
-            + hoodAngleMin; // ratio * (maxValue - minValue) + minValue
-    double flywheelSpeed = ratio * (flywheelSpeedMax - flywheelSpeedMin) + flywheelSpeedMin;
-
-    setHoodAngle(hoodAngle);
-    startFlywheel(flywheelSpeed);
+    
   }
 
   public void setHoodAngle(double angleRotations) {
@@ -288,8 +237,40 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void stopFeeder() {
-    feederController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
-    agitatorController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+       feederController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+       agitatorController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+   }
+
+  // Hood zeroing utilities (patterned after ClimberSubsystem zeroing)
+  /** Begin moving the hood slowly toward its mechanical zero (applies small % output). */
+  public void startHoodZeroing() {
+    // apply a small negative percent to seek the hard stop; tuned low to avoid damage
+    hoodMotor.set(-0.10);
+  }
+
+  /** Stop zeroing motion (stop motor). */
+  public void stopHoodZeroing() {
+    hoodMotor.set(0.0);
+  }
+
+  /**
+   * Returns true when the hood appears to be stalled against the mechanical stop.
+   * Uses a simple heuristic: current above threshold AND near-zero encoder velocity.
+   */
+  public boolean isHoodStalled() {
+    double current = hoodMotor.getOutputCurrent();
+    double velocity = hoodMotor.getEncoder().getVelocity(); // RPM
+    // threshold values chosen conservatively; adjust if needed for your hardware
+    return (current > 8.0) && (Math.abs(velocity) < 5.0);
+  }
+
+  /** Stop the motor and set the hood encoder position to zero. */
+  public void setHoodZero() {
+    hoodMotor.set(0.0);
+    // Reset encoder position (rotations) to zero at the mechanical stop
+    hoodMotor.getEncoder().setPosition(0.0);
+    // Also reset controller setpoint to 0 to avoid unwanted motion after zeroing
+    hoodController.setSetpoint(0.0, ControlType.kPosition, ClosedLoopSlot.kSlot0);
   }
 
   @AutoLogOutput(key = "Shooter/hoodAngle")
