@@ -132,7 +132,7 @@ public class IntakeModule extends SubsystemBase {
         ControlType.kMAXMotionPositionControl,
         ClosedLoopSlot.kSlot0);
     rollerController.setSetpoint(
-        Constants.Intake.kIntakeRollerSpeed,
+        rollerSpeed.get(),
         ControlType.kMAXMotionVelocityControl,
         ClosedLoopSlot.kSlot0);
   }
