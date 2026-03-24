@@ -101,6 +101,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   SparkFlexConfig flywheelConfig = new SparkFlexConfig();
     flywheelConfig
+        .smartCurrentLimit(20, 40, 50)
         .closedLoop
         .p(0.0001)
         .i(0)

@@ -213,23 +213,6 @@
                 }
               },
               {
-                "title": "IntakeMultiplier",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Number Slider",
-                "properties": {
-                  "topic": "Drive/IntakeMultiplier",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "min_value": 0.0,
-                  "max_value": 1.0,
-                  "divisions": 5,
-                  "update_continuously": false
-                }
-              },
-              {
                 "title": "NormalMultiplier",
                 "x": 0.0,
                 "y": 0.0,
@@ -255,6 +238,23 @@
                 "type": "Number Slider",
                 "properties": {
                   "topic": "Drive/SlowMultiplier",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 1.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              },
+              {
+                "title": "IntakeMultiplier",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "Drive/IntakeMultiplier",
                   "period": 0.06,
                   "data_type": "double",
                   "min_value": 0.0,
@@ -288,7 +288,7 @@
                   "period": 0.06,
                   "data_type": "double",
                   "min_value": 0.0,
-                  "max_value": 5.0,
+                  "max_value": 1.0,
                   "divisions": 5,
                   "update_continuously": false
                 }
@@ -305,15 +305,102 @@
                   "period": 0.06,
                   "data_type": "double",
                   "min_value": 0.0,
-                  "max_value": 1000.0,
+                  "max_value": 10.0,
                   "divisions": 5,
                   "update_continuously": false
                 }
               }
             ]
+          },
+          {
+            "title": "RebuiltField",
+            "x": 0.0,
+            "y": 512.0,
+            "width": 576.0,
+            "height": 320.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "FarAngle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "RebuiltField/FarAngle",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "FarSpeed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "RebuiltField/FarSpeed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "NearAngle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "RebuiltField/NearAngle",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "NearSpeed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "RebuiltField/NearSpeed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
           }
         ],
-        "containers": []
+        "containers": [
+          {
+            "title": "RollerSpeed",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 576.0,
+            "height": 128.0,
+            "type": "Number Slider",
+            "properties": {
+              "topic": "Intake/RollerSpeed",
+              "period": 0.06,
+              "data_type": "double",
+              "min_value": 3500.0,
+              "max_value": 6000.0,
+              "divisions": 5,
+              "update_continuously": true
+            }
+          }
+        ]
       }
     },
     {
@@ -425,6 +512,74 @@
               "time_displayed": 15.0,
               "color": 4285333716,
               "line_width": 2.0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Simulation",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Climber Position",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 704.0,
+            "type": "Number Bar",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Climber/Position",
+              "period": 0.06,
+              "data_type": "double",
+              "min_value": -100.0,
+              "max_value": 1000.0,
+              "divisions": 5,
+              "inverted": false,
+              "orientation": "vertical"
+            }
+          },
+          {
+            "title": "FlywheelVelocityRPM",
+            "x": 192.0,
+            "y": 0.0,
+            "width": 320.0,
+            "height": 320.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Shooter/FlywheelVelocityRPM",
+              "period": 0.06,
+              "data_type": "double",
+              "start_angle": -140.0,
+              "end_angle": 140.0,
+              "min_value": 0.0,
+              "max_value": 100.0,
+              "number_of_labels": 8,
+              "wrap_value": false,
+              "show_pointer": true,
+              "show_ticks": true
+            }
+          },
+          {
+            "title": "hoodAngle",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 320.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Shooter/hoodAngle",
+              "period": 0.06,
+              "data_type": "double",
+              "start_angle": -140.0,
+              "end_angle": 140.0,
+              "min_value": 0.0,
+              "max_value": 35.0,
+              "number_of_labels": 8,
+              "wrap_value": false,
+              "show_pointer": true,
+              "show_ticks": true
             }
           }
         ]
