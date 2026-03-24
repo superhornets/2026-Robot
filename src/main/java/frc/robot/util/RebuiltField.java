@@ -55,11 +55,11 @@ public class RebuiltField {
     public static ShooterState shooterStateForHub() {
         // minimum shooting distance
         double minDist = 1.32;
-        ShooterState min = new ShooterState(37, 0);
+        ShooterState min = new ShooterState(40, 0);
 
         // Maximum shooting distance
         double maxDist = 5.21;
-        ShooterState max = new ShooterState(49, 21);
+        ShooterState max = new ShooterState(55, 21);
 
         // get the distance from the hub
         double distance = getTranslationToHub2D().getNorm();
