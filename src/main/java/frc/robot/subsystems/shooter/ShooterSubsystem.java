@@ -41,6 +41,7 @@ import frc.robot.Robot;
 import frc.robot.Constants.Shooter;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -60,6 +61,9 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkClosedLoopController agitatorController;
   private SparkFlex feederMotor;
   private SparkClosedLoopController feederController;
+
+  private LoggedNetworkNumber flywheelP = new LoggedNetworkNumber("Shooter/FlywheelP", 0.0001);
+  private LoggedNetworkNumber flywheelD = new LoggedNetworkNumber("Shooter/FlywheelD", 0.0002);
 
   // SIMULATION OBJECTS
   private SparkMaxSim hoodMotorSim;
@@ -81,6 +85,7 @@ public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem(ShooterStateStore store) {
     this.stateStore = store;
+
     // Setup Motors and Controllers
     hoodMotor = new SparkMax(Constants.Shooter.CAN.kHood, MotorType.kBrushless);
 
@@ -99,27 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     hoodController = hoodMotor.getClosedLoopController();
 
-  SparkFlexConfig flywheelConfig = new SparkFlexConfig();
-    flywheelConfig
-        .smartCurrentLimit(40, 40, 5000)
-        .closedLoop
-        .p(0.0001)
-        .i(0)
-        .d(0.0002)
-        .maxMotion
-        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
-    flywheelConfig.encoder.velocityConversionFactor(1.0);
-
-
-    flywheelMotorRight = new SparkFlex(Constants.Shooter.CAN.kFlywheelRight, MotorType.kBrushless);
-    flywheelMotorRight.configure(
-        flywheelConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    flywheelControllerRight = flywheelMotorRight.getClosedLoopController();
-
-    flywheelMotorLeft = new SparkFlex(Constants.Shooter.CAN.kFlywheelLeft, MotorType.kBrushless);
-    flywheelMotorLeft.configure(
-        flywheelConfig.inverted(true), ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    flywheelControllerLeft = flywheelMotorLeft.getClosedLoopController();
+    configureFlywheelMotors();
 
     feederMotor = new SparkFlex(Constants.Shooter.CAN.kFeeder, MotorType.kBrushless);
     SparkFlexConfig feederConfig = new SparkFlexConfig();
@@ -205,6 +190,31 @@ public class ShooterSubsystem extends SubsystemBase {
   public void setHoodAngle(double angleRotations) {
     double value = Math.max(Constants.Shooter.kHoodMinAngle, Math.min(Constants.Shooter.kHoodMaxAngle, angleRotations));
     hoodController.setSetpoint(value, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+  }
+
+
+  private void configureFlywheelMotors() {
+  SparkFlexConfig flywheelConfig = new SparkFlexConfig();
+    flywheelConfig
+        .smartCurrentLimit(40, 40, 5000)
+        .closedLoop
+        .p(flywheelP.get())
+        .i(0)
+        .d(flywheelD.get())
+        .maxMotion
+        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
+    flywheelConfig.encoder.velocityConversionFactor(1.0);
+
+
+    flywheelMotorRight = new SparkFlex(Constants.Shooter.CAN.kFlywheelRight, MotorType.kBrushless);
+    flywheelMotorRight.configure(
+        flywheelConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    flywheelControllerRight = flywheelMotorRight.getClosedLoopController();
+
+    flywheelMotorLeft = new SparkFlex(Constants.Shooter.CAN.kFlywheelLeft, MotorType.kBrushless);
+    flywheelMotorLeft.configure(
+        flywheelConfig.inverted(true), ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    flywheelControllerLeft = flywheelMotorLeft.getClosedLoopController();
   }
 
   public void startFlywheel(double speedRPM) {

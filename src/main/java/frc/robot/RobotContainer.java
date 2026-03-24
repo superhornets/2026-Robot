@@ -223,14 +223,14 @@ public class RobotContainer {
         driverController.leftBumper()
         .whileTrue(
         Commands.parallel(
-        DriveCommands.intakeCommand(speedSupplier),
+        // DriveCommands.intakeCommand(speedSupplier),
         IntakeCommands.lowerLeft(intake)
         )
         );
         driverController.rightBumper()
         .whileTrue(
         Commands.parallel(
-        DriveCommands.intakeCommand(speedSupplier),
+        // DriveCommands.intakeCommand(speedSupplier),
         IntakeCommands.lowerRight(intake)
         )
         );

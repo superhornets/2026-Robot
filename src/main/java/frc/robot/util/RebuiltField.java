@@ -29,7 +29,7 @@ public class RebuiltField {
     public static LoggedNetworkNumber nearSpeed = new LoggedNetworkNumber("RebuiltField/NearSpeed", 40);
     public static LoggedNetworkNumber farSpeed = new LoggedNetworkNumber("RebuiltField/FarSpeed", 55);
     public static LoggedNetworkNumber nearAngle = new LoggedNetworkNumber("RebuiltField/NearAngle", 0);
-    public static LoggedNetworkNumber farAngle = new LoggedNetworkNumber("RebuiltField/FarAngle", 21);
+    public static LoggedNetworkNumber farAngle = new LoggedNetworkNumber("RebuiltField/FarAngle", 25);
 
     public static void setGlobalFlippedSupplier(BooleanSupplier newFlippedSupplier) {
         isFlippedSupplier = newFlippedSupplier;
