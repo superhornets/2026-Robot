@@ -7,6 +7,8 @@ package frc.robot.util;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -23,6 +25,11 @@ public class RebuiltField {
     
     private static BooleanSupplier isFlippedSupplier = () -> { return false; };
     private static Supplier<Pose2d> robotPoseSupplier = () -> { return new Pose2d(); };
+
+    public static LoggedNetworkNumber nearSpeed = new LoggedNetworkNumber("RebuiltField/NearSpeed", 40);
+    public static LoggedNetworkNumber farSpeed = new LoggedNetworkNumber("RebuiltField/FarSpeed", 55);
+    public static LoggedNetworkNumber nearAngle = new LoggedNetworkNumber("RebuiltField/NearAngle", 0);
+    public static LoggedNetworkNumber farAngle = new LoggedNetworkNumber("RebuiltField/FarAngle", 21);
 
     public static void setGlobalFlippedSupplier(BooleanSupplier newFlippedSupplier) {
         isFlippedSupplier = newFlippedSupplier;
@@ -55,12 +62,11 @@ public class RebuiltField {
     public static ShooterState shooterStateForHub() {
         // minimum shooting distance
         double minDist = 1.32;
-        ShooterState min = new ShooterState(40, 0);
+        ShooterState min = new ShooterState(nearSpeed.get(), nearAngle.get());
 
         // Maximum shooting distance
         double maxDist = 5.21;
-        ShooterState max = new ShooterState(55, 21);
-
+        ShooterState max = new ShooterState(farSpeed.get(), farAngle.get());
         // get the distance from the hub
         double distance = getTranslationToHub2D().getNorm();
         // calculate the ratio between our min and max that we are at

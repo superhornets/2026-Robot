@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class IntakeModule extends SubsystemBase {
   // HARDWARE OBJECTS
@@ -45,6 +46,8 @@ public class IntakeModule extends SubsystemBase {
 
   // Logging scope/prefix for this module (e.g. "Intake.Left")
   private final String logScope;
+
+  private LoggedNetworkNumber rollerSpeed = new LoggedNetworkNumber("Intake/RollerSpeed", Constants.Intake.kIntakeRollerSpeed);
 
   /** Creates a new IntakeModule. */
   public IntakeModule(int armID, int rollerID, boolean inverted, String logScope) {
@@ -82,7 +85,7 @@ public class IntakeModule extends SubsystemBase {
         .closedLoop
         .p(0.0005)
         .i(0)
-        .d(0)
+        .d(0.001)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     rollerMotor.configure(
