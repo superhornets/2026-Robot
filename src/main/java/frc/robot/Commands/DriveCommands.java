@@ -158,6 +158,7 @@ public class DriveCommands {
             ANGLE_KD,
             new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
+    angleController.setTolerance(Units.degreesToRadians(0.5));
 
     // Construct command
     return Commands.run(
@@ -197,6 +198,73 @@ public class DriveCommands {
 
         // Reset PID controller when command starts
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+  }
+
+
+  /**
+   * Field relative drive command using joystick for linear control and PID for angular control.
+   * Possible use cases include snapping to an angle, aiming at a vision target, or controlling
+   * absolute rotation with a joystick.
+   */
+  public static Command autonomousAlignToCommand(
+      Drive drive,
+      Supplier<Rotation2d> rotationSupplier,
+      DoubleSupplier speedMultiplierSupplier) {
+
+    // Create PID controller
+    ProfiledPIDController angleController =
+        new ProfiledPIDController(
+            ANGLE_KP,
+            0.0,
+            ANGLE_KD,
+            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
+    angleController.setTolerance(Units.degreesToRadians(0.5));
+
+    Command turnCommand = Commands.run(
+            () -> {
+              // Get linear velocity
+              Translation2d linearVelocity = 
+                  getLinearVelocityFromJoysticks(0,0);
+
+              // Calculate angular speed
+              double omega =
+                  angleController.calculate(
+                      drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
+
+              double speedMultiplier = speedMultiplierSupplier.getAsDouble();
+
+              // Convert to field relative speeds & send command
+              ChassisSpeeds speeds =
+                  new ChassisSpeeds(
+                      linearVelocity.getX()
+                          * drive.getMaxLinearSpeedMetersPerSec()
+                          * speedMultiplier,
+                      linearVelocity.getY()
+                          * drive.getMaxLinearSpeedMetersPerSec()
+                          * speedMultiplier,
+                      omega * drive.getMaxAngularSpeedRadPerSec() * speedMultiplier);
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds,
+                      isFlipped
+                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                          : drive.getRotation()));
+            },
+            drive)
+        // Reset PID controller when command starts
+        .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+
+    Command waitUntilSetpointCommand = Commands.waitUntil(angleController::atSetpoint);
+
+    // Construct command
+    return Commands.race(
+        turnCommand,
+        waitUntilSetpointCommand
+    );
   }
 
   /**
@@ -329,6 +397,54 @@ public class DriveCommands {
                               + formatter.format(Units.metersToInches(wheelRadius))
                               + " inches");
                     })));
+  }
+
+  /**
+   * Shake the robot: repeated short motions forward, back, left, right.
+   *
+   * @param drive Drive subsystem
+   * @param linearFraction fraction of max linear speed for forward/back (0..1)
+   * @param lateralFraction fraction of max linear speed for left/right (0..1)
+   * @param pulseSec duration of each pulse in seconds
+   * @param cycles number of shake cycles (each cycle does forward/back/left/right)
+   */
+  public static Command shake(
+      Drive drive, double linearFraction, double lateralFraction, double pulseSec, int cycles) {
+    // Build a dynamic sequence of run-with-timeout commands
+    java.util.List<Command> seq = new java.util.ArrayList<>();
+
+    double max = drive.getMaxLinearSpeedMetersPerSec();
+    double fwd = linearFraction * max;
+    double lat = lateralFraction * max;
+
+    for (int i = 0; i < cycles; i++) {
+      // forward
+      seq.add(
+          Commands.run(() -> drive.runVelocity(new ChassisSpeeds(fwd, 0.0, 0.0)), drive)
+              .withTimeout(pulseSec));
+      // back
+      seq.add(
+          Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-fwd, 0.0, 0.0)), drive)
+              .withTimeout(pulseSec));
+      // left
+      seq.add(
+          Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, lat, 0.0)), drive)
+              .withTimeout(pulseSec));
+      // right
+      seq.add(
+          Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, -lat, 0.0)), drive)
+              .withTimeout(pulseSec));
+    }
+
+    // stop at the end
+    seq.add(Commands.runOnce(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 0.0)), drive));
+
+    return Commands.sequence(seq.toArray(new Command[0]));
+  }
+
+  /** Convenience shake command with sane defaults (0.5 fraction, 0.2s pulses, 3 cycles). */
+  public static Command shake(Drive drive) {
+    return shake(drive, 0.5, 0.5, 0.20, 3);
   }
 
   private static class WheelRadiusCharacterizationState {

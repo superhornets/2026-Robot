@@ -48,6 +48,10 @@ public class ShooterCommands {
     );
   }
 
+  public static Command waitForReady(ShooterSubsystem shooter) {
+    return Commands.waitUntil(() -> shooter.getReady());
+  }
+
   public static Command shoot(ShooterSubsystem shooter) {
     return Commands.runEnd(
         () -> {
@@ -135,5 +139,15 @@ public class ShooterCommands {
         Commands.waitUntil(() -> shooter.isHoodStalled()),
         // Stop and set encoder zero
         Commands.runOnce(() -> shooter.setHoodZero(), shooter));
+  }
+
+  public static Command autoShoot(ShooterSubsystem shooter, ShooterStateStore state) {
+    return Commands.sequence(
+      Commands.runOnce(() -> {
+        state.set(RebuiltField.shooterStateForHub());
+      }),
+      Commands.waitUntil(() -> shooter.getReady()),
+      Commands.runOnce(() -> shooter.startFeeder())
+    );
   }
 }

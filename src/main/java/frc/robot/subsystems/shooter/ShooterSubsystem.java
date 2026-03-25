@@ -192,28 +192,29 @@ public class ShooterSubsystem extends SubsystemBase {
     hoodController.setSetpoint(value, ControlType.kPosition, ClosedLoopSlot.kSlot0);
   }
 
-
   private void configureFlywheelMotors() {
   SparkFlexConfig flywheelConfig = new SparkFlexConfig();
     flywheelConfig
-        .smartCurrentLimit(40, 40, 5000)
+        .smartCurrentLimit(20, 40, 1000)
         .closedLoop
         .p(flywheelP.get())
         .i(0)
         .d(flywheelD.get())
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
-    flywheelConfig.encoder.velocityConversionFactor(1.0);
+    flywheelConfig.encoder
+      .positionConversionFactor(1.0)
+      .velocityConversionFactor(1.0);
 
 
     flywheelMotorRight = new SparkFlex(Constants.Shooter.CAN.kFlywheelRight, MotorType.kBrushless);
     flywheelMotorRight.configure(
-        flywheelConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     flywheelControllerRight = flywheelMotorRight.getClosedLoopController();
 
     flywheelMotorLeft = new SparkFlex(Constants.Shooter.CAN.kFlywheelLeft, MotorType.kBrushless);
     flywheelMotorLeft.configure(
-        flywheelConfig.inverted(true), ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        flywheelConfig.inverted(true), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     flywheelControllerLeft = flywheelMotorLeft.getClosedLoopController();
   }
 
@@ -316,6 +317,11 @@ public class ShooterSubsystem extends SubsystemBase {
   @AutoLogOutput(key = "Shooter/isAtSpeed")
   public boolean getIsAtSpeed() {
     return flywheelControllerRight.isAtSetpoint();
+  }
+
+  @AutoLogOutput(key = "Shooter/Ready")
+  public boolean getReady() {
+    return getIsAtSpeed() && hoodController.isAtSetpoint();
   }
 
   public void simulationPeriodic() {

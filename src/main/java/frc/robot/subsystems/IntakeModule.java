@@ -47,45 +47,29 @@ public class IntakeModule extends SubsystemBase {
   // Logging scope/prefix for this module (e.g. "Intake.Left")
   private final String logScope;
 
-  private LoggedNetworkNumber rollerSpeed = new LoggedNetworkNumber("Intake/RollerSpeed", Constants.Intake.kIntakeRollerSpeed);
+  private boolean inverted;
+  private LoggedNetworkNumber rollerSpeed = new LoggedNetworkNumber("/Tuning/ntake/RollerSpeed", Constants.Intake.kIntakeRollerSpeed);
+  private LoggedNetworkNumber rollerP = new LoggedNetworkNumber("/Tuning/ntake/RollerP", 0.0005);
+  private LoggedNetworkNumber rollerD = new LoggedNetworkNumber("/Tuning/ntake/RollerD", 0.001);
 
   /** Creates a new IntakeModule. */
   public IntakeModule(int armID, int rollerID, boolean inverted, String logScope) {
     this.logScope = logScope;
+    this.inverted = inverted;
 
     // Setup Motors and Controllers
     armMotor = new SparkMax(armID, MotorType.kBrushless);
 
-    SparkMaxConfig armConfig = new SparkMaxConfig();
-    armConfig
-        .idleMode(IdleMode.kBrake)
-        .inverted(inverted)
-        .smartCurrentLimit(20)
-        .closedLoop
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .p(8)
-        .i(0)
-        .d(0.1)
-        .positionWrappingEnabled(false)
-        .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0)
-        .maxMotion
-        .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-        .allowedProfileError(Units.degreesToRotations(0.2))
-        .cruiseVelocity(120)
-        .maxAcceleration(6_000.0, ClosedLoopSlot.kSlot0);
-
-    armMotor.configure(
-        armConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    armController = armMotor.getClosedLoopController();
+    configureRoller();
 
     rollerMotor = new SparkMax(rollerID, MotorType.kBrushless);
     SparkMaxConfig rollerConfig = new SparkMaxConfig();
     rollerConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(0.0005)
+        .p(rollerP.get())
         .i(0)
-        .d(0.001)
+        .d(rollerD.get())
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     rollerMotor.configure(
@@ -125,8 +109,35 @@ public class IntakeModule extends SubsystemBase {
     // robot. The only thing we need to do is update the simulation objects in simulationPeriodic().
   }
 
+  private void configureRoller() {
+    SparkMaxConfig armConfig = new SparkMaxConfig();
+    armConfig
+        .idleMode(IdleMode.kBrake)
+        .inverted(inverted)
+        .smartCurrentLimit(20)
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        .p(8)
+        .i(0)
+        .d(0.1)
+        .positionWrappingEnabled(false)
+        .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0)
+        .maxMotion
+        .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
+        .allowedProfileError(Units.degreesToRotations(0.2))
+        .cruiseVelocity(120)
+        .maxAcceleration(6_000.0, ClosedLoopSlot.kSlot0);
+
+    armMotor.configure(
+        armConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    armController = armMotor.getClosedLoopController();
+  }
+
   /** Lowers the arm and starts the roller at the intake speed. */
   public void lower() {
+    // ensure we have the latest roller PID values from the dashboard before lowering and starting the roller
+    configureRoller();
+
     armController.setSetpoint(
         Constants.Intake.kLoweredAngle,
         ControlType.kMAXMotionPositionControl,
