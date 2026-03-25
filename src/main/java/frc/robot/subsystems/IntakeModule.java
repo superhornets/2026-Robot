@@ -49,8 +49,8 @@ public class IntakeModule extends SubsystemBase {
 
   private boolean inverted;
   private LoggedNetworkNumber rollerSpeed = new LoggedNetworkNumber("/Tuning/ntake/RollerSpeed", Constants.Intake.kIntakeRollerSpeed);
-  private LoggedNetworkNumber rollerP = new LoggedNetworkNumber("/Tuning/ntake/RollerP", 0.0005);
-  private LoggedNetworkNumber rollerD = new LoggedNetworkNumber("/Tuning/ntake/RollerD", 0.001);
+  private LoggedNetworkNumber rollerP = new LoggedNetworkNumber("/Tuning/ntake/RollerP", 0.0015);
+  private LoggedNetworkNumber rollerD = new LoggedNetworkNumber("/Tuning/ntake/RollerD", 0.0001);
 
   /** Creates a new IntakeModule. */
   public IntakeModule(int armID, int rollerID, boolean inverted, String logScope) {
@@ -102,11 +102,6 @@ public class IntakeModule extends SubsystemBase {
                 Constants.Intake.SIM.kRollerMOI,
                 Constants.Intake.SIM.kRollerGearRatio),
             rollerGearboxSim);
-  }
-
-  public void periodic() {
-    // Nothing to do here, as the subsystem is fully closed-loop in simulation and on the real
-    // robot. The only thing we need to do is update the simulation objects in simulationPeriodic().
   }
 
   private void configureRoller() {

@@ -23,7 +23,9 @@ import frc.robot.subsystems.shooter.ShooterState;
 /** Add your docs here. */
 public class RebuiltField {
     
-    private static BooleanSupplier isFlippedSupplier = () -> { return false; };
+    private static BooleanSupplier isFlippedSupplier = () -> { 
+        return false; 
+    };
     private static Supplier<Pose2d> robotPoseSupplier = () -> { return new Pose2d(); };
 
     public static LoggedNetworkNumber nearSpeed = new LoggedNetworkNumber("RebuiltField/NearSpeed", 3500);

@@ -29,12 +29,16 @@ public class PathCommands {
   }
 
   public static Command goToHubCommand() {
+    return goToCoordinate(() -> 2, () -> 4, () -> 0);
+  }
 
-    Pose2d targetPose = new Pose2d(3, 4, Rotation2d.fromDegrees(0));
+  public static Command goToCoordinate(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier angleSupplier) {
 
+    Pose2d targetPose = new Pose2d(xSupplier.getAsDouble(), ySupplier.getAsDouble(), Rotation2d.fromDegrees(angleSupplier.getAsDouble()));
+    
     // Create the constraints to use while pathfinding
     PathConstraints constraints =
-        new PathConstraints(17.0, 8.0, Units.degreesToRadians(900), Units.degreesToRadians(720));
+        new PathConstraints(35.0, 14.0, Units.degreesToRadians(900), Units.degreesToRadians(720));
 
     Command pathfindingCommand = AutoBuilder.pathfindToPoseFlipped(targetPose, constraints, 0.0);
     return pathfindingCommand;

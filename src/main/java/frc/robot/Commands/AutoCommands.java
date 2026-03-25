@@ -15,21 +15,26 @@ import frc.robot.util.RebuiltField;
 
 /** Add your docs here. */
 public class AutoCommands {
-    public static Command basicAuto(Drive drive, ShooterStateStore shooterStateStore, ShooterSubsystem shooterSubsystem) {
+    
+    /**
+     * A basic autonomous routine that drives to a specified y coordinate, aligns to the hub, and shoots for 15 seconds. We use a command like this instead of a preset path so that we can easily adjust our position on the field without having to regenerate paths
+     * @param y the y coordinate to drive to. We use this instead of a preset command so that we can easily adjust our position on the field without having to regenerate paths
+     * @param angle the angle to drive to. We use this instead of a preset command so that we can easily adjust our position on the field without having to regenerate paths
+     */
+    public static Command basicAuto(double y, double angle, Drive drive, ShooterStateStore shooterStateStore, ShooterSubsystem shooterSubsystem) {
         return Commands.sequence(
-            PathCommands.goToHubCommand(),
-            Commands.waitSeconds(3),
-            DriveCommands.autonomousAlignToCommand(
-                drive, 
-                () -> RebuiltField.getTranslationToHub2D().getAngle(), 
-                () -> Constants.DriveConstants.kFastModeMultiplier),
-            ShooterCommands.autoHub(shooterStateStore),
-            ShooterCommands.waitForReady(shooterSubsystem),
+            PathCommands.goToCoordinate(() -> 2, () -> y, () -> angle),
+            Commands.parallel(
+                DriveCommands.autonomousAlignToCommand(
+                    drive, 
+                    () -> RebuiltField.getTranslationToHub2D().getAngle(), 
+                    () -> Constants.DriveConstants.kFastModeMultiplier),
+                ShooterCommands.autoHub(shooterStateStore)
+            ),
             Commands.parallel(
                 ShooterCommands.shoot(shooterSubsystem),
-                DriveCommands.shake(drive)
-            ),
-            Commands.waitSeconds(15)
+                DriveCommands.shake(drive, 0.5, 0.0, 0.2, 50)
+            )
         );
     }
 }

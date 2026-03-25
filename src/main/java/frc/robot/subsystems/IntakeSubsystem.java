@@ -29,9 +29,6 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.setDefaultBoolean("LowerRight", false);
   }
 
-  @Override
-  public void periodic() {}
-
   public void raiseAll() {
     leftIntake.raise();
     rightIntake.raise();

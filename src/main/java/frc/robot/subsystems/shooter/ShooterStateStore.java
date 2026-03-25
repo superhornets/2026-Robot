@@ -13,7 +13,6 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 /** Add your docs here. */
 public class ShooterStateStore implements Supplier<ShooterState> {
 
-    @AutoLogOutput(key = "Shooter/State")
     private ShooterState current = ShooterState.zero;
 
     private ShooterState last = ShooterState.zero;
