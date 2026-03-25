@@ -238,8 +238,6 @@ public class RobotContainer {
         IntakeCommands.lowerRight(intake)
         )
         );
-        
-        driverController.rightTrigger().whileTrue( DriveCommands.shake(drive));
 
         driverController.start().onTrue(PathCommands.goToHubCommand());
 
@@ -252,14 +250,16 @@ public class RobotContainer {
         () -> -driverController.getLeftX(),
         () -> false));
 
-        driverController
-        .a()
-        .whileTrue(
-        PathCommands.ClosestTrench(
-        drive,
-        () -> -driverController.getLeftY(),
-        () -> -driverController.getLeftX(),
-        () -> true));
+        // driverController
+        // .a()
+        // .whileTrue(
+        // PathCommands.ClosestTrench(
+        // drive,
+        // () -> -driverController.getLeftY(),
+        // () -> -driverController.getLeftX(),
+        // () -> true));
+
+        driverController.a().whileTrue(DriveCommands.shake(drive));
         
         operatorController.y().whileTrue(ShooterCommands.autoHub(shooterState));
         operatorController.b().whileTrue(ShooterCommands.manual(shooterState, operatorController::getLeftY, operatorController::getLeftX));
