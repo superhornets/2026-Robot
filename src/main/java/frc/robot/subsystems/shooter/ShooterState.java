@@ -12,7 +12,7 @@ public class ShooterState implements Interpolatable<ShooterState> {
 
     public static final ShooterState zero = new ShooterState(0, 0);
     public static final ShooterState min = new ShooterState(0, 0);
-    public static final ShooterState max = new ShooterState(80, 30);
+    public static final ShooterState max = new ShooterState(5000, 30);
 
     public double speed = 0.0;
     public double angle = 0.0;
