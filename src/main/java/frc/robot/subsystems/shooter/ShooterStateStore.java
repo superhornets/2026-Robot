@@ -19,7 +19,7 @@ public class ShooterStateStore implements Supplier<ShooterState> {
     private ShooterState last = ShooterState.zero;
 
     private LoggedNetworkNumber hoodAdjustment = new LoggedNetworkNumber("Shooter/HoodAdjustment", .6);
-    private LoggedNetworkNumber speedAdjustment = new LoggedNetworkNumber("Shooter/SpeedAdjustment", 1);
+    private LoggedNetworkNumber speedAdjustment = new LoggedNetworkNumber("Shooter/SpeedAdjustment", 100);
 
     public ShooterState get() {
         return current;
