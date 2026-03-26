@@ -86,10 +86,10 @@ public final class Constants {
       public static final int kFlywheelRight = 50;
       public static final int kFeeder = 51;
       public static final int kAgitator = 52;
-      public static final int kSpindexer = 54;
+      public static final int kSpindexer = 59;
       public static final int kHood = 53;
     }
-  }
+  }5
 
   public static final class Intake {
     public static final class SIM {
