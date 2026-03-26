@@ -64,7 +64,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkFlex feederMotor;
   private SparkClosedLoopController feederController;
 
-  private LoggedNetworkNumber flywheelP = new LoggedNetworkNumber("Shooter/FlywheelP", 0.001);
+  private LoggedNetworkNumber flywheelP = new LoggedNetworkNumber("Shooter/FlywheelP", 0.0015);
   private LoggedNetworkNumber flywheelD = new LoggedNetworkNumber("Shooter/FlywheelD", 0.0002);
 
   // SIMULATION OBJECTS
@@ -215,7 +215,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private void configureFlywheelMotors() {
   SparkFlexConfig flywheelConfig = new SparkFlexConfig();
     flywheelConfig
-        .smartCurrentLimit(20, 40, 1000)
+        .smartCurrentLimit(40, 40, 5000)
         .closedLoop
         .p(flywheelP.get())
         .i(0)
