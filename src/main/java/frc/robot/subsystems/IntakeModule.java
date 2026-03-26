@@ -49,7 +49,7 @@ public class IntakeModule extends SubsystemBase {
 
   private boolean inverted;
   private LoggedNetworkNumber rollerSpeed = new LoggedNetworkNumber("/Tuning/ntake/RollerSpeed", Constants.Intake.kIntakeRollerSpeed);
-  private LoggedNetworkNumber rollerP = new LoggedNetworkNumber("/Tuning/ntake/RollerP", 0.0015);
+  private LoggedNetworkNumber rollerP = new LoggedNetworkNumber("/Tuning/ntake/RollerP", 0.00025);
   private LoggedNetworkNumber rollerD = new LoggedNetworkNumber("/Tuning/ntake/RollerD", 0.0001);
 
   /** Creates a new IntakeModule. */

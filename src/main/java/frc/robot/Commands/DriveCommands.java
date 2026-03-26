@@ -219,7 +219,7 @@ public class DriveCommands {
     ANGLE_KD,
     new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
-    angleController.setTolerance(Units.degreesToRadians(0.5));
+    angleController.setTolerance(Units.degreesToRadians(1.5));
     
     Command turnCommand = Commands.run(
     () -> {
