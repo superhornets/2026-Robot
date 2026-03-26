@@ -15,6 +15,8 @@ import java.util.function.BooleanSupplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -85,70 +87,71 @@ public class RobotContainer {
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        SmartDashboard.putNumber("Shooter/Speed",55);
-        SmartDashboard.putNumber("Shooter/HoodAngle",0);
-        shooter = new ShooterSubsystem(shooterState);
-        intake = new IntakeSubsystem();
+    	shooter = new ShooterSubsystem(shooterState);
+    	intake = new IntakeSubsystem();
         climber = new ClimberSubsystem();
-        switch (Constants.currentMode) {
-            case REAL:
-            // Real robot, instantiate hardware IO implementations
-            // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
-            // a CANcoder
-            drive =
-            new Drive(
-            new GyroIOPigeon2(),
-            new ModuleIOTalonFX(TunerConstants.FrontLeft),
-            new ModuleIOTalonFX(TunerConstants.FrontRight),
-            new ModuleIOTalonFX(TunerConstants.BackLeft),
-            new ModuleIOTalonFX(TunerConstants.BackRight));
-            
-            vision =
-            new Vision(
-            drive::addVisionMeasurement,
-            new VisionIOPhotonVision(camera0Name, robotToCamera0),
-            new VisionIOPhotonVision(camera1Name, robotToCamera1));
-            break;
-            
-            case SIM:
-            // Sim robot, instantiate physics sim IO implementations
-            drive =
-            new Drive(
-            new GyroIO() {},
-            new ModuleIOSim(TunerConstants.FrontLeft),
-            new ModuleIOSim(TunerConstants.FrontRight),
-            new ModuleIOSim(TunerConstants.BackLeft),
-            new ModuleIOSim(TunerConstants.BackRight));
-            
-            vision =
-            new Vision(
-            drive::addVisionMeasurement,
-            new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
-            new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
-            
-            break;
-            
-            default:
-            // Replayed robot, disable IO implementations
-            drive =
-            new Drive(
-            new GyroIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {});
-            
-            vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-            break;
-        }
-        
-        RebuiltField.setGlobalFlippedSupplier(new FlippedSupplier());
-        RebuiltField.setGlobalRobotPoseSupplier(() -> drive.getPose());
-        
+    	switch (Constants.currentMode) {
+       case REAL:
+         // Real robot, instantiate hardware IO implementations
+         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
+         // a CANcoder
+         drive =
+             new Drive(
+                 new GyroIOPigeon2(),
+                 new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                 new ModuleIOTalonFX(TunerConstants.FrontRight),
+                 new ModuleIOTalonFX(TunerConstants.BackLeft),
+                 new ModuleIOTalonFX(TunerConstants.BackRight));
+ 
+         vision =
+             new Vision(
+                 drive::addVisionMeasurement,
+                 new VisionIOPhotonVision(camera0Name, robotToCamera0),
+                 new VisionIOPhotonVision(camera1Name, robotToCamera1));
+         break;
+ 
+       case SIM:
+         // Sim robot, instantiate physics sim IO implementations
+         drive =
+             new Drive(
+                 new GyroIO() {},
+                 new ModuleIOSim(TunerConstants.FrontLeft),
+                 new ModuleIOSim(TunerConstants.FrontRight),
+                 new ModuleIOSim(TunerConstants.BackLeft),
+                 new ModuleIOSim(TunerConstants.BackRight));
+ 
+         vision =
+             new Vision(
+                 drive::addVisionMeasurement,
+                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
+                 new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
+ 
+         break;
+ 
+       default:
+         // Replayed robot, disable IO implementations
+         drive =
+             new Drive(
+                 new GyroIO() {},
+                 new ModuleIO() {},
+                 new ModuleIO() {},
+                 new ModuleIO() {},
+                 new ModuleIO() {});
+ 
+         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+         break;
+     }
+ 
+     // Provide RebuiltField with live suppliers so AutoBuilder can flip paths and compute hub targeting.
+     RebuiltField.setGlobalFlippedSupplier(new FlippedSupplier());
+     RebuiltField.setGlobalRobotPoseSupplier(drive::getPose);
+     
         // Set up auto routines
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
         
-        autoChooser.addOption("Basic Auto", AutoCommands.basicAuto(drive, shooterState, shooter));
+        autoChooser.addOption("Left", AutoCommands.basicAuto(6, -45, drive, shooterState, shooter));
+        autoChooser.addOption("Middle", AutoCommands.basicAuto(4, 0 , drive, shooterState, shooter));
+        autoChooser.addOption("Right", AutoCommands.basicAuto(2, 45, drive, shooterState, shooter));
 
         // // Set up SysId routines
         // autoChooser.addOption(

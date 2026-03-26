@@ -70,7 +70,9 @@ public class ShooterSubsystem extends SubsystemBase {
   private DCMotor hoodGearboxSim;
   private ElevatorSim hoodSim;
   private SparkRelativeEncoderSim hoodEncoderSim;
-  private SparkFlexSim flywheelMotorSim;
+  // Per-motor sims for the two flywheel motors (share same gearbox)
+  private SparkFlexSim flywheelRightMotorSim;
+  private SparkFlexSim flywheelLeftMotorSim;
   private FlywheelSim flywheelSim;
   private DCMotor flywheelGearboxSim;
   // Feeder simulation (matches flywheel)
@@ -144,7 +146,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // Flywheel sim
     flywheelGearboxSim = DCMotor.getNeoVortex(2);
-    flywheelMotorSim = new SparkFlexSim(flywheelMotorRight, flywheelGearboxSim);
+    // Create a SparkFlexSim for each physical motor. They drive the same gearbox in the FlywheelSim.
+    flywheelRightMotorSim = new SparkFlexSim(flywheelMotorRight, flywheelGearboxSim);
+    flywheelLeftMotorSim = new SparkFlexSim(flywheelMotorLeft, flywheelGearboxSim);
     flywheelSim =
         new FlywheelSim(
             LinearSystemId.createFlywheelSystem(
@@ -160,7 +164,7 @@ public class ShooterSubsystem extends SubsystemBase {
         new FlywheelSim(
             LinearSystemId.createFlywheelSystem(
                 feederGearboxSim,
-                Constants.Shooter.SIM.kFlywheelMOI,
+                Constants.Shooter.SIM.kFlywheelMOI * 0.3,
                 Constants.Shooter.SIM.kFlywheelGearRatio),
             feederGearboxSim);
 
@@ -171,7 +175,7 @@ public class ShooterSubsystem extends SubsystemBase {
         new FlywheelSim(
             LinearSystemId.createFlywheelSystem(
                 agitatorGearboxSim,
-                Constants.Shooter.SIM.kFlywheelMOI * 10,
+                Constants.Shooter.SIM.kFlywheelMOI * 0.1,
                 Constants.Shooter.SIM.kFlywheelGearRatio),
             agitatorGearboxSim);
 
@@ -200,7 +204,9 @@ public class ShooterSubsystem extends SubsystemBase {
         .p(flywheelP.get())
         .i(0)
         .d(flywheelD.get())
+        .allowedClosedLoopError(50, ClosedLoopSlot.kSlot0)
         .maxMotion
+        .allowedProfileError(50)
         .cruiseVelocity(5000)
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     flywheelConfig.encoder
@@ -332,13 +338,17 @@ public class ShooterSubsystem extends SubsystemBase {
     hoodMotorSim.iterate(hoodSim.getVelocityMetersPerSecond(), hoodSim.getPositionMeters(), Constants.SIM.interval);
 
     // Flywheel
-    flywheelMotorSim.iterate(
-        Units.radiansPerSecondToRotationsPerMinute( // motor velocity, in RPM
-            flywheelSim.getAngularVelocityRadPerSec()),
-        RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
-        Constants.SIM.interval); // Time interval, in Seconds
-        flywheelSim.setInput(2 * flywheelMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+    // Use the sum of both motors' applied outputs as input to the flywheel system
+    double combinedApplied =
+        (flywheelRightMotorSim.getAppliedOutput() + flywheelLeftMotorSim.getAppliedOutput())
+            * RoboRioSim.getVInVoltage();
+    flywheelSim.setInput(combinedApplied);
     flywheelSim.update(Constants.SIM.interval);
+    // Iterate both motor sims so each Spark/Sim sees the same resulting angular velocity
+    double flywheelRPM =
+        Units.radiansPerSecondToRotationsPerMinute(flywheelSim.getAngularVelocityRadPerSec());
+    flywheelRightMotorSim.iterate(flywheelRPM, RoboRioSim.getVInVoltage(), Constants.SIM.interval);
+    flywheelLeftMotorSim.iterate(flywheelRPM, RoboRioSim.getVInVoltage(), Constants.SIM.interval);
 
     // Feeder
     feederMotorSim.iterate(

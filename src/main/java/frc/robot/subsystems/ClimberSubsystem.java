@@ -71,12 +71,6 @@ public class ClimberSubsystem extends SubsystemBase {
     //  climberSim = new SingleJointedArmSim()
   }
 
-  @Override
-  public void periodic() {
-    // Nothing required for now. Zeroing is performed via the zero command:
-    // startZeroing() -> waitUntil(isStalled()) -> setZero()
-  }
-
   /** Begin moving the climber slowly toward its mechanical zero (applies small % output). */
   public void startZeroing() {
     climberMotor.set(-0.10); // conservative seek power, matches hood zeroing behavior
