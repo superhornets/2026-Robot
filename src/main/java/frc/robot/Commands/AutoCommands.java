@@ -24,15 +24,22 @@ public class AutoCommands {
     public static Command basicAuto(double y, double angle, Drive drive, ShooterStateStore shooterStateStore, ShooterSubsystem shooterSubsystem) {
         return Commands.sequence(
             PathCommands.goToCoordinate(() -> 2, () -> y, () -> angle),
-            DriveCommands.autonomousAlignToCommand(
-                drive, 
-                () -> RebuiltField.getTranslationToHub2D().getAngle(), 
-                () -> Constants.DriveConstants.kFastModeMultiplier),
-            ShooterCommands.autoHub(shooterStateStore),
-            Commands.waitSeconds(5),
-            ShooterCommands.startFeeder(shooterSubsystem),
-            Commands.waitSeconds(10),
-            ShooterCommands.stopFeeder(shooterSubsystem)
+            Commands.race(
+                 DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> 0,
+                    () -> 0,
+                    () -> RebuiltField.getTranslationToHub2D().getAngle(),
+                    () -> 0.75),
+                Commands.sequence(
+                     ShooterCommands.autoHub(shooterStateStore),
+                     Commands.runOnce(() -> { shooterSubsystem.startFeeder();}, shooterSubsystem)
+                    // Commands.waitSeconds(5),
+                    // ShooterCommands.startFeeder(shooterSubsystem),
+                    // Commands.waitSeconds(10),
+                    // ShooterCommands.stopFeeder(shooterSubsystem)
+                )
+            )
         );
     }
 }
