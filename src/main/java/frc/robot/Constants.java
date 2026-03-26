@@ -89,7 +89,7 @@ public final class Constants {
       public static final int kSpindexer = 59;
       public static final int kHood = 53;
     }
-  }5
+  }
 
   public static final class Intake {
     public static final class SIM {

@@ -149,6 +149,10 @@ public class ShooterSubsystem extends SubsystemBase {
         .d(0.0001)
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
+
+      spindexerConfig.encoder
+      .positionConversionFactor(1.0)
+      .velocityConversionFactor(1.0);
     spindexerMotor.configure(
         spindexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     spindexerController = spindexerMotor.getClosedLoopController();
@@ -268,7 +272,7 @@ public class ShooterSubsystem extends SubsystemBase {
       agitatorController.setSetpoint(
         1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
       spindexerController.setSetpoint(
-        100, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
   }
 
   public void startReverseFeeder() {
