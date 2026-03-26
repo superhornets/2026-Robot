@@ -59,6 +59,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkClosedLoopController hoodController;
   private SparkFlex agitatorMotor;
   private SparkClosedLoopController agitatorController;
+  private SparkFlex spindexerMotor;
+  private SparkClosedLoopController spindexerController;
   private SparkFlex feederMotor;
   private SparkClosedLoopController feederController;
 
@@ -136,6 +138,20 @@ public class ShooterSubsystem extends SubsystemBase {
     agitatorMotor.configure(
         agigitatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     agitatorController = agitatorMotor.getClosedLoopController();
+
+    spindexerMotor = new SparkFlex(Constants.Shooter.CAN.kSpindexer, MotorType.kBrushless);
+    SparkFlexConfig spindexerConfig = new SparkFlexConfig();
+    spindexerConfig
+        .idleMode(IdleMode.kCoast)
+        .closedLoop
+        .p(0.0005)
+        .i(0)
+        .d(0.001)
+        .maxMotion
+        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
+    spindexerMotor.configure(
+        spindexerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    spindexerController = spindexerMotor.getClosedLoopController();
 
     // SIMULATION OBJECTS
     hoodGearboxSim = DCMotor.getNeo550(1);
@@ -251,6 +267,8 @@ public class ShooterSubsystem extends SubsystemBase {
         3000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
       agitatorController.setSetpoint(
         1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+      spindexerController.setSetpoint(
+        1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
   }
 
   public void startReverseFeeder() {
@@ -267,6 +285,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void stopFeeder() {
        feederController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
        agitatorController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+       spindexerController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
    }
 
   // Hood zeroing utilities (patterned after ClimberSubsystem zeroing)
