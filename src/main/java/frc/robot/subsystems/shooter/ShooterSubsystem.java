@@ -344,6 +344,11 @@ public class ShooterSubsystem extends SubsystemBase {
     return flywheelMotorRight.getEncoder().getVelocity();
   }
 
+  @AutoLogOutput(key = "Shooter/FeederSetpointRPM")
+  public double getFeederSetpointRPM() {
+    return feederController.getSetpoint();
+  }
+
   @AutoLogOutput(key = "Shooter/isAtSpeed")
   public boolean getIsAtSpeed() {
     return flywheelControllerRight.isAtSetpoint();

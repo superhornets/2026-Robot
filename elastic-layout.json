@@ -5,7 +5,57 @@
     {
       "name": "Teleoperated",
       "grid_layout": {
-        "layouts": [],
+        "layouts": [
+          {
+            "title": "Shooter",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 448.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "HIDDEN"
+            },
+            "children": [
+              {
+                "title": "FlywheelVelocityRPM",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Bar",
+                "properties": {
+                  "topic": "/AdvantageKit/RealOutputs/Shooter/FlywheelVelocityRPM",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 5000.0,
+                  "divisions": 5,
+                  "inverted": false,
+                  "orientation": "horizontal"
+                }
+              },
+              {
+                "title": "hoodAngle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Bar",
+                "properties": {
+                  "topic": "/AdvantageKit/RealOutputs/Shooter/hoodAngle",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 35.0,
+                  "divisions": 5,
+                  "inverted": false,
+                  "orientation": "horizontal"
+                }
+              }
+            ]
+          }
+        ],
         "containers": [
           {
             "title": "FMSInfo",
@@ -54,19 +104,17 @@
             }
           },
           {
-            "title": "Shooter RPM",
+            "title": "FlywheelVelocityRPM",
             "x": 0.0,
             "y": 384.0,
-            "width": 320.0,
+            "width": 448.0,
             "height": 256.0,
             "type": "Graph",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Shooter/FlywheelVelocityRPM",
               "period": 0.033,
               "data_type": "double",
-              "time_displayed": 5.0,
-              "min_value": 0.0,
-              "max_value": 5000.0,
+              "time_displayed": 15.0,
               "color": 4278238420,
               "line_width": 2.0
             }
@@ -74,7 +122,7 @@
           {
             "title": "MatchTime",
             "x": 768.0,
-            "y": 128.0,
+            "y": 384.0,
             "width": 320.0,
             "height": 128.0,
             "type": "Match Time",
@@ -90,7 +138,7 @@
           {
             "title": "Hub Status",
             "x": 1088.0,
-            "y": 128.0,
+            "y": 384.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Single Color View",
@@ -103,7 +151,7 @@
           {
             "title": "Auto Choices",
             "x": 768.0,
-            "y": 256.0,
+            "y": 512.0,
             "width": 448.0,
             "height": 128.0,
             "type": "Split Button Chooser",
@@ -113,21 +161,19 @@
             }
           },
           {
-            "title": "hoodAngle",
-            "x": 320.0,
-            "y": 384.0,
-            "width": 128.0,
+            "title": "FeederSetpointRPM",
+            "x": 0.0,
+            "y": 640.0,
+            "width": 448.0,
             "height": 256.0,
-            "type": "Number Bar",
+            "type": "Graph",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Shooter/hoodAngle",
-              "period": 0.06,
+              "topic": "/AdvantageKit/RealOutputs/Shooter/FeederSetpointRPM",
+              "period": 0.033,
               "data_type": "double",
-              "min_value": 0.0,
-              "max_value": 30.0,
-              "divisions": 5,
-              "inverted": false,
-              "orientation": "vertical"
+              "time_displayed": 15.0,
+              "color": 4278238420,
+              "line_width": 2.0
             }
           }
         ]
@@ -316,61 +362,6 @@
                 }
               }
             ]
-          },
-          {
-            "title": "ntake",
-            "x": 704.0,
-            "y": 448.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "RollerD",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Tuning/ntake/RollerD",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "RollerP",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Tuning/ntake/RollerP",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "RollerSpeed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Tuning/ntake/RollerSpeed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              }
-            ]
           }
         ],
         "containers": [
@@ -382,7 +373,7 @@
             "height": 128.0,
             "type": "Number Slider",
             "properties": {
-              "topic": "/Tuning/ntake/RollerSpeed",
+              "topic": "Intake/RollerSpeed",
               "period": 0.06,
               "data_type": "double",
               "min_value": 3500.0,
@@ -432,6 +423,124 @@
             }
           }
         ]
+      }
+    },
+    {
+      "name": "Intake",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "Left",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "RollerD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Tuning/ntake/Left/RollerD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "RollerP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Tuning/ntake/Left/RollerP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "RollerSpeed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Tuning/ntake/Left/RollerSpeed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "Right",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "RollerD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Tuning/ntake/Right/RollerD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "RollerP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Tuning/ntake/Right/RollerP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "RollerSpeed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Tuning/ntake/Right/RollerSpeed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          }
+        ],
+        "containers": []
       }
     }
   ]

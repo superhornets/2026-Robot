@@ -28,9 +28,9 @@ public class RebuiltField {
     };
     private static Supplier<Pose2d> robotPoseSupplier = () -> { return new Pose2d(); };
 
-    public static LoggedNetworkNumber nearSpeed = new LoggedNetworkNumber("RebuiltField/NearSpeed", 3500);
-    public static LoggedNetworkNumber farSpeed = new LoggedNetworkNumber("RebuiltField/FarSpeed", 4500);
-    public static LoggedNetworkNumber nearAngle = new LoggedNetworkNumber("RebuiltField/NearAngle", 0);
+    public static LoggedNetworkNumber nearSpeed = new LoggedNetworkNumber("RebuiltField/NearSpeed", 3000);
+    public static LoggedNetworkNumber farSpeed = new LoggedNetworkNumber("RebuiltField/FarSpeed", 4250);
+    public static LoggedNetworkNumber nearAngle = new LoggedNetworkNumber("RebuiltField/NearAngle", 5);
     public static LoggedNetworkNumber farAngle = new LoggedNetworkNumber("RebuiltField/FarAngle", 25);
 
     public static void setGlobalFlippedSupplier(BooleanSupplier newFlippedSupplier) {
@@ -63,11 +63,11 @@ public class RebuiltField {
 
     public static ShooterState shooterStateForHub() {
         // minimum shooting distance
-        double minDist = 1.32;
+        double minDist = 1.32; // 4'4"
         ShooterState min = new ShooterState(nearSpeed.get(), nearAngle.get());
 
         // Maximum shooting distance
-        double maxDist = 5.21;
+        double maxDist = 5.21; // 17'1"
         ShooterState max = new ShooterState(farSpeed.get(), farAngle.get());
         // get the distance from the hub
         double distance = getTranslationToHub2D().getNorm();

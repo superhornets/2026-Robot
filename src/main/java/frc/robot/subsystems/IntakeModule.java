@@ -48,14 +48,20 @@ public class IntakeModule extends SubsystemBase {
   private final String logScope;
 
   private boolean inverted;
-  private LoggedNetworkNumber rollerSpeed = new LoggedNetworkNumber("/Tuning/ntake/RollerSpeed", Constants.Intake.kIntakeRollerSpeed);
-  private LoggedNetworkNumber rollerP = new LoggedNetworkNumber("/Tuning/ntake/RollerP", 0.00025);
-  private LoggedNetworkNumber rollerD = new LoggedNetworkNumber("/Tuning/ntake/RollerD", 0.0001);
+  private LoggedNetworkNumber rollerLeftSpeed = new LoggedNetworkNumber("/Tuning/ntake/Left/RollerSpeed", Constants.Intake.kIntakeRollerSpeed);
+  private LoggedNetworkNumber rollerLeftP = new LoggedNetworkNumber("/Tuning/ntake/Left/RollerP", 0.00025);
+  private LoggedNetworkNumber rollerLeftD = new LoggedNetworkNumber("/Tuning/ntake/Left/RollerD", 0.0001);
+
+  private LoggedNetworkNumber rollerRightSpeed = new LoggedNetworkNumber("/Tuning/ntake/Right/RollerSpeed", Constants.Intake.kIntakeRollerSpeed);
+  private LoggedNetworkNumber rollerRightP = new LoggedNetworkNumber("/Tuning/ntake/Right/RollerP", 0.00025);
+  private LoggedNetworkNumber rollerRightD = new LoggedNetworkNumber("/Tuning/ntake/Right/RollerD", 0.0001);
+
 
   /** Creates a new IntakeModule. */
   public IntakeModule(int armID, int rollerID, boolean inverted, String logScope) {
     this.logScope = logScope;
     this.inverted = inverted;
+
 
     // Setup Motors and Controllers
     armMotor = new SparkMax(armID, MotorType.kBrushless);
@@ -119,9 +125,9 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
     rollerConfig
         .idleMode(IdleMode.kCoast)
         .closedLoop
-        .p(rollerP.get())
+        .p(inverted ? rollerRightP.get() : rollerLeftP.get())
         .i(0)
-        .d(rollerD.get())
+        .d(inverted ? rollerRightD.get() : rollerLeftD.get())
         .maxMotion
         .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
     rollerMotor.configure(
@@ -140,7 +146,7 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
         ControlType.kMAXMotionPositionControl,
         ClosedLoopSlot.kSlot0);
     rollerController.setSetpoint(
-        rollerSpeed.get(),
+        inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get(),
         ControlType.kMAXMotionVelocityControl,
         ClosedLoopSlot.kSlot0);
   }
