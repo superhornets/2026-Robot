@@ -72,6 +72,16 @@ public class ShooterCommands {
     );
   }
 
+
+  public static Command stop(ShooterSubsystem shooter, ShooterStateStore state) {
+    return Commands.run(
+      () -> {
+        state.reset();
+        shooter.stopFeeder();
+      }
+    );
+  }
+
   public static Command lower(ShooterStateStore state) {
     return Commands.runOnce(
       () -> {

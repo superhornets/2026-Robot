@@ -32,12 +32,13 @@ public class AutoCommands {
                     () -> RebuiltField.getTranslationToHub2D().getAngle(),
                     () -> 0.75),
                 Commands.sequence(
-                     ShooterCommands.autoHub(shooterStateStore),
-                     Commands.runOnce(() -> { shooterSubsystem.startFeeder();}, shooterSubsystem)
-                    // Commands.waitSeconds(5),
-                    // ShooterCommands.startFeeder(shooterSubsystem),
-                    // Commands.waitSeconds(10),
-                    // ShooterCommands.stopFeeder(shooterSubsystem)
+                    Commands.runOnce(() -> {
+                        shooterStateStore.set(RebuiltField.shooterStateForHub());
+                    }),
+                    Commands.waitSeconds(5),
+                    ShooterCommands.startFeeder(shooterSubsystem),
+                    Commands.waitSeconds(10),
+                    ShooterCommands.stop(shooterSubsystem, shooterStateStore)
                 )
             )
         );
