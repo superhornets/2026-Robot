@@ -61,8 +61,8 @@ public final class Constants {
 
   public static final class DriveConstants {
     public static final double kSlowModeMultiplier = 0.25; // slow is 0.25
-    public static final double kNormalModeMultiplier = 0.6; // normal is 0.40
-    public static final double kFastModeMultiplier = 0.75;  // fast is 0.60
+    public static final double kNormalModeMultiplier = 0.7; // normal is 0.40
+    public static final double kFastModeMultiplier = 0.9;  // fast is 0.60
     public static final double kIntakeSpeedMultiplier = 0.2; // intake is 0.2
 
     public static final double kWidthMeters = Units.inchesToMeters(20.5);
@@ -104,8 +104,8 @@ public final class Constants {
 
     public static final double kRaisedAngle = (0.24);
     public static final double kLoweredAngle = (0.55);
-    public static final double kIntakeRollerSpeed = 5200.0; // RPM
-
+    public static final double kIntakeRollerSpeedLeft = 5200.0; // RPM
+    public static final double kIntakeRollerSpeedRight= 5300.0;
     public static final class CAN {
       public static final int kLeftArm = 54;
       public static final int kLeftRoller = 55;

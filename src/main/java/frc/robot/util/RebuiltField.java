@@ -28,7 +28,7 @@ public class RebuiltField {
     };
     private static Supplier<Pose2d> robotPoseSupplier = () -> { return new Pose2d(); };
 
-    public static LoggedNetworkNumber nearSpeed = new LoggedNetworkNumber("RebuiltField/NearSpeed", 3000);
+    public static LoggedNetworkNumber nearSpeed = new LoggedNetworkNumber("RebuiltField/NearSpeed", 3200);
     public static LoggedNetworkNumber farSpeed = new LoggedNetworkNumber("RebuiltField/FarSpeed", 4250);
     public static LoggedNetworkNumber nearAngle = new LoggedNetworkNumber("RebuiltField/NearAngle", 5);
     public static LoggedNetworkNumber farAngle = new LoggedNetworkNumber("RebuiltField/FarAngle", 25);

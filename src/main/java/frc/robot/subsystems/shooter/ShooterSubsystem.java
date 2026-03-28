@@ -19,8 +19,11 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig.Behavior;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -232,7 +235,11 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelConfig.encoder
       .positionConversionFactor(1.0)
       .velocityConversionFactor(1.0);
-
+      flywheelConfig.limitSwitch.apply(
+        new LimitSwitchConfig()
+        .forwardLimitSwitchTriggerBehavior(Behavior.kKeepMovingMotor)
+        .reverseLimitSwitchTriggerBehavior(Behavior.kKeepMovingMotor)
+      );
 
     flywheelMotorRight = new SparkFlex(Constants.Shooter.CAN.kFlywheelRight, MotorType.kBrushless);
     flywheelMotorRight.configure(

@@ -48,12 +48,12 @@ public class IntakeModule extends SubsystemBase {
   private final String logScope;
 
   private boolean inverted;
-  private LoggedNetworkNumber rollerLeftSpeed = new LoggedNetworkNumber("/Tuning/ntake/Left/RollerSpeed", Constants.Intake.kIntakeRollerSpeed);
-  private LoggedNetworkNumber rollerLeftP = new LoggedNetworkNumber("/Tuning/ntake/Left/RollerP", 0.00025);
+  private LoggedNetworkNumber rollerLeftSpeed = new LoggedNetworkNumber("/Tuning/ntake/Left/RollerSpeed", Constants.Intake.kIntakeRollerSpeedLeft);
+  private LoggedNetworkNumber rollerLeftP = new LoggedNetworkNumber("/Tuning/ntake/Left/RollerP", 0.0005);
   private LoggedNetworkNumber rollerLeftD = new LoggedNetworkNumber("/Tuning/ntake/Left/RollerD", 0.0001);
 
-  private LoggedNetworkNumber rollerRightSpeed = new LoggedNetworkNumber("/Tuning/ntake/Right/RollerSpeed", Constants.Intake.kIntakeRollerSpeed);
-  private LoggedNetworkNumber rollerRightP = new LoggedNetworkNumber("/Tuning/ntake/Right/RollerP", 0.00025);
+  private LoggedNetworkNumber rollerRightSpeed = new LoggedNetworkNumber("/Tuning/ntake/Right/RollerSpeed", Constants.Intake.kIntakeRollerSpeedRight);
+  private LoggedNetworkNumber rollerRightP = new LoggedNetworkNumber("/Tuning/ntake/Right/RollerP", 0.0005);
   private LoggedNetworkNumber rollerRightD = new LoggedNetworkNumber("/Tuning/ntake/Right/RollerD", 0.0001);
 
 
