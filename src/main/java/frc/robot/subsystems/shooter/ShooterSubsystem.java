@@ -187,6 +187,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setState(ShooterState state) {
+    configureFlywheelMotors();
     setHoodAngle(state.angle);
     startFlywheel(state.speed);
   }
