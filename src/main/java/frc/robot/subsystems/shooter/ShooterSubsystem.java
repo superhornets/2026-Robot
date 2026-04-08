@@ -19,8 +19,11 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig.Behavior;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -59,6 +62,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkClosedLoopController hoodController;
   private SparkFlex agitatorMotor;
   private SparkClosedLoopController agitatorController;
+  private SparkFlex spindexerMotor;
+  private SparkClosedLoopController spindexerController;
   private SparkFlex feederMotor;
   private SparkClosedLoopController feederController;
 
@@ -137,6 +142,24 @@ public class ShooterSubsystem extends SubsystemBase {
         agigitatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     agitatorController = agitatorMotor.getClosedLoopController();
 
+    spindexerMotor = new SparkFlex(Constants.Shooter.CAN.kSpindexer, MotorType.kBrushless);
+    SparkFlexConfig spindexerConfig = new SparkFlexConfig();
+    spindexerConfig
+        .idleMode(IdleMode.kCoast)
+        .closedLoop
+        .p(0.0001)
+        .i(0)
+        .d(0.0001)
+        .maxMotion
+        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
+
+      spindexerConfig.encoder
+      .positionConversionFactor(1.0)
+      .velocityConversionFactor(1.0);
+    spindexerMotor.configure(
+        spindexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    spindexerController = spindexerMotor.getClosedLoopController();
+
     // SIMULATION OBJECTS
     hoodGearboxSim = DCMotor.getNeo550(1);
     hoodMotorSim = new SparkMaxSim(hoodMotor, hoodGearboxSim);
@@ -213,7 +236,11 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelConfig.encoder
       .positionConversionFactor(1.0)
       .velocityConversionFactor(1.0);
-
+      flywheelConfig.limitSwitch.apply(
+        new LimitSwitchConfig()
+        .forwardLimitSwitchTriggerBehavior(Behavior.kKeepMovingMotor)
+        .reverseLimitSwitchTriggerBehavior(Behavior.kKeepMovingMotor)
+      );
 
     flywheelMotorRight = new SparkFlex(Constants.Shooter.CAN.kFlywheelRight, MotorType.kBrushless);
     flywheelMotorRight.configure(
@@ -252,6 +279,8 @@ public class ShooterSubsystem extends SubsystemBase {
         3000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
       agitatorController.setSetpoint(
         1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+      spindexerController.setSetpoint(
+        1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
   }
 
   public void startReverseFeeder() {
@@ -268,6 +297,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void stopFeeder() {
        feederController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
        agitatorController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+       spindexerController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
    }
 
   // Hood zeroing utilities (patterned after ClimberSubsystem zeroing)
@@ -320,6 +350,11 @@ public class ShooterSubsystem extends SubsystemBase {
   @AutoLogOutput(key = "Shooter/FlywheelVelocityRPM")
   public double getFlywheelVelocityRPM() {
     return flywheelMotorRight.getEncoder().getVelocity();
+  }
+
+  @AutoLogOutput(key = "Shooter/FeederSetpointRPM")
+  public double getFeederSetpointRPM() {
+    return feederController.getSetpoint();
   }
 
   @AutoLogOutput(key = "Shooter/isAtSpeed")
