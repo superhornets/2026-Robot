@@ -226,8 +226,9 @@ public class ShooterSubsystem extends SubsystemBase {
         .closedLoop
         .p(flywheelP.get())
         .i(0)
-        .d(flywheelD.get(), ClosedLoopSlot.kSlot0);
-        // .allowedClosedLoopError(50, ClosedLoopSlot.kSlot0);
+        .d(flywheelD.get())
+        .feedForward
+        .kV(0.00177);
     flywheelConfig.encoder
       .positionConversionFactor(1.0)
       .velocityConversionFactor(1.0);
