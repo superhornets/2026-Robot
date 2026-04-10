@@ -67,8 +67,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkFlex feederMotor;
   private SparkClosedLoopController feederController;
 
-  private LoggedNetworkNumber flywheelP = new LoggedNetworkNumber("Shooter/FlywheelP", 0.0015);
-  private LoggedNetworkNumber flywheelD = new LoggedNetworkNumber("Shooter/FlywheelD", 0.0002);
+  private LoggedNetworkNumber flywheelP = new LoggedNetworkNumber("Shooter/FlywheelP", 0.0007);
+  private LoggedNetworkNumber flywheelD = new LoggedNetworkNumber("Shooter/FlywheelD", 0.0000);
 
   // SIMULATION OBJECTS
   private SparkMaxSim hoodMotorSim;
@@ -210,7 +210,6 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setState(ShooterState state) {
-    configureFlywheelMotors();
     setHoodAngle(state.angle);
     startFlywheel(state.speed);
   }
@@ -223,16 +222,12 @@ public class ShooterSubsystem extends SubsystemBase {
   private void configureFlywheelMotors() {
   SparkFlexConfig flywheelConfig = new SparkFlexConfig();
     flywheelConfig
-        .smartCurrentLimit(40, 40, 5000)
+        .smartCurrentLimit(80, 40, 1000)
         .closedLoop
         .p(flywheelP.get())
         .i(0)
-        .d(flywheelD.get())
-        .allowedClosedLoopError(50, ClosedLoopSlot.kSlot0)
-        .maxMotion
-        .allowedProfileError(50)
-        .cruiseVelocity(5000)
-        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
+        .d(flywheelD.get(), ClosedLoopSlot.kSlot0);
+        // .allowedClosedLoopError(50, ClosedLoopSlot.kSlot0);
     flywheelConfig.encoder
       .positionConversionFactor(1.0)
       .velocityConversionFactor(1.0);
@@ -258,19 +253,19 @@ public class ShooterSubsystem extends SubsystemBase {
         MathUtil.clamp(
             speedRPM, Constants.Shooter.kFlywheelMinSpeed, Constants.Shooter.kFlywheelMaxSpeed);
     flywheelControllerLeft.setSetpoint(
-        speedClamped, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        speedClamped, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
     flywheelControllerRight.setSetpoint(
-        speedClamped, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        speedClamped, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
   public void stopFlywheel(boolean coast) {
     flywheelControllerRight.setSetpoint(
         0.0,
-        coast ? ControlType.kDutyCycle : ControlType.kMAXMotionVelocityControl,
+        coast ? ControlType.kDutyCycle : ControlType.kVelocity,
         ClosedLoopSlot.kSlot0);
     flywheelControllerLeft.setSetpoint(
         0.0,
-        coast ? ControlType.kDutyCycle : ControlType.kMAXMotionVelocityControl,
+        coast ? ControlType.kDutyCycle : ControlType.kVelocity,
         ClosedLoopSlot.kSlot0);
   }
 

@@ -35,9 +35,9 @@ public class AutoCommands {
                     Commands.runOnce(() -> {
                         shooterStateStore.set(RebuiltField.shooterStateForHub());
                     }),
-                    Commands.waitSeconds(5),
+                    Commands.waitSeconds(1.5),
                     ShooterCommands.startFeeder(shooterSubsystem),
-                    Commands.waitSeconds(10),
+                    Commands.waitSeconds(2),
                     ShooterCommands.stop(shooterSubsystem, shooterStateStore)
                 )
             )
