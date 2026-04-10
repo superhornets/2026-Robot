@@ -271,7 +271,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void startFeeder() {
       feederController.setSetpoint(
-        3000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        4000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
       agitatorController.setSetpoint(
         1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
       spindexerController.setSetpoint(
