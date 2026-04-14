@@ -107,8 +107,6 @@ public final class Constants {
     public static final double kIntakeRollerSpeedLeft = 5200.0; // RPM
     public static final double kIntakeRollerSpeedRight= 5300.0;
     public static final class CAN {
-      public static final int kLeftArm = 54;
-      public static final int kLeftRoller = 55;
       public static final int kRightArm = 56;
       public static final int kRightRoller = 57;
     }

@@ -226,13 +226,6 @@ public class RobotContainer {
         drive)
         .ignoringDisable(true));
         
-        driverController.leftBumper()
-        .whileTrue(
-        Commands.parallel(
-        // DriveCommands.intakeCommand(speedSupplier),
-        IntakeCommands.lowerLeft(intake)
-        )
-        );
 
         driverController.rightBumper()
         .whileTrue(

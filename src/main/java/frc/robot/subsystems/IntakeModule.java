@@ -74,8 +74,8 @@ public class IntakeModule extends SubsystemBase {
     this.logScope = logScope;
     this.inverted = inverted;
 
-    servo1 = new Servo(1);
-    servo2 = new Servo(2);
+    servo1 = new Servo(8);
+    servo2 = new Servo(9);
 
     // Setup Motors and Controllers
     armMotor = new SparkMax(armID, MotorType.kBrushless);

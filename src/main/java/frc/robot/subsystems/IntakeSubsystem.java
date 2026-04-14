@@ -12,35 +12,27 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Provide a logScope to each IntakeModule so the module knows which side it
   // represents and where to emit logs (e.g. "Intake.Left").
-  private IntakeModule leftIntake =
-      new IntakeModule(
-          Constants.Intake.CAN.kLeftArm, Constants.Intake.CAN.kLeftRoller, false, "Intake/Left");
   private IntakeModule rightIntake =
       new IntakeModule(
           Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller, true, "Intake/Right");
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
-    SmartDashboard.setDefaultNumber("LeftAngle", 0);
+ 
     SmartDashboard.setDefaultNumber("RightAngle", 0);
-    SmartDashboard.setDefaultBoolean("LeftRaised", false);
     SmartDashboard.setDefaultBoolean("RightRaised", false);
-    SmartDashboard.setDefaultBoolean("LowerLeft", false);
     SmartDashboard.setDefaultBoolean("LowerRight", false);
   }
 
   public void raiseAll() {
-    leftIntake.raise();
+   
     rightIntake.raise();
   }
 
-  public void lowerLeft() {
-    leftIntake.lower();
-    rightIntake.raise();
-  }
+
 
   public void lowerRight() {
-    leftIntake.raise();
+  
     rightIntake.lower();
   }
 
@@ -48,14 +40,14 @@ public class IntakeSubsystem extends SubsystemBase {
   public void simulationPeriodic() {
 
     boolean right = SmartDashboard.getBoolean("LowerRight", false);
-    boolean left = SmartDashboard.getBoolean("LowerLeft", false);
-    if (left) lowerLeft();
+   
+
     if (right) lowerRight();
 
-    SmartDashboard.putBoolean("LeftRaised", !leftIntake.isLowered());
+  
     SmartDashboard.putBoolean("RightRaised", !rightIntake.isLowered());
 
-    leftIntake.simulationPeriodic();
+
     rightIntake.simulationPeriodic();
   }
 }
