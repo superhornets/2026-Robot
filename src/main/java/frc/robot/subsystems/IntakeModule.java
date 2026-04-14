@@ -4,6 +4,12 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.sim.SparkAbsoluteEncoderSim;
@@ -20,6 +26,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -30,10 +37,15 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class IntakeModule extends SubsystemBase {
   // HARDWARE OBJECTS
+  private Servo servo1;
+  private Servo servo2;
   private SparkMax armMotor;
   private SparkClosedLoopController armController;
-  private SparkMax rollerMotor;
-  private SparkClosedLoopController rollerController;
+  // private SparkMax rollerMotor;
+  private final TalonFX rollerMotor;
+  private final DutyCycleOut rollerDutyCycle = new DutyCycleOut(0); 
+  private final VelocityVoltage rollerVelocity = new VelocityVoltage(0);
+  // private SparkClosedLoopController rollerController;
 
   // SIMULATION OBJECTS
   private SparkMaxSim armMotorSim;
@@ -62,6 +74,8 @@ public class IntakeModule extends SubsystemBase {
     this.logScope = logScope;
     this.inverted = inverted;
 
+    servo1 = new Servo(1);
+    servo2 = new Servo(2);
 
     // Setup Motors and Controllers
     armMotor = new SparkMax(armID, MotorType.kBrushless);
@@ -87,8 +101,9 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
         armConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     armController = armMotor.getClosedLoopController();
 
-    
-    rollerMotor = new SparkMax(rollerID, MotorType.kBrushless);
+
+    rollerMotor = new TalonFX(rollerID, "");
+
 
     configureRoller();
 
@@ -109,7 +124,7 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
             Units.rotationsToRadians(Constants.Intake.kRaisedAngle));
 
     rollerGearboxSim = DCMotor.getNEO(1);
-    rollerMotorSim = new SparkMaxSim(rollerMotor, rollerGearboxSim);
+    // rollerMotorSim = new SparkMaxSim(rollerMotor, rollerGearboxSim);
 
     rollerFlywheelSim =
         new FlywheelSim(
@@ -121,34 +136,34 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
   }
 
   private void configureRoller() {
-    SparkMaxConfig rollerConfig = new SparkMaxConfig();
-    rollerConfig
-        .idleMode(IdleMode.kCoast)
-        .closedLoop
-        .p(inverted ? rollerRightP.get() : rollerLeftP.get())
-        .i(0)
-        .d(inverted ? rollerRightD.get() : rollerLeftD.get())
-        .maxMotion
-        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
-    rollerMotor.configure(
-        rollerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    rollerController = rollerMotor.getClosedLoopController();
+    TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
+    rollerConfig.MotorOutput.Inverted = inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+    rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    rollerConfig.CurrentLimits.StatorCurrentLimit = 40; // Protect the motor
+    rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
+    var slot0 = rollerConfig.Slot0;
+    slot0.kP = inverted ? rollerRightP.get() : rollerLeftP.get();
+    slot0.kD = inverted ? rollerRightD.get() : rollerLeftD.get();
+    // Krakens often need a tiny bit of kV (feedforward) to help reach speed
+    slot0.kV = 0.12; 
+    
+    rollerMotor.getConfigurator().apply(rollerConfig);
   }
 
   /** Lowers the arm and starts the roller at the intake speed. */
   public void lower() {
     // ensure we have the latest roller PID values from the dashboard before lowering and starting the roller
     configureRoller();
-
+    servo1.setAngle(90);
+    servo2.setAngle(90);
     armController.setSetpoint(
         Constants.Intake.kLoweredAngle,
         ControlType.kMAXMotionPositionControl,
         ClosedLoopSlot.kSlot0);
-    rollerController.setSetpoint(
-        inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get(),
-        ControlType.kMAXMotionVelocityControl,
-        ClosedLoopSlot.kSlot0);
+        
+    rollerMotor.setControl(rollerVelocity.withVelocity((inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get()) / 60));
+
   }
 
   /**
@@ -163,13 +178,16 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
 
   /** Raises the arm and stops the roller. */
   public void raise() {
+    servo1.setAngle(0);
+    servo2.setAngle(0);
     armController.setSetpoint(
         Constants.Intake.kRaisedAngle,
         ControlType.kMAXMotionPositionControl,
         ClosedLoopSlot.kSlot0);
     // We set the roller to 0 using duty cycle control, as setting it to 0 using velocity control
     // will cause the motor to brake and stop the rollers rather than letting them coast to a stop.
-    rollerController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+    // rollerController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+    rollerMotor.setControl(rollerDutyCycle.withOutput(0.0));
   }
 
   /**
@@ -192,7 +210,8 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
 
   @AutoLogOutput(key = "{logScope}/RollerVelocityRPM")
   public double getRollerVelocityRPM() {
-    return rollerMotor.getEncoder().getVelocity();
+    // return rollerMotor.getEncoder().getVelocity();
+    return rollerMotor.getVelocity().getValueAsDouble() * 60;
   }
 
   public void simulationPeriodic() {
