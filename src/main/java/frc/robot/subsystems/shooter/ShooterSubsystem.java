@@ -60,8 +60,6 @@ public class ShooterSubsystem extends SubsystemBase {
   // other
   private SparkMax hoodMotor;
   private SparkClosedLoopController hoodController;
-  private SparkFlex agitatorMotor;
-  private SparkClosedLoopController agitatorController;
   private SparkFlex spindexerMotor;
   private SparkClosedLoopController spindexerController;
   private SparkFlex feederMotor;
@@ -84,10 +82,6 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkFlexSim feederMotorSim;
   private FlywheelSim feederSim;
   private DCMotor feederGearboxSim;
-  // Agitator simulation (matches flywheel)
-  private SparkFlexSim agitatorMotorSim;
-  private FlywheelSim agitatorSim;
-  private DCMotor agitatorGearboxSim;
 
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem(ShooterStateStore store) {
@@ -121,26 +115,10 @@ public class ShooterSubsystem extends SubsystemBase {
         .closedLoop
         .p(0.0006)
         .i(0)
-        .d(0.001)
-        .maxMotion
-        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
+        .d(0.001);
     feederMotor.configure(
         feederConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     feederController = feederMotor.getClosedLoopController();
-
-    agitatorMotor = new SparkFlex(Constants.Shooter.CAN.kAgitator, MotorType.kBrushless);
-    SparkFlexConfig agigitatorConfig = new SparkFlexConfig();
-    agigitatorConfig
-        .idleMode(IdleMode.kCoast)
-        .closedLoop
-        .p(0.0005)
-        .i(0)
-        .d(0.001)
-        .maxMotion
-        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
-    agitatorMotor.configure(
-        agigitatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    agitatorController = agitatorMotor.getClosedLoopController();
 
     spindexerMotor = new SparkFlex(Constants.Shooter.CAN.kSpindexer, MotorType.kBrushless);
     SparkFlexConfig spindexerConfig = new SparkFlexConfig();
@@ -149,9 +127,7 @@ public class ShooterSubsystem extends SubsystemBase {
         .closedLoop
         .p(0.0001)
         .i(0)
-        .d(0.0001)
-        .maxMotion
-        .maxAcceleration(10_000, ClosedLoopSlot.kSlot0);
+        .d(0.0001);
 
       spindexerConfig.encoder
       .positionConversionFactor(1.0)
@@ -190,17 +166,6 @@ public class ShooterSubsystem extends SubsystemBase {
                 Constants.Shooter.SIM.kFlywheelMOI * 0.3,
                 Constants.Shooter.SIM.kFlywheelGearRatio),
             feederGearboxSim);
-
-    // Agitator sim
-    agitatorGearboxSim = DCMotor.getNeoVortex(1);
-    agitatorMotorSim = new SparkFlexSim(agitatorMotor, agitatorGearboxSim);
-    agitatorSim =
-        new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(
-                agitatorGearboxSim,
-                Constants.Shooter.SIM.kFlywheelMOI * 0.1,
-                Constants.Shooter.SIM.kFlywheelGearRatio),
-            agitatorGearboxSim);
 
     hoodMotor.getEncoder().setPosition(0);
   }
@@ -272,16 +237,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void startFeeder() {
       feederController.setSetpoint(
-        4000, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
-      agitatorController.setSetpoint(
-        1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        4000, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
       spindexerController.setSetpoint(
-        1500, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        6000, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
   public void startReverseFeeder() {
     feederController.setSetpoint(-200, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-    agitatorController.setSetpoint(1000, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
     startFlywheel(-200);
   }
 
@@ -292,7 +254,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void stopFeeder() {
        feederController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
-       agitatorController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
        spindexerController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
    }
 
@@ -390,14 +351,5 @@ public class ShooterSubsystem extends SubsystemBase {
         Constants.SIM.interval); // Time interval, in Seconds
     feederSim.setInput(feederMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
     feederSim.update(Constants.SIM.interval);
-
-    // Agitator
-    agitatorMotorSim.iterate(
-        Units.radiansPerSecondToRotationsPerMinute( // motor velocity, in RPM
-            agitatorSim.getAngularVelocityRadPerSec()),
-        RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
-        Constants.SIM.interval); // Time interval, in Seconds
-    agitatorSim.setInput(agitatorMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
-    agitatorSim.update(Constants.SIM.interval);
   }
 }
