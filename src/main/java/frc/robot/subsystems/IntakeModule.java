@@ -156,13 +156,13 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
     // ensure we have the latest roller PID values from the dashboard before lowering and starting the roller
     configureRoller();
     servo1.setAngle(90);
-    servo2.setAngle(90);
-    armController.setSetpoint(
-        Constants.Intake.kLoweredAngle,
-        ControlType.kMAXMotionPositionControl,
-        ClosedLoopSlot.kSlot0);
+    servo2.setAngle(0);
+   // armController.setSetpoint(
+      //  Constants.Intake.kLoweredAngle,
+     //   ControlType.kMAXMotionPositionControl,
+     //   ClosedLoopSlot.kSlot0);
         
-    rollerMotor.setControl(rollerVelocity.withVelocity((inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get()) / 60));
+   // rollerMotor.setControl(rollerVelocity.withVelocity((inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get()) / 60));
 
   }
 
@@ -179,7 +179,7 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
   /** Raises the arm and stops the roller. */
   public void raise() {
     servo1.setAngle(0);
-    servo2.setAngle(0);
+    servo2.setAngle(90);
     armController.setSetpoint(
         Constants.Intake.kRaisedAngle,
         ControlType.kMAXMotionPositionControl,
