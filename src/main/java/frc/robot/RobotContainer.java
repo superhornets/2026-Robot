@@ -227,13 +227,16 @@ public class RobotContainer {
         .ignoringDisable(true));
         
 
-        driverController.rightBumper()
-        .whileTrue(
-        Commands.parallel(
-        // DriveCommands.intakeCommand(speedSupplier),
-        IntakeCommands.lowerRight(intake)
-        )
-        );
+        // driverController.rightBumper()
+        // .whileTrue(
+        // Commands.parallel(
+        // // DriveCommands.intakeCommand(speedSupplier),
+        // IntakeCommands.lowerRight(intake)
+        // )
+        // );
+
+        driverController.rightBumper().onTrue(IntakeCommands.toggle(intake));
+        // driverController.leftBumper().onTrue(IntakeCommands.);
 
         driverController.start().onTrue(PathCommands.goToHubCommand());
 

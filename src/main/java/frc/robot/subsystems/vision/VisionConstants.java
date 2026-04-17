@@ -33,7 +33,7 @@ public class VisionConstants {
   public static Transform3d robotToCamera1 =
       new Transform3d(
           -.346,
-          .146,
+          .146 - 0.17,
           .445,
           new Rotation3d(0.0, 0, Units.degreesToRadians(150)));
 

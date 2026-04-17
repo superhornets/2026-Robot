@@ -33,4 +33,15 @@ public class IntakeCommands {
         },
         intake);
   }
+
+  public static Command toggle(IntakeSubsystem intake) {
+    return Commands.run(
+    () -> {
+      if (intake.isLowered()) {
+        intake.raiseAll();
+      } else {
+        intake.lowerRight();
+      }
+    }, intake);
+  }
 }

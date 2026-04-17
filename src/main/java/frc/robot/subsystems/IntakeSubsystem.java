@@ -36,6 +36,10 @@ public class IntakeSubsystem extends SubsystemBase {
     rightIntake.lower();
   }
 
+  public boolean isLowered() {
+    return rightIntake.isLowered();
+  }
+
   @Override
   public void simulationPeriodic() {
 

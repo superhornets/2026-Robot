@@ -52,9 +52,6 @@ public class IntakeModule extends SubsystemBase {
   private SparkAbsoluteEncoderSim armEncoderSim;
   private DCMotor armGearboxSim;
   private SingleJointedArmSim armSim;
-  private SparkMaxSim rollerMotorSim;
-  private FlywheelSim rollerFlywheelSim;
-  private DCMotor rollerGearboxSim;
 
   // Logging scope/prefix for this module (e.g. "Intake.Left")
   private final String logScope;
@@ -122,17 +119,6 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
             Units.rotationsToRadians(Constants.Intake.kLoweredAngle),
             true,
             Units.rotationsToRadians(Constants.Intake.kRaisedAngle));
-
-    rollerGearboxSim = DCMotor.getNEO(1);
-    // rollerMotorSim = new SparkMaxSim(rollerMotor, rollerGearboxSim);
-
-    rollerFlywheelSim =
-        new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(
-                rollerGearboxSim,
-                Constants.Intake.SIM.kRollerMOI,
-                Constants.Intake.SIM.kRollerGearRatio),
-            rollerGearboxSim);
   }
 
   private void configureRoller() {
@@ -228,15 +214,6 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
         Units.radiansPerSecondToRotationsPerMinute(armSim.getVelocityRadPerSec())
             / Constants.Intake.SIM.kArmGearRatio,
         Constants.SIM.interval);
-
-    // Roller
-    rollerFlywheelSim.setInput(rollerMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
-    rollerFlywheelSim.update(Constants.SIM.interval);
-    rollerMotorSim.iterate(
-        Units.radiansPerSecondToRotationsPerMinute( // motor velocity, in RPM
-            rollerFlywheelSim.getAngularVelocityRadPerSec()),
-        RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
-        Constants.SIM.interval); // Time interval, in Seconds
   }
 
   // Accessor for the logging scope
