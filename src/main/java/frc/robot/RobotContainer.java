@@ -176,7 +176,7 @@ public class RobotContainer {
         
         // schedule these commands to run when the robot is enabled
         CommandScheduler.getInstance().schedule(
-        IntakeCommands.raiseAll(intake),
+        IntakeCommands.raise(intake),
         ClimberCommands.zero(climber),
         ShooterCommands.zeroHood(shooter)
         );
@@ -229,25 +229,16 @@ public class RobotContainer {
         .ignoringDisable(true));
         
 
-        // driverController.rightBumper()
-        // .whileTrue(
-        // Commands.parallel(
-        // // DriveCommands.intakeCommand(speedSupplier),
-        // IntakeCommands.lowerRight(intake)
-        // )
-        // );
+        driverController.rightBumper()
+        .whileTrue(
+        Commands.parallel(
+        // DriveCommands.intakeCommand(speedSupplier),
+        IntakeCommands.lowerRight(intake)
+        )
+        );
 
-        driverController.rightBumper().onTrue(IntakeCommands.toggle(intake));
-        driverController.leftBumper().onTrue(Commands.runOnce(
-            () -> {
-                intake.startRoller();
-            }, intake
-        ));
-        driverController.leftBumper().onFalse(Commands.runOnce(
-            () -> {
-                intake.stopRoller();
-            }, intake
-        ));
+        driverController.rightBumper()
+        .
 
         driverController.start().onTrue(PathCommands.goToHubCommand());
 
