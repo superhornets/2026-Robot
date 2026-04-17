@@ -45,6 +45,14 @@ public class RebuiltField {
         return isFlippedSupplier.getAsBoolean();
     }
 
+    public static boolean inNeutralZone() {
+        Pose2d pose = robotPoseSupplier.get();
+        return (
+            pose.getX() > Constants.FieldConstants.blueUpperTrench.getX() && 
+            pose.getX() < Constants.FieldConstants.redUpperTrench.getX()
+        );
+    }
+
     public static Pose3d getHubCenter() {
         return getIsFlipped()
             ? Constants.FieldConstants.RedHubCenter
@@ -61,6 +69,16 @@ public class RebuiltField {
         return new Translation2d(relativeHubX, relativeHubY);
     }
 
+    public static double getDistanceToAllianceZone() {
+        Pose2d pose = robotPoseSupplier.get();
+
+        if (RebuiltField.getIsFlipped()) { // robot is on red alliance when flipped
+            return Constants.FieldConstants.redUpperTrench.getX() - pose.getX();
+        } else {
+            return pose.getX() - Constants.FieldConstants.blueUpperTrench.getX();
+        }
+    }
+
     public static ShooterState shooterStateForHub() {
         // minimum shooting distance
         double minDist = 1.32; // 4'4"
@@ -71,6 +89,24 @@ public class RebuiltField {
         ShooterState max = new ShooterState(farSpeed.get(), farAngle.get());
         // get the distance from the hub
         double distance = getTranslationToHub2D().getNorm();
+        // calculate the ratio between our min and max that we are at
+        double ratio = InverseInterpolator.forDouble().inverseInterpolate(minDist, maxDist, distance);
+
+        // interpolate our shooter configuration between the min and max based on the ratio
+        return min.interpolate(max, ratio);
+    }
+
+    public static ShooterState shooterStateForAllianceZone() {
+        
+        // minimum shooting distance
+        double minDist = 1.32; // 4'4"
+        ShooterState min = new ShooterState(nearSpeed.get(), nearAngle.get());
+
+        // Maximum shooting distance
+        double maxDist = 5.21; // 17'1"
+        ShooterState max = new ShooterState(farSpeed.get(), farAngle.get());
+        // get the distance from the hub
+        double distance = getDistanceToAllianceZone();
         // calculate the ratio between our min and max that we are at
         double ratio = InverseInterpolator.forDouble().inverseInterpolate(minDist, maxDist, distance);
 

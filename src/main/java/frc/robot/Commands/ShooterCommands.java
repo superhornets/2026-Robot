@@ -24,7 +24,11 @@ public class ShooterCommands {
   public static Command autoHub(ShooterStateStore state) {
     return Commands.runEnd(
       () -> {
-        state.set(RebuiltField.shooterStateForHub());
+        if (RebuiltField.inNeutralZone()) {
+          state.set(RebuiltField.shooterStateForAllianceZone());
+        } else {
+          state.set(RebuiltField.shooterStateForHub());
+        }
       },
       () -> {
         state.reset();
