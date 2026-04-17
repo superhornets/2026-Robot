@@ -6,6 +6,7 @@ package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.IntakeModule;
 import frc.robot.subsystems.IntakeSubsystem;
 
 /** Add your docs here. */
@@ -13,23 +14,23 @@ public class IntakeCommands {
 
   private IntakeCommands() {}
 
-  public static Command raiseAll(IntakeSubsystem intake) {
+  public static Command raiseAll(IntakeModule intake) {
     return Commands.run(
         () -> {
-          intake.raiseAll();
+          intake.raise();
         },
         intake);
   }
 
 
 
-  public static Command lowerRight(IntakeSubsystem intake) {
+  public static Command lowerRight(IntakeModule intake) {
     return Commands.startEnd(
         () -> {
-          intake.lowerRight();
+          intake.lower();
         },
         () -> {
-          intake.raiseAll();
+          intake.raise();
         },
         intake);
   }

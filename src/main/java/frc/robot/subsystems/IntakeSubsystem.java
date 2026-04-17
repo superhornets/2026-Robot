@@ -25,14 +25,12 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void raiseAll() {
-   
     rightIntake.raise();
   }
 
 
 
   public void lowerRight() {
-  
     rightIntake.lower();
   }
 

@@ -123,6 +123,7 @@ public class ShooterSubsystem extends SubsystemBase {
     spindexerMotor = new SparkFlex(Constants.Shooter.CAN.kSpindexer, MotorType.kBrushless);
     SparkFlexConfig spindexerConfig = new SparkFlexConfig();
     spindexerConfig
+        .inverted(true)
         .idleMode(IdleMode.kCoast)
         .closedLoop
         .p(0.0001)
@@ -233,7 +234,7 @@ public class ShooterSubsystem extends SubsystemBase {
         0.0,
         coast ? ControlType.kDutyCycle : ControlType.kVelocity,
         ClosedLoopSlot.kSlot0);
-  }
+   }
 
   public void startFeeder() {
       feederController.setSetpoint(
