@@ -238,7 +238,16 @@ public class RobotContainer {
         // );
 
         driverController.rightBumper().onTrue(IntakeCommands.toggle(intake));
-        // driverController.leftBumper().onTrue(IntakeCommands.);
+        driverController.leftBumper().onTrue(Commands.runOnce(
+            () -> {
+                intake.startRoller();
+            }, intake
+        ));
+        driverController.leftBumper().onFalse(Commands.runOnce(
+            () -> {
+                intake.stopRoller();
+            }, intake
+        ));
 
         driverController.start().onTrue(PathCommands.goToHubCommand());
 

@@ -35,13 +35,13 @@ public class IntakeCommands {
         intake);
   }
 
-  public static Command toggle(IntakeSubsystem intake) {
+  public static Command toggle(IntakeModule intake) {
     return Commands.run(
     () -> {
       if (intake.isLowered()) {
-        intake.raiseAll();
+        intake.raise();
       } else {
-        intake.lowerRight();
+        intake.lower();
       }
     }, intake);
   }

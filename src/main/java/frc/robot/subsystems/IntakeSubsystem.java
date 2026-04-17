@@ -38,6 +38,14 @@ public class IntakeSubsystem extends SubsystemBase {
     return rightIntake.isLowered();
   }
 
+  public void startRoller() {
+    rightIntake.startRoller();
+  }
+  
+  public void stopRoller() {
+    rightIntake.stopRoller();
+  }
+
   @Override
   public void simulationPeriodic() {
 
