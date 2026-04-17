@@ -161,9 +161,6 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
        Constants.Intake.kLoweredAngle,
        ControlType.kMAXMotionPositionControl,
        ClosedLoopSlot.kSlot0);
-        
-   rollerMotor.setControl(rollerVelocity.withVelocity((inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get()) / 60));
-
   }
 
   /**
@@ -184,7 +181,15 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
         Constants.Intake.kRaisedAngle,
         ControlType.kMAXMotionPositionControl,
         ClosedLoopSlot.kSlot0);
-    // We set the roller to 0 using duty cycle control, as setting it to 0 using velocity control
+
+  }
+
+  public void startRoller() {
+    rollerMotor.setControl(rollerVelocity.withVelocity((inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get()) / 60));
+  }
+
+  public void stopRoller() {
+        // We set the roller to 0 using duty cycle control, as setting it to 0 using velocity control
     // will cause the motor to brake and stop the rollers rather than letting them coast to a stop.
     // rollerController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
     rollerMotor.setControl(rollerDutyCycle.withOutput(0.0));
