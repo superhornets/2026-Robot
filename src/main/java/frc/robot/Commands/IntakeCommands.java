@@ -14,7 +14,7 @@ public class IntakeCommands {
 
   private IntakeCommands() {}
 
-  public static Command raiseAll(IntakeModule intake) {
+  public static Command raise(IntakeModule intake) {
     return Commands.run(
         () -> {
           intake.raise();
