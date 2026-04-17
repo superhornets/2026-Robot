@@ -157,12 +157,12 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
     configureRoller();
     servo1.setAngle(90);
     servo2.setAngle(0);
-   // armController.setSetpoint(
-      //  Constants.Intake.kLoweredAngle,
-     //   ControlType.kMAXMotionPositionControl,
-     //   ClosedLoopSlot.kSlot0);
+   armController.setSetpoint(
+       Constants.Intake.kLoweredAngle,
+       ControlType.kMAXMotionPositionControl,
+       ClosedLoopSlot.kSlot0);
         
-   // rollerMotor.setControl(rollerVelocity.withVelocity((inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get()) / 60));
+   rollerMotor.setControl(rollerVelocity.withVelocity((inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get()) / 60));
 
   }
 
