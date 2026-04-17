@@ -102,8 +102,8 @@ public final class Constants {
       public static final double kArmGearRatio = 5.0;
     }
 
-    public static final double kRaisedAngle = (0.24);
-    public static final double kLoweredAngle = (0.55);
+    public static final double kRaisedAngle = (0.0);
+    public static final double kLoweredAngle = (0.25);
     public static final double kIntakeRollerSpeedLeft = 5200.0; // RPM
     public static final double kIntakeRollerSpeedRight= 5300.0;
     public static final class CAN {
