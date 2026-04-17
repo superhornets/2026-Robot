@@ -36,6 +36,7 @@ import frc.robot.Constants.Climber;
 import frc.robot.Constants.Shooter;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.IntakeModule;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -68,7 +69,7 @@ public class RobotContainer {
     private final Drive drive;
     private final Vision vision;
     private final ShooterSubsystem shooter;
-    private final IntakeSubsystem intake;
+    private final IntakeModule intake;
     private final ClimberSubsystem climber;
     
     // Controller
@@ -88,7 +89,8 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
     	shooter = new ShooterSubsystem(shooterState);
-    	intake = new IntakeSubsystem();
+    	intake = new IntakeModule(
+          Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller, true, "Intake/Right");
         climber = new ClimberSubsystem();
     	switch (Constants.currentMode) {
        case REAL:
