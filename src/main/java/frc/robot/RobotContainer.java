@@ -227,11 +227,11 @@ public class RobotContainer {
         drive)
         .ignoringDisable(true));
 
-        driverController.rightBumper().onTrue(IntakeCommands.toggle(intake));
-        driverController.rightBumper().onTrue(IntakeCommands.lower(intake));
-        driverController.leftBumper().onTrue(IntakeCommands.raise(intake));
+        // driverController.rightBumper().onTrue(IntakeCommands.toggle(intake));
+        driverController.rightTrigger().onTrue(IntakeCommands.lower(intake));
+        driverController.rightBumper().onTrue(IntakeCommands.raise(intake));
 
-        driverController.rightTrigger().onTrue(
+        driverController.leftTrigger().onTrue(
             Commands.runOnce(
                 () -> {
                     intake.startRoller(false);
@@ -239,7 +239,7 @@ public class RobotContainer {
                 }, intake, shooter
             )
         );
-        driverController.rightTrigger().onFalse(
+        driverController.leftTrigger().onFalse(
             Commands.runOnce(
                 () -> { 
                     intake.stopRoller();
@@ -248,7 +248,7 @@ public class RobotContainer {
             )
         );
 
-        driverController.leftTrigger().onTrue(
+        driverController.leftBumper().onTrue(
             Commands.runOnce(
                 () -> {
                     intake.startRoller(true);
@@ -256,7 +256,7 @@ public class RobotContainer {
                 }, intake, shooter
             )
         );
-        driverController.leftTrigger().onFalse(
+        driverController.leftBumper().onFalse(
             Commands.runOnce(
                 () -> { 
                     intake.stopRoller();
