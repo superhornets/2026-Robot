@@ -38,6 +38,8 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class IntakeModule extends SubsystemBase {
+  boolean lowered = false;
+
   // HARDWARE OBJECTS
   private Servo servo1;
   private Servo servo2;
@@ -142,6 +144,7 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
   /** Lowers the arm and starts the roller at the intake speed. */
   public void lower() {
     // ensure we have the latest roller PID values from the dashboard before lowering and starting the roller
+    lowered = true;
     configureRoller();
     servo1.setAngle(90);
     servo2.setAngle(0);
@@ -157,12 +160,14 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
    * @return true if the arm is at the lowered setpoint, false otherwise
    */
   public boolean isLowered() {
-    return armController.getSetpoint() == Constants.Intake.kLoweredAngle
-        && armController.isAtSetpoint();
+    return lowered;
+    // return armController.getSetpoint() == Constants.Intake.kLoweredAngle
+    //     && armController.isAtSetpoint();
   }
 
   /** Raises the arm and stops the roller. */
   public void raise() {
+    lowered = false;
     servo1.setAngle(0);
     servo2.setAngle(90);
     armController.setSetpoint(
