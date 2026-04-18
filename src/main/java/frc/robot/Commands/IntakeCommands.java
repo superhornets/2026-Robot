@@ -7,7 +7,6 @@ package frc.robot.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.IntakeModule;
-import frc.robot.subsystems.IntakeSubsystem;
 
 /** Add your docs here. */
 public class IntakeCommands {
