@@ -70,7 +70,7 @@ public class RobotContainer {
     private final Vision vision;
     private final ShooterSubsystem shooter;
     private final IntakeModule intake;
-    private final ClimberSubsystem climber;
+    // private final ClimberSubsystem climber;
     
     // Controller
     private final CommandXboxController driverController = new CommandXboxController(0);
@@ -91,7 +91,7 @@ public class RobotContainer {
     	shooter = new ShooterSubsystem(shooterState);
     	intake = new IntakeModule(
           Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller, true, "Intake/Right");
-        climber = new ClimberSubsystem();
+        // climber = new ClimberSubsystem();
     	switch (Constants.currentMode) {
        case REAL:
          // Real robot, instantiate hardware IO implementations
@@ -177,7 +177,7 @@ public class RobotContainer {
         // schedule these commands to run when the robot is enabled
         CommandScheduler.getInstance().schedule(
         IntakeCommands.raise(intake),
-        ClimberCommands.zero(climber),
+        // ClimberCommands.zero(climber),
         ShooterCommands.zeroHood(shooter)
         );
     }
@@ -227,29 +227,44 @@ public class RobotContainer {
         new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
         drive)
         .ignoringDisable(true));
-        
 
-        driverController.rightBumper()
-        .whileTrue(
-        Commands.parallel(
-        // DriveCommands.intakeCommand(speedSupplier),
-        IntakeCommands.lowerRight(intake)
-        )
+        driverController.rightBumper().onTrue(IntakeCommands.toggle(intake));
+        driverController.rightBumper().onTrue(IntakeCommands.lower(intake));
+        driverController.leftBumper().onTrue(IntakeCommands.raise(intake));
+
+        driverController.rightTrigger().onTrue(
+            Commands.runOnce(
+                () -> {
+                    intake.startRoller(false);
+                    shooter.intakeOn();
+                }, intake, shooter
+            )
+        );
+        driverController.rightTrigger().onFalse(
+            Commands.runOnce(
+                () -> { 
+                    intake.stopRoller();
+                    shooter.intakeOff();
+                 }, intake, shooter
+            )
         );
 
-          driverController.rightBumper().onTrue(IntakeCommands.toggle(intake));
-        driverController.leftBumper().onTrue(Commands.runOnce(
-            () -> {
-                intake.startRoller();
-                shooter.intakeOn();
-            }, intake, shooter
-        ));
-        driverController.leftBumper().onFalse(Commands.runOnce(
-            () -> {
-                intake.stopRoller();
-                shooter.intakeOff();
-            }, intake, shooter
-        ));
+        driverController.leftTrigger().onTrue(
+            Commands.runOnce(
+                () -> {
+                    intake.startRoller(true);
+                    shooter.intakeOn();
+                }, intake, shooter
+            )
+        );
+        driverController.leftTrigger().onFalse(
+            Commands.runOnce(
+                () -> { 
+                    intake.stopRoller();
+                    shooter.intakeOff();
+                 }, intake, shooter
+            )
+        );
 
         driverController.start().onTrue(PathCommands.goToHubCommand());
 
@@ -278,8 +293,8 @@ public class RobotContainer {
         
         operatorController.leftTrigger().whileTrue(ShooterCommands.shoot(shooter));
         
-        operatorController.povUp().onTrue(ClimberCommands.climberUp(climber));
-        operatorController.povDown().onTrue(ClimberCommands.climberDown(climber));
+        // operatorController.povUp().onTrue(ClimberCommands.climberUp(climber));
+        // operatorController.povDown().onTrue(ClimberCommands.climberDown(climber));
         
     }
     

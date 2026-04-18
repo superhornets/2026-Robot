@@ -82,12 +82,12 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
     armConfig
         .idleMode(IdleMode.kBrake)
         .inverted(inverted)
-        .smartCurrentLimit(20)
+        .smartCurrentLimit(40)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .p(8)
+        .p(.0001)
         .i(0)
-        .d(0.1)
+        .d(0)
         .positionWrappingEnabled(false)
         .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0)
         .maxMotion
@@ -172,9 +172,12 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
 
   }
 
-  public void startRoller() {
-    rollerMotor.setControl(rollerVelocity.withVelocity((inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get()) / 60));
-    // armController.setSetpoint(0.1, ControlType.kDutyCycle);
+  public void startRoller(boolean reverse) {
+    double speed = (inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get()) / 60;
+    if (reverse) {
+      speed *= -1;
+    }
+    rollerMotor.setControl(rollerVelocity.withVelocity(speed));
   }
 
   public void stopRoller() {
@@ -182,10 +185,6 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
     // will cause the motor to brake and stop the rollers rather than letting them coast to a stop.
     // rollerController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
     rollerMotor.setControl(rollerDutyCycle.withOutput(0.0));
-  //  armController.setSetpoint(
-  //      Constants.Intake.kLoweredAngle,
-  //      ControlType.kMAXMotionPositionControl,
-  //      ClosedLoopSlot.kSlot0);
   }
 
   /**

@@ -22,13 +22,8 @@ public class IntakeCommands {
         intake);
   }
 
-
-
-  public static Command lowerRight(IntakeModule intake) {
-    return Commands.startEnd(
-        () -> {
-          intake.lower();
-        },
+  public static Command lower(IntakeModule intake) {
+    return Commands.run(
         () -> {
           intake.raise();
         },
