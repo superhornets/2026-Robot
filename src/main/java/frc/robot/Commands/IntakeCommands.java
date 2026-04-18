@@ -24,7 +24,7 @@ public class IntakeCommands {
   public static Command lower(IntakeModule intake) {
     return Commands.run(
         () -> {
-          intake.raise();
+          intake.lower();
         },
         intake);
   }

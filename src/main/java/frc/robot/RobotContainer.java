@@ -228,10 +228,10 @@ public class RobotContainer {
         .ignoringDisable(true));
 
         // driverController.rightBumper().onTrue(IntakeCommands.toggle(intake));
-        driverController.rightTrigger().onTrue(IntakeCommands.lower(intake));
-        driverController.rightBumper().onTrue(IntakeCommands.raise(intake));
+        driverController.povDown().onTrue(IntakeCommands.lower(intake));
+        driverController.povUp().onTrue(IntakeCommands.raise(intake));
 
-        driverController.leftTrigger().onTrue(
+        driverController.rightBumper().onTrue(
             Commands.runOnce(
                 () -> {
                     intake.startRoller(false);
@@ -239,7 +239,7 @@ public class RobotContainer {
                 }, intake, shooter
             )
         );
-        driverController.leftTrigger().onFalse(
+        driverController.rightBumper().onFalse(
             Commands.runOnce(
                 () -> { 
                     intake.stopRoller();
