@@ -32,6 +32,8 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Shooter;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -172,6 +174,7 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
 
   public void startRoller() {
     rollerMotor.setControl(rollerVelocity.withVelocity((inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get()) / 60));
+    // armController.setSetpoint(0.1, ControlType.kDutyCycle);
   }
 
   public void stopRoller() {
@@ -179,6 +182,10 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
     // will cause the motor to brake and stop the rollers rather than letting them coast to a stop.
     // rollerController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
     rollerMotor.setControl(rollerDutyCycle.withOutput(0.0));
+  //  armController.setSetpoint(
+  //      Constants.Intake.kLoweredAngle,
+  //      ControlType.kMAXMotionPositionControl,
+  //      ClosedLoopSlot.kSlot0);
   }
 
   /**

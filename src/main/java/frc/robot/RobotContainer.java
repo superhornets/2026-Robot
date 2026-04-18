@@ -241,12 +241,14 @@ public class RobotContainer {
         driverController.leftBumper().onTrue(Commands.runOnce(
             () -> {
                 intake.startRoller();
-            }, intake
+                shooter.intakeOn();
+            }, intake, shooter
         ));
         driverController.leftBumper().onFalse(Commands.runOnce(
             () -> {
                 intake.stopRoller();
-            }, intake
+                shooter.intakeOff();
+            }, intake, shooter
         ));
 
         driverController.start().onTrue(PathCommands.goToHubCommand());
