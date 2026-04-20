@@ -140,7 +140,7 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
   public void lower() {
     // ensure we have the latest roller PID values from the dashboard before lowering and starting the roller
     lowered = true;
-    configureRoller();
+    // configureRoller();
     servo1.setAngle(80);
     servo2.setAngle(10);
    armController.setSetpoint(
