@@ -291,6 +291,8 @@ public class RobotContainer {
         operatorController.b().whileTrue(ShooterCommands.manual(shooterState, operatorController::getLeftY, operatorController::getLeftX));
         
         operatorController.leftTrigger().whileTrue(ShooterCommands.shoot(shooter));
+
+        operatorController.a().whileTrue(IntakeCommands.intakeAgitate(intake));
         
         // operatorController.povUp().onTrue(ClimberCommands.climberUp(climber));
         // operatorController.povDown().onTrue(ClimberCommands.climberDown(climber));
