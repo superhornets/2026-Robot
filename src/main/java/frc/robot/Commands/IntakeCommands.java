@@ -43,7 +43,7 @@ public class IntakeCommands {
   }
 
   public static Command intakeAgitate(IntakeModule intake) {
-    return Commands.run(
+    return Commands.runEnd(
       () -> {
         if (intake.isAtSetpoint()) {
           if (intake.isLowered()) {
@@ -52,6 +52,9 @@ public class IntakeCommands {
             intake.lower();
           }
         }
+      }, 
+      () -> {
+        intake.lower();
       }, intake
     );
   }
