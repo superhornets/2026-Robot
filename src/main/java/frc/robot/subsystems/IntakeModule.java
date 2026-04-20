@@ -209,8 +209,9 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
    */
   @AutoLogOutput(key = "{logScope}/isRaised")
   public boolean isRaised() {
-    return armController.getSetpoint() == Constants.Intake.kRaisedAngle
-        && armController.isAtSetpoint();
+    // return armController.getSetpoint() == Constants.Intake.kRaisedAngle
+    //     && armController.isAtSetpoint();
+    return !lowered;
   }
 
   @AutoLogOutput(key = "{logScope}/ArmAngleRotations")
