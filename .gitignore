@@ -4,6 +4,7 @@
 ### C++ ###
 # Prerequisites
 *.d
+simgui-ds.json
 
 # Compiled Object files
 *.slo
