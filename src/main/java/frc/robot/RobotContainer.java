@@ -175,7 +175,7 @@ public class RobotContainer {
         
         // schedule these commands to run when the robot is enabled
         CommandScheduler.getInstance().schedule(
-        IntakeCommands.raise(intake),
+       // IntakeCommands.raise(intake),
         // ClimberCommands.zero(climber),
         ShooterCommands.zeroHood(shooter)
         );
