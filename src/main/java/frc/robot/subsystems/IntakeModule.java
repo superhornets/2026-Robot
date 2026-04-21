@@ -87,11 +87,13 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
         .smartCurrentLimit(40)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .p(1.5)
-        .i(0)
-        .d(0.01)
+        .p(2)
+        .i(0.0001)
+        .d(50)
         .positionWrappingEnabled(false)
-        .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0);
+        .allowedClosedLoopError(Units.degreesToRotations(0.5), ClosedLoopSlot.kSlot0);
+        //.feedForward.kS(0.008).kCos(0.1);
+
 
     armMotor.configure(
         armConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -141,8 +143,8 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
     // ensure we have the latest roller PID values from the dashboard before lowering and starting the roller
     lowered = true;
     //configureRoller();
-    servo1.setAngle(70);
-    servo2.setAngle(20);
+    servo1.setAngle(80);
+    servo2.setAngle(10);
    armController.setSetpoint(
        Constants.Intake.kLoweredAngle,
        ControlType.kPosition,
