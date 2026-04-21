@@ -67,6 +67,18 @@ public class ShooterCommands {
         shooter);
   }
 
+  
+  public static Command reverseFeeder(ShooterSubsystem shooter) {
+    return Commands.runEnd(
+        () -> {
+          shooter.startReverseFeeder();
+        },
+        () -> {
+          shooter.stopFeeder();
+        },
+        shooter);
+  }
+
 
   public static Command rangeForHub(ShooterStateStore state) {
     return Commands.run(
@@ -132,14 +144,6 @@ public class ShooterCommands {
     return Commands.runOnce(
         () -> {
           shooter.startReverseFeeder();
-        },
-        shooter);
-  }
-
-  public static Command stopReverse(ShooterSubsystem shooter) {
-    return Commands.runOnce(
-        () -> {
-          shooter.stopReverseFeeder();
         },
         shooter);
   }
