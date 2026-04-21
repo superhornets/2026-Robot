@@ -235,16 +235,14 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> {
                     intake.startRoller(false);
-                    shooter.intakeOn();
-                }, intake, shooter
+                }, intake
             )
         );
         driverController.rightBumper().onFalse(
             Commands.runOnce(
                 () -> { 
                     intake.stopRoller();
-                    shooter.intakeOff();
-                 }, intake, shooter
+                 }, intake
             )
         );
 
@@ -252,7 +250,6 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> {
                     intake.startRoller(true);
-                    shooter.intakeOn();
                 }, intake, shooter
             )
         );
@@ -260,7 +257,6 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> { 
                     intake.stopRoller();
-                    shooter.intakeOff();
                  }, intake, shooter
             )
         );
@@ -276,23 +272,14 @@ public class RobotContainer {
         () -> -driverController.getLeftX(),
         () -> false));
 
-        // driverController
-        // .a()
-        // .whileTrue(
-        // PathCommands.ClosestTrench(
-        // drive,
-        // () -> -driverController.getLeftY(),
-        // () -> -driverController.getLeftX(),
-        // () -> true));
-
         driverController.a().whileTrue(DriveCommands.shake(drive));
         
         operatorController.y().whileTrue(ShooterCommands.autoHub(shooterState));
         operatorController.b().whileTrue(ShooterCommands.manual(shooterState, operatorController::getLeftY, operatorController::getLeftX));
         
-        operatorController.leftTrigger().whileTrue(ShooterCommands.shoot(shooter));
 
-        operatorController.a().whileTrue(IntakeCommands.intakeAgitate(intake));
+        operatorController.rightTrigger().whileTrue(ShooterCommands.shoot(shooter));
+        operatorController.leftTrigger().whileTrue(ShooterCommands.reverseFeeder(shooter));
         
         // operatorController.povUp().onTrue(ClimberCommands.climberUp(climber));
         // operatorController.povDown().onTrue(ClimberCommands.climberDown(climber));

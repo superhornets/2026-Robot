@@ -47,10 +47,6 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ShooterSubsystem extends SubsystemBase {
-
-
-  boolean roller = false;
-  boolean feeder = false;
   ShooterStateStore stateStore;;
   // HARDWARE OBJECTS
 
@@ -244,39 +240,17 @@ public class ShooterSubsystem extends SubsystemBase {
         4000, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
       spindexerController.setSetpoint(
         6000, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-      feeder = true;
   }
 
   public void startReverseFeeder() {
-    feederController.setSetpoint(-200, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-    startFlywheel(-200);
-  }
-
-  public void stopReverseFeeder() {
-    stopFeeder();
-    stopFlywheel(false);
+    feederController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+    spindexerController.setSetpoint( -2000, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
   public void stopFeeder() {
     feederController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
     spindexerController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
-    if (roller) {
-      spindexerController.setSetpoint(800, ControlType.kVelocity);
-    }
-    feeder = false;
-   }
 
-   public void intakeOn() {
-    roller = true;
-    if (!feeder) {
-      spindexerController.setSetpoint(800, ControlType.kVelocity);
-    }
-   }
-   public void intakeOff() {
-    roller = true;
-    if (!feeder) {
-      spindexerController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
-    }
    }
 
   // Hood zeroing utilities (patterned after ClimberSubsystem zeroing)
