@@ -172,6 +172,19 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
 
   }
 
+  public boolean isAtSetpoint() {
+    return armController.isAtSetpoint();
+  }
+
+  public void raiseHalf() {
+    lowered = false;
+    double angle = (Constants.Intake.kRaisedAngle + Constants.Intake.kLoweredAngle) * 0.5;
+    armController.setSetpoint(
+        angle,
+        ControlType.kPosition,
+        ClosedLoopSlot.kSlot0);
+  }
+
   public void startRoller(boolean reverse) {
     double speed = (inverted ? rollerRightSpeed.get() : rollerLeftSpeed.get()) / 60;
     if (reverse) {
@@ -196,8 +209,9 @@ SparkMaxConfig armConfig = new SparkMaxConfig();
    */
   @AutoLogOutput(key = "{logScope}/isRaised")
   public boolean isRaised() {
-    return armController.getSetpoint() == Constants.Intake.kRaisedAngle
-        && armController.isAtSetpoint();
+    // return armController.getSetpoint() == Constants.Intake.kRaisedAngle
+    //     && armController.isAtSetpoint();
+    return !lowered;
   }
 
   @AutoLogOutput(key = "{logScope}/ArmAngleRotations")
