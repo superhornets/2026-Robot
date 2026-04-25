@@ -57,3 +57,18 @@ public class IntakeCommands {
     );
   }
 }
+//     return Commands.runEnd(
+//       () -> {
+//         if (intake.isAtSetpoint()) {
+//           if (intake.isLowered()) {
+//             intake.raiseHalf();
+//           } else {
+//             intake.lower();
+//           }
+//         }
+//       }, 
+//       () -> {
+//         intake.lower();
+//       }, intake
+//     );
+//   } }
