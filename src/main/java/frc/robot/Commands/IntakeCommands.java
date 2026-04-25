@@ -47,13 +47,16 @@ public class IntakeCommands {
       Commands.waitSeconds(0.5),
       Commands.runOnce(
         () -> {
-          if (intake.isLowered()) {
-            intake.raise();
-          } else {
-            intake.lower();
-          }
+          intake.raise();
+          intake.stopRoller();
         }, intake
-      )
+      ),
+      Commands.waitSeconds(0.5),
+      Commands.runOnce(
+        () -> {
+          intake.lower();
+          intake.startRoller(false);
+        }, intake)
     );
   }
 }
