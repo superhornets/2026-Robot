@@ -43,8 +43,8 @@ public class IntakeCommands {
   }
 
   public static Command intakeAgitate(IntakeModule intake) {
-    return Commands.sequence(
-      Commands.waitSeconds(1),
+    return Commands.repeatingSequence(
+      Commands.waitSeconds(0.5),
       Commands.runOnce(
         () -> {
           if (intake.isLowered()) {
