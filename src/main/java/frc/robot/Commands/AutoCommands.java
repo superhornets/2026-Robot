@@ -90,7 +90,7 @@ public class AutoCommands {
                         }),
                         Commands.waitSeconds(1.5),
                         ShooterCommands.startFeeder(shooterSubsystem),
-                        Commands.waitSeconds(10),
+                        Commands.waitSeconds(7),
                         ShooterCommands.stop(shooterSubsystem, shooterStateStore),
                         Commands.runOnce(() -> {
                             intake.lower();
@@ -98,7 +98,7 @@ public class AutoCommands {
                         })
                     )
                 ),
-                PathCommands.goToCoordinate(() -> Constants.FieldConstants.center.getX(), () -> Constants.FieldConstants.center.getY(), () -> intakeAngle)
+                PathCommands.goToCoordinate(() -> Constants.FieldConstants.center.getX(), () -> y, () -> intakeAngle)
             );
     }
 }
