@@ -48,7 +48,7 @@ public class IntakeCommands {
       Commands.runOnce(
         () -> {
           if (intake.isLowered()) {
-            intake.raiseHalf();
+            intake.raise();
           } else {
             intake.lower();
           }
