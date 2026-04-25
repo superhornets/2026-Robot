@@ -153,6 +153,10 @@ public class RobotContainer {
         autoChooser.addOption("Left", AutoCommands.basicAuto(6, -45, drive, shooterState, shooter));
         autoChooser.addOption("Middle", AutoCommands.basicAuto(4, 0 , drive, shooterState, shooter));
         autoChooser.addOption("Right", AutoCommands.basicAuto(2, 45, drive, shooterState, shooter));
+        
+        autoChooser.addOption("LeftIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(6, -45, drive, shooterState, shooter, intake));
+        autoChooser.addOption("MiddleIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(4, 0 , drive, shooterState, shooter, intake));
+        autoChooser.addOption("RightIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(2, 45, drive, shooterState, shooter, intake));
 
         // // Set up SysId routines
         // autoChooser.addOption(
