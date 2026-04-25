@@ -43,17 +43,32 @@ public class IntakeCommands {
   }
 
   public static Command intakeAgitate(IntakeModule intake) {
-    return Commands.sequence(
-      Commands.waitSeconds(1),
-      Commands.runOnce(
-        () -> {
+    // return Commands.sequence(
+    //   Commands.waitSeconds(1),
+    //   Commands.runOnce(
+    //     () -> {
+    //       if (intake.isLowered()) {
+    //         intake.raiseHalf();
+    //       } else {
+    //         intake.lower();
+    //       }
+    //     }, intake
+    //   )
+    // );
+    
+    return Commands.runEnd(
+      () -> {
+        if (intake.isAtSetpoint()) {
           if (intake.isLowered()) {
             intake.raiseHalf();
           } else {
             intake.lower();
           }
-        }, intake
-      )
+        }
+      }, 
+      () -> {
+        intake.lower();
+      }, intake
     );
   }
 }
