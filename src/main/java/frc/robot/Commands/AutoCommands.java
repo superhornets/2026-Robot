@@ -37,7 +37,7 @@ public class AutoCommands {
                     }),
                     Commands.waitSeconds(1.5),
                     ShooterCommands.startFeeder(shooterSubsystem),
-                    Commands.waitSeconds(2),
+                    Commands.waitSeconds(10),
                     ShooterCommands.stop(shooterSubsystem, shooterStateStore)
                 )
             )
