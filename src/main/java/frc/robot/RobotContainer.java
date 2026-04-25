@@ -158,6 +158,10 @@ public class RobotContainer {
         autoChooser.addOption("MiddleIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(4, 0 , drive, shooterState, shooter, intake));
         autoChooser.addOption("RightIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(2, 45, drive, shooterState, shooter, intake));
 
+        autoChooser.addOption("LeftNeutral", AutoCommands.neutralAuto(6, -45, 90, drive, shooterState, shooter, intake));
+        autoChooser.addOption("MiddleNeutral", AutoCommands.neutralAuto(4, 0, 90, drive, shooterState, shooter, intake));
+        autoChooser.addOption("RightNeutral", AutoCommands.neutralAuto(2, 45, 90, drive, shooterState, shooter, intake));
+
         // // Set up SysId routines
         // autoChooser.addOption(
         // "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));

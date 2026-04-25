@@ -10,6 +10,8 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
+import org.opencv.core.RotatedRect;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
@@ -52,6 +54,7 @@ public final class Constants {
         new Pose3d(Meters.of(12), Meters.of(0.6), Meters.of(0), Rotation3d.kZero);
     public static final Pose3d redUpperTrench =
         new Pose3d(Meters.of(12), Meters.of(7.4), Meters.of(0), Rotation3d.kZero);
+    public static final Pose3d center = new Pose3d(Meters.of((12.0 + 4.6) * 0.5), Meters.of((0.6 + 7.4) * 0.5), Meters.of(0), Rotation3d.kZero);
   }
 
   public static final class Robot {

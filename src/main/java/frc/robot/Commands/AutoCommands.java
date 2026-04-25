@@ -69,5 +69,36 @@ public class AutoCommands {
                 )
             )
         );
+    }public static Command neutralAuto(double y, double angle, double intakeAngle, Drive drive, ShooterStateStore shooterStateStore, ShooterSubsystem shooterSubsystem, IntakeModule intake) {
+        return Commands.repeatingSequence(
+                Commands.runOnce(
+                    () -> {
+                        intake.stopRoller();
+                    }, intake
+                ),
+                PathCommands.goToCoordinate(() -> 2, () -> y, () -> angle),
+                Commands.race(
+                    DriveCommands.joystickDriveAtAngle(
+                        drive,
+                        () -> 0,
+                        () -> 0,
+                        () -> RebuiltField.getTranslationToHub2D().getAngle(),
+                        () -> 0.75),
+                    Commands.sequence(
+                        Commands.runOnce(() -> {
+                            shooterStateStore.set(RebuiltField.shooterStateForHub());
+                        }),
+                        Commands.waitSeconds(1.5),
+                        ShooterCommands.startFeeder(shooterSubsystem),
+                        Commands.waitSeconds(10),
+                        ShooterCommands.stop(shooterSubsystem, shooterStateStore),
+                        Commands.runOnce(() -> {
+                            intake.lower();
+                            intake.startRoller(false);
+                        })
+                    )
+                ),
+                PathCommands.goToCoordinate(() -> Constants.FieldConstants.center.getX(), () -> Constants.FieldConstants.center.getY(), () -> intakeAngle)
+            );
     }
 }
