@@ -175,6 +175,19 @@
               "color": 4278238420,
               "line_width": 2.0
             }
+          },
+          {
+            "title": "Field Oriented",
+            "x": 1088.0,
+            "y": 640.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Switch",
+            "properties": {
+              "topic": "Drive/FieldOriented",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }

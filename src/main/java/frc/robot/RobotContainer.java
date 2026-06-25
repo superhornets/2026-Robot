@@ -56,6 +56,8 @@ import frc.robot.util.RebuiltMatch;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -84,6 +86,7 @@ public class RobotContainer {
     
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
+    private LoggedNetworkBoolean fieldOriented = new LoggedNetworkBoolean("Drive/FieldOriented", true);
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -203,7 +206,8 @@ public class RobotContainer {
         () -> -driverController.getLeftY(),
         () -> -driverController.getLeftX(),
         () -> -driverController.getRightX(),
-        speedSupplier));
+        speedSupplier,
+        fieldOriented));
         
         // Lock to Hub when Y button is held
         driverController
