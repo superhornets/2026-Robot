@@ -124,6 +124,16 @@ public class ShooterCommands {
         shooter);
   }
 
+  public static Command idleFlywheel(ShooterSubsystem shooter) {
+    return Commands.runOnce(
+      ()->{
+        shooter.startFlywheel(2000);
+      },
+      shooter
+    );
+  }
+
+
   public static Command startFeeder(ShooterSubsystem shooter) {
     return Commands.runOnce(
         () -> {
