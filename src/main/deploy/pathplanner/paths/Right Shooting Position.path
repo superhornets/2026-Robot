@@ -3,37 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4399630500637755,
-        "y": 0.5591603954081643
+        "x": 3.654249162946429,
+        "y": 0.6677366868622459
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.439963050063778,
-        "y": 0.5591603954081643
+        "x": 3.3307924904336734,
+        "y": 0.6267321827168371
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.372466073495371,
-        "y": 4.075547309027778
+        "x": 2.933017338966837,
+        "y": 0.7932670998086746
       },
       "prevControl": {
-        "x": 1.3724660734953709,
-        "y": 4.075547309027778
+        "x": 3.000379384566327,
+        "y": 0.4574706234056134
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "RightShootingPosition"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.65,
+        "y": 4.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.0,
+      "name": "Hub Aim"
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 6.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -42,13 +53,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 63.641843566437394
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
