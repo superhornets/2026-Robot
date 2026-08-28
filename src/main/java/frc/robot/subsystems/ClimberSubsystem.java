@@ -63,10 +63,10 @@ public class ClimberSubsystem extends SubsystemBase {
             Constants.Climber.SIM.kGearRatio,
             1.0, // mass kg (approx)
             1.0, // length meters (approx)
-            Units.degreesToRadians(Constants.Climber.kMinAngleDegrees),
-            Units.degreesToRadians(Constants.Climber.kMaxAngleDegrees),
+            Units.degreesToRadians(Constants.Climber.kMinAngle),
+            Units.degreesToRadians(Constants.Climber.kMaxAngle),
             true,
-            Units.degreesToRadians(Constants.Climber.kMinAngleDegrees));
+            Units.degreesToRadians(Constants.Climber.kMinAngle));
 
     //  climberSim = new SingleJointedArmSim()
   }
@@ -103,17 +103,17 @@ public class ClimberSubsystem extends SubsystemBase {
   public void setPositionDegrees(double degrees) {
     double clamped =
         MathUtil.clamp(
-            degrees, Constants.Climber.kMinAngleDegrees, Constants.Climber.kMaxAngleDegrees);
+            degrees, Constants.Climber.kMinAngle, Constants.Climber.kMaxAngle);
     double rotations = Units.degreesToRotations(clamped);
     climberController.setSetpoint(
         rotations, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
   }
 
   public void climberUp() {
-    climberController.setSetpoint(Climber.kMaxAngleDegrees, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
+    climberController.setSetpoint(Climber.kMaxAngle, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
   }
   public void climberDown() {
-        climberController.setSetpoint(-Climber.kMaxAngleDegrees, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
+        climberController.setSetpoint(-Climber.kMaxAngle, ControlType.kPosition, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
 
     // climberController.setSetpoint(-2, ControlType.kVelocity, com.revrobotics.spark.ClosedLoopSlot.kSlot0);
     // lowering = 1;

@@ -1,13 +1,13 @@
-package frc.robot.Commands;
+package frc.robot.commands;
 
 import com.ctre.phoenix6.Orchestra;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class OrchestraStopCommand extends Command {
+public class OrchestraPlayCommand extends Command {
   // Declare subsystem variables
   private final Orchestra m_orchestra;
 
-  public OrchestraStopCommand(Orchestra orchestra) {
+  public OrchestraPlayCommand(Orchestra orchestra) {
     m_orchestra = orchestra;
   }
 
@@ -16,7 +16,7 @@ public class OrchestraStopCommand extends Command {
 
   @Override
   public void execute() {
-    m_orchestra.stop();
+    m_orchestra.play();
   }
 
   // @Override

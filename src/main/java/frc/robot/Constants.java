@@ -10,8 +10,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
-import org.opencv.core.RotatedRect;
-
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
@@ -68,8 +66,8 @@ public final class Constants {
     public static final double kFastModeMultiplier = 0.9;  // fast is 0.60
     public static final double kIntakeSpeedMultiplier = 0.2; // intake is 0.2
 
-    public static final double kWidthMeters = Units.inchesToMeters(20.5);
-    public static final double kLengthMeters = Units.inchesToMeters(29.25);
+    public static final double kWidthMeters = Robot.kWidthMeters;
+    public static final double kLengthMeters = Robot.kLengthMeters;
   }
 
   public static final class Shooter {
@@ -110,10 +108,12 @@ public final class Constants {
     public static final double kIntakeRollerSpeedLeft = 2000.0; // RPM
     public static final double kIntakeRollerSpeedRight= 4000.0;
     public static final class CAN {
-
       public static final int kRightArm = 56;
       public static final int kRightRoller = 57;
     }
+
+    public static final int kServo1Port = 8;
+    public static final int kServo2Port = 9;
   }
 
   public static final class Climber {
@@ -121,9 +121,9 @@ public final class Constants {
       public static final int kClimber = 60;
     }
 
-    // Physical limits for the climber arm (degrees)
-    public static final double kMinAngleDegrees = -9000.0;
-    public static final double kMaxAngleDegrees = 0.0;
+    // Physical limits for the climber arm (motor rotations)
+    public static final double kMinAngle = -9000.0;
+    public static final double kMaxAngle = 0.0;
 
     // PID gains for position control (tune on robot)
     public static final double kPositionP = 1.0;

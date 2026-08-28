@@ -9,33 +9,21 @@ package frc.robot;
 
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
-import java.lang.reflect.Field;
-import java.util.function.BooleanSupplier;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Commands.AutoCommands;
-import frc.robot.Commands.ClimberCommands;
-import frc.robot.Commands.DriveCommands;
-import frc.robot.Commands.IntakeCommands;
-import frc.robot.Commands.PathCommands;
-import frc.robot.Commands.ShooterCommands;
-import frc.robot.Constants.Climber;
-import frc.robot.Constants.Shooter;
+import frc.robot.commands.AutoCommands;
+import frc.robot.commands.DriveCommands;
+import frc.robot.commands.IntakeCommands;
+import frc.robot.commands.PathCommands;
+import frc.robot.commands.ShooterCommands;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeModule;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -53,11 +41,8 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.util.FlippedSupplier;
 import frc.robot.util.RebuiltField;
 import frc.robot.util.RebuiltMatch;
-
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -223,10 +208,8 @@ public class RobotContainer {
         // Switch to X pattern when X button is pressed
         driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
         
-        driverController.leftTrigger().onTrue(Commands.runOnce(() -> { speedSupplier.setSlow(); }));
-        driverController.leftTrigger().onFalse(Commands.runOnce(() -> { speedSupplier.reset(); }));
-        driverController.rightTrigger().onTrue(Commands.runOnce(() -> { speedSupplier.setFast(); }));
-        driverController.rightTrigger().onFalse(Commands.runOnce(() -> { speedSupplier.reset(); }));
+        driverController.leftTrigger().whileTrue(DriveCommands.slowCommand(speedSupplier));
+        driverController.rightTrigger().whileTrue(DriveCommands.fastCommand(speedSupplier));
         
         // Reset gyro to 0° when B button is pressed
         driverController
@@ -243,37 +226,15 @@ public class RobotContainer {
         driverController.povDown().onTrue(IntakeCommands.lower(intake));
         driverController.povUp().onTrue(IntakeCommands.raise(intake));
 
-        driverController.rightBumper().onTrue(
-            Commands.runOnce(
-                () -> {
-                    intake.startRoller(false);
-                }, intake
-            )
-        );
-        driverController.rightBumper().onFalse(
-            Commands.runOnce(
-                () -> { 
-                    intake.stopRoller();
-                 }, intake
-            )
+        driverController.rightBumper().whileTrue(
+            Commands.startEnd(() -> intake.startRoller(false), () -> intake.stopRoller(), intake)
         );
 
-        driverController.leftBumper().onTrue(
-            Commands.runOnce(
-                () -> {
-                    intake.startRoller(true);
-                }, intake, shooter
-            )
-        );
-        driverController.leftBumper().onFalse(
-            Commands.runOnce(
-                () -> { 
-                    intake.stopRoller();
-                 }, intake, shooter
-            )
+        driverController.leftBumper().whileTrue(
+            Commands.startEnd(() -> intake.startRoller(true), () -> intake.stopRoller(), intake, shooter)
         );
 
-        driverController.start().onTrue(PathCommands.goToHubCommand());
+        driverController.start().onTrue(PathCommands.goToHubCommand(drive));
 
         driverController
         .back()

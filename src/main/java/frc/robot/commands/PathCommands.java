@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Commands;
+package frc.robot.commands;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
@@ -28,20 +28,23 @@ public class PathCommands {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
-  public static Command goToHubCommand() {
-    return goToCoordinate(() -> 2, () -> 4, () -> 0);
+  public static Command goToHubCommand(Drive drive) {
+    return goToCoordinate(() -> 2, () -> 4, () -> 0, drive);
   }
 
-  public static Command goToCoordinate(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier angleSupplier) {
-
-    Pose2d targetPose = new Pose2d(xSupplier.getAsDouble(), ySupplier.getAsDouble(), Rotation2d.fromDegrees(angleSupplier.getAsDouble()));
-    
-    // Create the constraints to use while pathfinding
+  public static Command goToCoordinate(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier angleSupplier, Drive drive) {
     PathConstraints constraints =
-        new PathConstraints(35.0, 14.0, Units.degreesToRadians(900), Units.degreesToRadians(720));
+        new PathConstraints(4.0, 3.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
 
-    Command pathfindingCommand = AutoBuilder.pathfindToPoseFlipped(targetPose, constraints, 0.0);
-    return pathfindingCommand;
+    return new DeferredCommand(
+        () -> {
+          Pose2d targetPose = new Pose2d(
+              xSupplier.getAsDouble(),
+              ySupplier.getAsDouble(),
+              Rotation2d.fromDegrees(angleSupplier.getAsDouble()));
+          return AutoBuilder.pathfindToPoseFlipped(targetPose, constraints, 0.0);
+        },
+        Set.of(drive));
   }
 
   public static Command ClosestTrench(
@@ -66,9 +69,9 @@ public class PathCommands {
             isFlipped = !isFlipped;
           }
 
-          boolean SideY = false;
+          boolean sideY = false;
           if (robotPose.getY() > 4.00) {
-            SideY = true;
+            sideY = true;
           }
           double angle = isFlipped ? 180 : 0;
           double xCoord =
@@ -76,7 +79,7 @@ public class PathCommands {
                   ? Constants.FieldConstants.redLowerTrench.getX()
                   : Constants.FieldConstants.blueLowerTrench.getX();
           double yCoord =
-              SideY
+              sideY
                   ? Constants.FieldConstants.redUpperTrench.getY()
                   : Constants.FieldConstants.blueLowerTrench.getY();
 
@@ -84,9 +87,9 @@ public class PathCommands {
 
           PathConstraints constraints =
               new PathConstraints(
-                  25.0, 14.0, Units.degreesToRadians(900), Units.degreesToRadians(720));
+                  4.0, 3.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
 
-          return AutoBuilder.pathfindToPose(targetPose, constraints, 25.0);
+          return AutoBuilder.pathfindToPose(targetPose, constraints, 0.0);
         },
         Set.of(drive));
   }

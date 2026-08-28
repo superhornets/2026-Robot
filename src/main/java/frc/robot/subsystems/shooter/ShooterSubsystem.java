@@ -47,7 +47,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ShooterSubsystem extends SubsystemBase {
-  ShooterStateStore stateStore;;
+  private final ShooterStateStore stateStore;
   // HARDWARE OBJECTS
 
   // flywheel
