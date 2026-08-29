@@ -7,47 +7,28 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutoCommands;
+import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.PathCommands;
 import frc.robot.commands.ShooterCommands;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.intake.IntakeConstants;
-import frc.robot.subsystems.intake.IntakeIO;
-import frc.robot.subsystems.intake.IntakeIOHardware;
-import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.commands.SpeedCommands;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.drive.SpeedSupplier;
-import frc.robot.subsystems.shooter.ShooterIO;
-import frc.robot.subsystems.shooter.ShooterIOSim;
-import frc.robot.subsystems.shooter.ShooterIOSparkMax;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterStateStore;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPhotonVision;
-import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.util.FlippedSupplier;
 import frc.robot.util.RebuiltField;
-import frc.robot.util.RebuiltMatch;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
@@ -72,92 +53,42 @@ public class RobotContainer {
     private final SpeedSupplier speedSupplier = new SpeedSupplier();
     private final ShooterStateStore shooterState = new ShooterStateStore();
     
-    // Match Stuff
-    private final RebuiltMatch rebuiltMatch = new RebuiltMatch();
-    
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
     private LoggedNetworkBoolean fieldOriented = new LoggedNetworkBoolean("Drive/FieldOriented", true);
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-    	switch (Constants.currentMode) {
-       case REAL:
-         // Real robot, instantiate hardware IO implementations
-         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
-         // a CANcoder
-         drive =
-             new Drive(
-                 new GyroIOPigeon2(),
-                 new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                 new ModuleIOTalonFX(TunerConstants.FrontRight),
-                 new ModuleIOTalonFX(TunerConstants.BackLeft),
-                 new ModuleIOTalonFX(TunerConstants.BackRight));
+        drive   = Subsystems.createDrive(Constants.currentMode);
+        vision  = Subsystems.createVision(Constants.currentMode, drive);
+        shooter = Subsystems.createShooter(Constants.currentMode, shooterState);
+        intake  = Subsystems.createIntake(Constants.currentMode);
 
-         vision =
-             new Vision(
-                 drive::addVisionMeasurement,
-                 new VisionIOPhotonVision(camera0Name, robotToCamera0),
-                 new VisionIOPhotonVision(camera1Name, robotToCamera1));
+        // Provide RebuiltField with live suppliers so AutoBuilder can flip paths and compute hub targeting.
+        RebuiltField.setGlobalFlippedSupplier(new FlippedSupplier());
+        RebuiltField.setGlobalRobotPoseSupplier(drive::getPose);
 
-         shooter = new ShooterSubsystem(new ShooterIOSparkMax(), shooterState);
-         intake = new IntakeSubsystem(
-             new IntakeIOHardware(Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller, true),
-             "Intake/Right", IntakeConstants.kIntakeRollerSpeedRight);
-         break;
-
-       case SIM:
-         // Sim robot, instantiate physics sim IO implementations
-         drive =
-             new Drive(
-                 new GyroIO() {},
-                 new ModuleIOSim(TunerConstants.FrontLeft),
-                 new ModuleIOSim(TunerConstants.FrontRight),
-                 new ModuleIOSim(TunerConstants.BackLeft),
-                 new ModuleIOSim(TunerConstants.BackRight));
-
-         vision =
-             new Vision(
-                 drive::addVisionMeasurement,
-                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
-                 new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
-
-         shooter = new ShooterSubsystem(new ShooterIOSim(), shooterState);
-         intake = new IntakeSubsystem(
-             new IntakeIOSim(), "Intake/Right", IntakeConstants.kIntakeRollerSpeedRight);
-         break;
-
-       default:
-         // Replayed robot, disable IO implementations
-         drive =
-             new Drive(
-                 new GyroIO() {},
-                 new ModuleIO() {},
-                 new ModuleIO() {},
-                 new ModuleIO() {},
-                 new ModuleIO() {});
-
-         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-
-         shooter = new ShooterSubsystem(new ShooterIO() {}, shooterState);
-         intake = new IntakeSubsystem(
-             new IntakeIO() {}, "Intake/Right", IntakeConstants.kIntakeRollerSpeedRight);
-         break;
-     }
- 
-     // Provide RebuiltField with live suppliers so AutoBuilder can flip paths and compute hub targeting.
-     RebuiltField.setGlobalFlippedSupplier(new FlippedSupplier());
-     RebuiltField.setGlobalRobotPoseSupplier(drive::getPose);
-     
         // Set up auto routines
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+        configureAutoChooser();
+
+        // Configure the button bindings
+        configureDriverBindings();
+        configureOperatorBindings();
         
+        // schedule these commands to run when the robot is enabled
+        CommandScheduler.getInstance().schedule(
+        ShooterCommands.zeroHood(shooter)
+        );
+    }
+    
+    private void configureAutoChooser() {
         autoChooser.addOption("Left", AutoCommands.basicAuto(6, -45, drive, shooterState, shooter));
-        autoChooser.addOption("Middle", AutoCommands.basicAuto(4, 0 , drive, shooterState, shooter));
+        autoChooser.addOption("Middle", AutoCommands.basicAuto(4, 0, drive, shooterState, shooter));
         autoChooser.addOption("Right", AutoCommands.basicAuto(2, 45, drive, shooterState, shooter));
-        
+
         autoChooser.addOption("LeftIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(6, -45, drive, shooterState, shooter, intake));
-        autoChooser.addOption("MiddleIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(4, 0 , drive, shooterState, shooter, intake));
+        autoChooser.addOption("MiddleIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(4, 0, drive, shooterState, shooter, intake));
         autoChooser.addOption("RightIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(2, 45, drive, shooterState, shooter, intake));
 
         autoChooser.addOption("LeftNeutral", AutoCommands.neutralAuto(6, -45, 90, drive, shooterState, shooter, intake));
@@ -166,9 +97,9 @@ public class RobotContainer {
 
         // // Set up SysId routines
         // autoChooser.addOption(
-        // "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+        // "Drive Wheel Radius Characterization", DriveCharacterizationCommands.wheelRadiusCharacterization(drive));
         // autoChooser.addOption(
-        // "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+        // "Drive Simple FF Characterization", DriveCharacterizationCommands.feedforwardCharacterization(drive));
         // autoChooser.addOption(
         // "Drive SysId (Quasistatic Forward)",
         // drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -179,23 +110,9 @@ public class RobotContainer {
         // "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
         // autoChooser.addOption(
         // "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        
-        // Configure the button bindings
-        configureButtonBindings();
-        
-        // schedule these commands to run when the robot is enabled
-        CommandScheduler.getInstance().schedule(
-        ShooterCommands.zeroHood(shooter)
-        );
     }
-    
-    /**
-    * Use this method to define your button->command mappings. Buttons can be created by
-    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-    */
-    private void configureButtonBindings() {
+
+    private void configureDriverBindings() {
         // Default command, normal field-relative drive
         drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -220,8 +137,8 @@ public class RobotContainer {
         // Switch to X pattern when X button is pressed
         driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
         
-        driverController.leftTrigger().whileTrue(DriveCommands.slowCommand(speedSupplier));
-        driverController.rightTrigger().whileTrue(DriveCommands.fastCommand(speedSupplier));
+        driverController.leftTrigger().whileTrue(SpeedCommands.slowCommand(speedSupplier));
+        driverController.rightTrigger().whileTrue(SpeedCommands.fastCommand(speedSupplier));
         
         // Reset gyro to 0° when B button is pressed
         driverController
@@ -234,7 +151,6 @@ public class RobotContainer {
         drive)
         .ignoringDisable(true));
 
-        // driverController.rightBumper().onTrue(IntakeCommands.toggle(intake));
         driverController.povDown().onTrue(IntakeCommands.lower(intake));
         driverController.povUp().onTrue(IntakeCommands.raise(intake));
 
@@ -258,16 +174,16 @@ public class RobotContainer {
         () -> false));
 
         driverController.a().whileTrue(DriveCommands.shake(drive));
-        
+    }
+
+    private void configureOperatorBindings() {
         operatorController.y().whileTrue(ShooterCommands.autoHub(shooterState));
         operatorController.b().whileTrue(ShooterCommands.manual(shooterState, operatorController::getLeftY, operatorController::getLeftX));
-        
 
         operatorController.rightTrigger().whileTrue(ShooterCommands.shoot(shooter));
         operatorController.leftTrigger().whileTrue(ShooterCommands.reverseFeeder(shooter));
-        
-        operatorController.a().whileTrue(IntakeCommands.intakeAgitate(intake));
 
+        operatorController.a().whileTrue(IntakeCommands.intakeAgitate(intake));
     }
     
     /**

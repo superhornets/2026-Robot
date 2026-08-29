@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,6 +37,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public ShooterSubsystem(ShooterIO io, ShooterStateStore store) {
     this.io = io;
     this.stateStore = store;
+    SmartDashboard.putData("Shooter/Mechanism", m_mechanism);
   }
 
   @Override
@@ -47,7 +49,6 @@ public class ShooterSubsystem extends SubsystemBase {
     double scale = HOOD_DISPLAY_MAX_DEGREES / ShooterConstants.kHoodMaxAngle;
     m_hood.setAngle(inputs.hoodPositionRotations * scale);
     m_hoodSetpoint.setAngle(hoodSetpointRotations * scale);
-    Logger.recordOutput("Shooter/Mechanism", m_mechanism);
   }
 
   public void setState(ShooterState state) {

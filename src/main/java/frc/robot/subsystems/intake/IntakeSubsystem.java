@@ -8,6 +8,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -40,6 +41,7 @@ public class IntakeSubsystem extends SubsystemBase {
     this.io = io;
     this.logScope = logScope;
     this.rollerSpeed = new LoggedNetworkNumber(logScope + "/RollerSpeedRPM", defaultRollerSpeedRPM);
+    SmartDashboard.putData(logScope + "/Mechanism", m_mechanism);
   }
 
   @Override
@@ -49,7 +51,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     m_arm.setAngle(Units.rotationsToDegrees(inputs.armPositionRotations));
     m_armSetpoint.setAngle(Units.rotationsToDegrees(armSetpointRotations));
-    Logger.recordOutput(logScope + "/Mechanism", m_mechanism);
   }
 
   /** Lowers the arm and prepares servos for intaking. */
