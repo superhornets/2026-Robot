@@ -9,7 +9,6 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-import frc.robot.Constants.DriveConstants;
 
 /** Add your docs here. */
 public class SpeedSupplier implements DoubleSupplier {

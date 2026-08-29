@@ -17,7 +17,6 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
-import frc.robot.Constants.Shooter;
 import frc.robot.subsystems.shooter.ShooterState;
 
 /** Add your docs here. */

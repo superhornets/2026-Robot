@@ -7,8 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
-import frc.robot.Constants.Shooter;
-import frc.robot.subsystems.IntakeModule;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.shooter.ShooterStateStore;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -45,7 +44,7 @@ public class AutoCommands {
         );
     }
 
-    public static Command basicAutoIntakeAgitate(double y, double angle, Drive drive, ShooterStateStore shooterStateStore, ShooterSubsystem shooterSubsystem, IntakeModule intake) {
+    public static Command basicAutoIntakeAgitate(double y, double angle, Drive drive, ShooterStateStore shooterStateStore, ShooterSubsystem shooterSubsystem, IntakeSubsystem intake) {
         return Commands.sequence(
             PathCommands.goToCoordinate(() -> 2, () -> y, () -> angle, drive),
             buildShootRace(drive, shooterStateStore, shooterSubsystem, 10,
@@ -53,7 +52,7 @@ public class AutoCommands {
         );
     }
 
-    public static Command neutralAuto(double y, double angle, double intakeAngle, Drive drive, ShooterStateStore shooterStateStore, ShooterSubsystem shooterSubsystem, IntakeModule intake) {
+    public static Command neutralAuto(double y, double angle, double intakeAngle, Drive drive, ShooterStateStore shooterStateStore, ShooterSubsystem shooterSubsystem, IntakeSubsystem intake) {
         return Commands.sequence(
             Commands.runOnce(() -> intake.stopRoller(), intake),
             PathCommands.goToCoordinate(() -> 2, () -> y, () -> angle, drive),

@@ -24,7 +24,11 @@ import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.PathCommands;
 import frc.robot.commands.ShooterCommands;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.IntakeModule;
+import frc.robot.subsystems.intake.IntakeConstants;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOHardware;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -32,6 +36,9 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.drive.SpeedSupplier;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.shooter.ShooterStateStore;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.Vision;
@@ -55,8 +62,7 @@ public class RobotContainer {
     private final Drive drive;
     private final Vision vision;
     private final ShooterSubsystem shooter;
-    private final IntakeModule intake;
-    // private final ClimberSubsystem climber;
+    private final IntakeSubsystem intake;
     
     // Controller
     private final CommandXboxController driverController = new CommandXboxController(0);
@@ -75,10 +81,6 @@ public class RobotContainer {
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-    	shooter = new ShooterSubsystem(shooterState);
-    	intake = new IntakeModule(
-          Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller, true, "Intake/Right");
-        // climber = new ClimberSubsystem();
     	switch (Constants.currentMode) {
        case REAL:
          // Real robot, instantiate hardware IO implementations
@@ -91,14 +93,19 @@ public class RobotContainer {
                  new ModuleIOTalonFX(TunerConstants.FrontRight),
                  new ModuleIOTalonFX(TunerConstants.BackLeft),
                  new ModuleIOTalonFX(TunerConstants.BackRight));
- 
+
          vision =
              new Vision(
                  drive::addVisionMeasurement,
                  new VisionIOPhotonVision(camera0Name, robotToCamera0),
                  new VisionIOPhotonVision(camera1Name, robotToCamera1));
+
+         shooter = new ShooterSubsystem(new ShooterIOSparkMax(), shooterState);
+         intake = new IntakeSubsystem(
+             new IntakeIOHardware(Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller, true),
+             "Intake/Right", IntakeConstants.kIntakeRollerSpeedRight);
          break;
- 
+
        case SIM:
          // Sim robot, instantiate physics sim IO implementations
          drive =
@@ -108,15 +115,18 @@ public class RobotContainer {
                  new ModuleIOSim(TunerConstants.FrontRight),
                  new ModuleIOSim(TunerConstants.BackLeft),
                  new ModuleIOSim(TunerConstants.BackRight));
- 
+
          vision =
              new Vision(
                  drive::addVisionMeasurement,
                  new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
                  new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
- 
+
+         shooter = new ShooterSubsystem(new ShooterIOSim(), shooterState);
+         intake = new IntakeSubsystem(
+             new IntakeIOSim(), "Intake/Right", IntakeConstants.kIntakeRollerSpeedRight);
          break;
- 
+
        default:
          // Replayed robot, disable IO implementations
          drive =
@@ -126,8 +136,12 @@ public class RobotContainer {
                  new ModuleIO() {},
                  new ModuleIO() {},
                  new ModuleIO() {});
- 
+
          vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+
+         shooter = new ShooterSubsystem(new ShooterIO() {}, shooterState);
+         intake = new IntakeSubsystem(
+             new IntakeIO() {}, "Intake/Right", IntakeConstants.kIntakeRollerSpeedRight);
          break;
      }
  
@@ -171,8 +185,6 @@ public class RobotContainer {
         
         // schedule these commands to run when the robot is enabled
         CommandScheduler.getInstance().schedule(
-       // IntakeCommands.raise(intake),
-        // ClimberCommands.zero(climber),
         ShooterCommands.zeroHood(shooter)
         );
     }
@@ -256,9 +268,6 @@ public class RobotContainer {
         
         operatorController.a().whileTrue(IntakeCommands.intakeAgitate(intake));
 
-        // operatorController.povUp().onTrue(ClimberCommands.climberUp(climber));
-        // operatorController.povDown().onTrue(ClimberCommands.climberDown(climber));
-        
     }
     
     /**

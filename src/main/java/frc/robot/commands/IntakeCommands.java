@@ -7,7 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.subsystems.IntakeModule;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.drive.Drive;
 
 /** Add your docs here. */
@@ -15,7 +15,7 @@ public class IntakeCommands {
 
   private IntakeCommands() {}
 
-  public static Command raise(IntakeModule intake) {
+  public static Command raise(IntakeSubsystem intake) {
     return Commands.run(
         () -> {
           intake.raise();
@@ -23,7 +23,7 @@ public class IntakeCommands {
         intake);
   }
 
-  public static Command lower(IntakeModule intake) {
+  public static Command lower(IntakeSubsystem intake) {
     return Commands.run(
         () -> {
           intake.lower();
@@ -31,7 +31,7 @@ public class IntakeCommands {
         intake);
   }
 
-  public static Command toggle(IntakeModule intake) {
+  public static Command toggle(IntakeSubsystem intake) {
     return Commands.run(
     () -> {
       if (intake.isLowered()) {
@@ -42,7 +42,7 @@ public class IntakeCommands {
     }, intake);
   }
 
-  public static Command intakeAgitate(IntakeModule intake) {
+  public static Command intakeAgitate(IntakeSubsystem intake) {
     return Commands.repeatingSequence(
       Commands.waitSeconds(0.5),
       Commands.runOnce(

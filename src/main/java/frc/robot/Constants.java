@@ -9,13 +9,13 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
+import edu.wpi.first.math.util.Units;
+
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import frc.robot.util.MOI;
+
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -60,53 +60,20 @@ public final class Constants {
     public static final double kLengthMeters = Units.inchesToMeters(29.25);
   }
 
-  public static final class DriveConstants {
-    public static final double kSlowModeMultiplier = 0.25; // slow is 0.25
-    public static final double kNormalModeMultiplier = 0.7; // normal is 0.40
-    public static final double kFastModeMultiplier = 0.9;  // fast is 0.60
-    public static final double kIntakeSpeedMultiplier = 0.2; // intake is 0.2
-
-    public static final double kWidthMeters = Robot.kWidthMeters;
-    public static final double kLengthMeters = Robot.kLengthMeters;
-  }
-
+  /** CAN IDs and port assignments for the shooter mechanism. */
   public static final class Shooter {
-    public static final class SIM {
-      public static final double kFlywheelMOI = MOI.in2lbToKgM2(10.7);
-      public static final double kFlywheelGearRatio = 1.0;
-      public static final double kHoodGearRatio = 25.0;
-    }
-
-    public static final double kFlywheelMaxSpeed = 6000.0; // RPM
-    public static final double kFlywheelMinSpeed = -200.0; // RPM
-    public static final double kHoodMinAngle = 0;
-    public static final double kHoodMaxAngle = 25;
-
     public static final class CAN {
       public static final int kFlywheelLeft = 49;
       public static final int kFlywheelRight = 50;
       public static final int kFeeder = 51;
       public static final int kAgitator = 52;
       public static final int kSpindexer = 59;
-      public static final int kHood = 53; 
+      public static final int kHood = 53;
     }
   }
 
+  /** CAN IDs and port assignments for the intake mechanism. */
   public static final class Intake {
-    public static final class SIM {
-      public static final double kRollerMOI = MOI.in2lbToKgM2(0.225446);
-      public static final double kRollerGearRatio = 1.0;
-
-      public static final double kArmLengthMeters = Units.inchesToMeters(14);
-      public static final double kArmMOI =
-          SingleJointedArmSim.estimateMOI(kArmLengthMeters, Units.lbsToKilograms(2));
-      public static final double kArmGearRatio = 5.0;
-    }
-
-    public static final double kRaisedAngle = (0.2);
-    public static final double kLoweredAngle = (0.5);
-    public static final double kIntakeRollerSpeedLeft = 2000.0; // RPM
-    public static final double kIntakeRollerSpeedRight= 4000.0;
     public static final class CAN {
       public static final int kRightArm = 56;
       public static final int kRightRoller = 57;
@@ -116,31 +83,7 @@ public final class Constants {
     public static final int kServo2Port = 9;
   }
 
-  public static final class Climber {
-    public static final class CAN {
-      public static final int kClimber = 60;
-    }
-
-    // Physical limits for the climber arm (motor rotations)
-    public static final double kMinAngle = -9000.0;
-    public static final double kMaxAngle = 0.0;
-
-    // PID gains for position control (tune on robot)
-    public static final double kPositionP = 1.0;
-    public static final double kPositionI = 0.0;
-    public static final double kPositionD = 0.1;
-
-    public static final class SIM {
-      // Motor rotations per arm rotation (gear reduction). Adjust to match your gearbox.
-      public static final double kGearRatio = 25.0;
-
-      // Simple arm model parameters used by simulation. Tune for better sim fidelity.
-      public static final double kArmMassKg = 1.0;
-      public static final double kArmLengthMeters = 1.0;
-    }
-  }
-
-  public static final class SIM {
+public static final class SIM {
     public static final double interval = 1.0 / 50.0; // 50Hz
   }
 }

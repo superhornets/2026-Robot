@@ -4,173 +4,30 @@
 
 package frc.robot.subsystems.shooter;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
-import com.revrobotics.sim.SparkAbsoluteEncoderSim;
-import com.revrobotics.sim.SparkFlexSim;
-import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.sim.SparkRelativeEncoderSim;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.LimitSwitchConfig;
-import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.LimitSwitchConfig.Behavior;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Robot;
-import frc.robot.Constants.Shooter;
-
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final ShooterStateStore stateStore;
-  // HARDWARE OBJECTS
+  private final ShooterIO io;
+  private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
-  // flywheel
-  private SparkFlex flywheelMotorLeft;
-  private SparkClosedLoopController flywheelControllerLeft;
-  private SparkFlex flywheelMotorRight;
-  private SparkClosedLoopController flywheelControllerRight;
+  // Output setpoints — tracked here so they can be logged without reading back from hardware
+  private double flywheelSetpointRPM = 0.0;
+  private double hoodSetpointRotations = 0.0;
+  private double feederSetpointRPM = 0.0;
 
-  // other
-  private SparkMax hoodMotor;
-  private SparkClosedLoopController hoodController;
-  private SparkFlex spindexerMotor;
-  private SparkClosedLoopController spindexerController;
-  private SparkFlex feederMotor;
-  private SparkClosedLoopController feederController;
-
-  private LoggedNetworkNumber flywheelP = new LoggedNetworkNumber("Shooter/FlywheelP", 0.0007);
-  private LoggedNetworkNumber flywheelD = new LoggedNetworkNumber("Shooter/FlywheelD", 0.0000);
-
-  // SIMULATION OBJECTS
-  private SparkMaxSim hoodMotorSim;
-  private DCMotor hoodGearboxSim;
-  private ElevatorSim hoodSim;
-  private SparkRelativeEncoderSim hoodEncoderSim;
-  // Per-motor sims for the two flywheel motors (share same gearbox)
-  private SparkFlexSim flywheelRightMotorSim;
-  private SparkFlexSim flywheelLeftMotorSim;
-  private FlywheelSim flywheelSim;
-  private DCMotor flywheelGearboxSim;
-  // Feeder simulation (matches flywheel)
-  private SparkFlexSim feederMotorSim;
-  private FlywheelSim feederSim;
-  private DCMotor feederGearboxSim;
-
-  /** Creates a new ShooterSubsystem. */
-  public ShooterSubsystem(ShooterStateStore store) {
+  public ShooterSubsystem(ShooterIO io, ShooterStateStore store) {
+    this.io = io;
     this.stateStore = store;
-
-    // Setup Motors and Controllers
-    hoodMotor = new SparkMax(Constants.Shooter.CAN.kHood, MotorType.kBrushless);
-
-    SparkMaxConfig hoodConfig = new SparkMaxConfig();
-    hoodConfig
-        .idleMode(IdleMode.kBrake)
-        .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(.1)
-        .i(0)
-        .d(0.01)
-        .outputRange(-1, 1)
-        .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0);
-
-    hoodMotor.configure(
-        hoodConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    hoodController = hoodMotor.getClosedLoopController();
-
-    configureFlywheelMotors();
-
-    feederMotor = new SparkFlex(Constants.Shooter.CAN.kFeeder, MotorType.kBrushless);
-    SparkFlexConfig feederConfig = new SparkFlexConfig();
-    feederConfig
-        .inverted(true)
-        .idleMode(IdleMode.kCoast)
-        .closedLoop
-        .p(0.0006)
-        .i(0)
-        .d(0.001);
-    feederMotor.configure(
-        feederConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    feederController = feederMotor.getClosedLoopController();
-
-    spindexerMotor = new SparkFlex(Constants.Shooter.CAN.kSpindexer, MotorType.kBrushless);
-    SparkFlexConfig spindexerConfig = new SparkFlexConfig();
-    spindexerConfig
-        .inverted(true)
-        .idleMode(IdleMode.kCoast)
-        .closedLoop
-        .p(0.0001)
-        .i(0)
-        .d(0.0001);
-
-      spindexerConfig.encoder
-      .positionConversionFactor(1.0)
-      .velocityConversionFactor(1.0);
-    spindexerMotor.configure(
-        spindexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    spindexerController = spindexerMotor.getClosedLoopController();
-
-    // SIMULATION OBJECTS
-    hoodGearboxSim = DCMotor.getNeo550(1);
-    hoodMotorSim = new SparkMaxSim(hoodMotor, hoodGearboxSim);
-    hoodEncoderSim = hoodMotorSim.getRelativeEncoderSim();
-    hoodSim = new ElevatorSim(hoodGearboxSim, 9, .01, Units.inchesToMeters(1.5), 0, Units.inchesToMeters(6), true, 0);
-
-
-    // Flywheel sim
-    flywheelGearboxSim = DCMotor.getNeoVortex(2);
-    // Create a SparkFlexSim for each physical motor. They drive the same gearbox in the FlywheelSim.
-    flywheelRightMotorSim = new SparkFlexSim(flywheelMotorRight, flywheelGearboxSim);
-    flywheelLeftMotorSim = new SparkFlexSim(flywheelMotorLeft, flywheelGearboxSim);
-    flywheelSim =
-        new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(
-                flywheelGearboxSim,
-                Constants.Shooter.SIM.kFlywheelMOI,
-                Constants.Shooter.SIM.kFlywheelGearRatio),
-            flywheelGearboxSim);
-
-    // Feeder sim
-    feederGearboxSim = DCMotor.getNeoVortex(1);
-    feederMotorSim = new SparkFlexSim(feederMotor, feederGearboxSim);
-    feederSim =
-        new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(
-                feederGearboxSim,
-                Constants.Shooter.SIM.kFlywheelMOI * 0.3,
-                Constants.Shooter.SIM.kFlywheelGearRatio),
-            feederGearboxSim);
-
-    hoodMotor.getEncoder().setPosition(0);
   }
 
+  @Override
   public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Shooter", inputs);
     setState(stateStore.get());
   }
 
@@ -180,172 +37,93 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setHoodAngle(double angleRotations) {
-    double value = Math.max(Constants.Shooter.kHoodMinAngle, Math.min(Constants.Shooter.kHoodMaxAngle, angleRotations));
-    hoodController.setSetpoint(value, ControlType.kPosition, ClosedLoopSlot.kSlot0);
-  }
-
-  private void configureFlywheelMotors() {
-  SparkFlexConfig flywheelConfig = new SparkFlexConfig();
-    flywheelConfig
-        .smartCurrentLimit(80, 40, 1000)
-        .closedLoop
-        .p(flywheelP.get())
-        .i(0)
-        .d(flywheelD.get())
-        .feedForward
-        .kV(0.00177);
-    flywheelConfig.encoder
-      .positionConversionFactor(1.0)
-      .velocityConversionFactor(1.0);
-      flywheelConfig.limitSwitch.apply(
-        new LimitSwitchConfig()
-        .forwardLimitSwitchTriggerBehavior(Behavior.kKeepMovingMotor)
-        .reverseLimitSwitchTriggerBehavior(Behavior.kKeepMovingMotor)
-      );
-
-    flywheelMotorRight = new SparkFlex(Constants.Shooter.CAN.kFlywheelRight, MotorType.kBrushless);
-    flywheelMotorRight.configure(
-        flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    flywheelControllerRight = flywheelMotorRight.getClosedLoopController();
-
-    flywheelMotorLeft = new SparkFlex(Constants.Shooter.CAN.kFlywheelLeft, MotorType.kBrushless);
-    flywheelMotorLeft.configure(
-        flywheelConfig.inverted(true), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    flywheelControllerLeft = flywheelMotorLeft.getClosedLoopController();
+    double value = Math.max(ShooterConstants.kHoodMinAngle,
+        Math.min(ShooterConstants.kHoodMaxAngle, angleRotations));
+    hoodSetpointRotations = value;
+    io.setHoodPosition(value);
   }
 
   public void startFlywheel(double speedRPM) {
-    double speedClamped =
-        MathUtil.clamp(
-            speedRPM, Constants.Shooter.kFlywheelMinSpeed, Constants.Shooter.kFlywheelMaxSpeed);
-    flywheelControllerLeft.setSetpoint(
-        speedClamped, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-    flywheelControllerRight.setSetpoint(
-        speedClamped, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    double speedClamped = MathUtil.clamp(
+        speedRPM, ShooterConstants.kFlywheelMinSpeed, ShooterConstants.kFlywheelMaxSpeed);
+    flywheelSetpointRPM = speedClamped;
+    io.setFlywheelVelocity(speedClamped);
   }
 
   public void stopFlywheel(boolean coast) {
-    flywheelControllerRight.setSetpoint(
-        0.0,
-        coast ? ControlType.kDutyCycle : ControlType.kVelocity,
-        ClosedLoopSlot.kSlot0);
-    flywheelControllerLeft.setSetpoint(
-        0.0,
-        coast ? ControlType.kDutyCycle : ControlType.kVelocity,
-        ClosedLoopSlot.kSlot0);
-   }
+    flywheelSetpointRPM = 0.0;
+    io.stopFlywheel(coast);
+  }
 
   public void startFeeder() {
-      feederController.setSetpoint(
-        4000, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-      spindexerController.setSetpoint(
-        6000, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    feederSetpointRPM = 4000;
+    io.setFeederVelocity(4000);
+    io.setSpindexerVelocity(6000);
   }
 
   public void startReverseFeeder() {
-    feederController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
-    spindexerController.setSetpoint( -2000, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    feederSetpointRPM = 0.0;
+    io.setFeederOutput(0.0);
+    io.setSpindexerVelocity(-2000);
   }
 
   public void stopFeeder() {
-    feederController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
-    spindexerController.setSetpoint(0.0, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+    feederSetpointRPM = 0.0;
+    io.setFeederOutput(0.0);
+    io.setSpindexerOutput(0.0);
+  }
 
-   }
-
-  // Hood zeroing utilities (patterned after ClimberSubsystem zeroing)
-  /** Begin moving the hood slowly toward its mechanical zero (applies small % output). */
   public void startHoodZeroing() {
-    // apply a small negative percent to seek the hard stop; tuned low to avoid damage
-    hoodMotor.set(-0.10);
+    io.setHoodOutput(-0.10);
   }
 
-  /** Stop zeroing motion (stop motor). */
   public void stopHoodZeroing() {
-    hoodMotor.set(0.0);
+    io.setHoodOutput(0.0);
   }
 
-  /**
-   * Returns true when the hood appears to be stalled against the mechanical stop.
-   * Uses a simple heuristic: current above threshold AND near-zero encoder velocity.
-   */
   public boolean isHoodStalled() {
-    double current = hoodMotor.getOutputCurrent();
-    double velocity = hoodMotor.getEncoder().getVelocity(); // RPM
-    // threshold values chosen conservatively; adjust if needed for your hardware
-    return (current > 8.0) && (Math.abs(velocity) < 5.0);
+    return inputs.hoodStalled;
   }
 
-  /** Stop the motor and set the hood encoder position to zero. */
   public void setHoodZero() {
-    hoodMotor.set(0.0);
-    // Reset encoder position (rotations) to zero at the mechanical stop
-    hoodMotor.getEncoder().setPosition(0.0);
-    // Also reset controller setpoint to 0 to avoid unwanted motion after zeroing
-    hoodController.setSetpoint(0.0, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    io.setHoodOutput(0.0);
+    io.resetHoodEncoder();
+    hoodSetpointRotations = 0.0;
+    io.setHoodPosition(0.0);
   }
 
   @AutoLogOutput(key = "Shooter/hoodAngle")
   public double getHoodAngle() {
-    return hoodMotor.getEncoder().getPosition();
+    return inputs.hoodPositionRotations;
   }
 
-    @AutoLogOutput(key = "Shooter/hoodAngleSetpoint")
+  @AutoLogOutput(key = "Shooter/hoodAngleSetpoint")
   public double getHoodAngleSet() {
-    return hoodController.getSetpoint();
+    return hoodSetpointRotations;
   }
 
   @AutoLogOutput(key = "Shooter/FlywheelVelocitySetpointRPM")
   public double getFlywheelVelocitySetpointRPM() {
-    return flywheelControllerRight.getSetpoint();
+    return flywheelSetpointRPM;
   }
 
   @AutoLogOutput(key = "Shooter/FlywheelVelocityRPM")
   public double getFlywheelVelocityRPM() {
-    return flywheelMotorRight.getEncoder().getVelocity();
+    return inputs.flywheelVelocityRPM;
   }
 
   @AutoLogOutput(key = "Shooter/FeederSetpointRPM")
   public double getFeederSetpointRPM() {
-    return feederController.getSetpoint();
+    return feederSetpointRPM;
   }
 
   @AutoLogOutput(key = "Shooter/isAtSpeed")
   public boolean getIsAtSpeed() {
-    return flywheelControllerRight.isAtSetpoint();
+    return inputs.flywheelAtSetpoint;
   }
 
   @AutoLogOutput(key = "Shooter/Ready")
   public boolean getReady() {
-    return getIsAtSpeed() && hoodController.isAtSetpoint();
-  }
-
-  public void simulationPeriodic() {
-    // Hood
-    hoodSim.setInput(hoodMotor.getAppliedOutput() * RoboRioSim.getVInVoltage());
-    hoodSim.update(Constants.SIM.interval);
-    hoodMotorSim.iterate(hoodSim.getVelocityMetersPerSecond(), hoodSim.getPositionMeters(), Constants.SIM.interval);
-
-    // Flywheel
-    // Use the sum of both motors' applied outputs as input to the flywheel system
-    double combinedApplied =
-        (flywheelRightMotorSim.getAppliedOutput() + flywheelLeftMotorSim.getAppliedOutput())
-            * RoboRioSim.getVInVoltage();
-    flywheelSim.setInput(combinedApplied);
-    flywheelSim.update(Constants.SIM.interval);
-    // Iterate both motor sims so each Spark/Sim sees the same resulting angular velocity
-    double flywheelRPM =
-        Units.radiansPerSecondToRotationsPerMinute(flywheelSim.getAngularVelocityRadPerSec());
-    flywheelRightMotorSim.iterate(flywheelRPM, RoboRioSim.getVInVoltage(), Constants.SIM.interval);
-    flywheelLeftMotorSim.iterate(flywheelRPM, RoboRioSim.getVInVoltage(), Constants.SIM.interval);
-
-    // Feeder
-    feederMotorSim.iterate(
-        Units.radiansPerSecondToRotationsPerMinute( // motor velocity, in RPM
-            feederSim.getAngularVelocityRadPerSec()),
-        RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
-        Constants.SIM.interval); // Time interval, in Seconds
-    feederSim.setInput(feederMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
-    feederSim.update(Constants.SIM.interval);
+    return inputs.flywheelAtSetpoint && inputs.hoodAtSetpoint;
   }
 }
