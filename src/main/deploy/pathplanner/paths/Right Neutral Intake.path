@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.933017338966837,
-        "y": 0.7932670998086746
+        "x": 2.3766424984056123,
+        "y": 1.5515183354591842
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.9050923150510215,
-        "y": 0.5007123724489804
+        "x": 5.348717474489797,
+        "y": 1.25896360809949
       },
       "isLocked": false,
       "linkedName": "RightShootingPosition"
@@ -113,10 +113,21 @@
       }
     }
   ],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.625,
+        "y": 4.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 3.2917092880523726,
+      "maxWaypointRelativePos": 4.0,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [
     {
-      "name": "Lower Intake",
+      "name": "intake_lower",
       "waypointRelativePos": 0.2911466857610476,
       "endWaypointRelativePos": null,
       "command": {
@@ -127,7 +138,7 @@
       }
     },
     {
-      "name": "Intake",
+      "name": "intake_run",
       "waypointRelativePos": 0.44085004091653013,
       "endWaypointRelativePos": 2.562551145662848,
       "command": {
@@ -154,7 +165,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": 63.641843566437394
+    "rotation": 47.272232285337
   },
   "useDefaultConstraints": true
 }

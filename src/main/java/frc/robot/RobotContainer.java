@@ -8,14 +8,18 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoCommands;
-import frc.robot.commands.DriveCharacterizationCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.PathCommands;
@@ -52,6 +56,10 @@ public class RobotContainer {
     // Value Suppliers
     private final SpeedSupplier speedSupplier = new SpeedSupplier();
     private final ShooterStateStore shooterState = new ShooterStateStore();
+
+    // Triggers
+    private final Trigger shooterReady;
+    private final Trigger alignedToHub;
     
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -63,10 +71,15 @@ public class RobotContainer {
         vision  = Subsystems.createVision(Constants.currentMode, drive);
         shooter = Subsystems.createShooter(Constants.currentMode, shooterState);
         intake  = Subsystems.createIntake(Constants.currentMode);
+        
+        shooterReady = new Trigger(shooter::getReady).debounce(0.05);
+        alignedToHub = new Trigger(drive::isAlignedToHub).debounce(0.05);
 
         // Provide RebuiltField with live suppliers so AutoBuilder can flip paths and compute hub targeting.
         RebuiltField.setGlobalFlippedSupplier(new FlippedSupplier());
         RebuiltField.setGlobalRobotPoseSupplier(drive::getPose);
+
+        setupCommandsAndEvents();
 
         // Set up auto routines
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -78,22 +91,39 @@ public class RobotContainer {
         
         // schedule these commands to run when the robot is enabled
         CommandScheduler.getInstance().schedule(
-        ShooterCommands.zeroHood(shooter)
+        ShooterCommands.homeHood(shooter)
         );
     }
     
+    private void setupCommandsAndEvents() {
+        // Register named commands for PathPlanner autos
+        NamedCommands.registerCommand("shooter_idle", ShooterCommands.idle(shooter, shooterState));
+        NamedCommands.registerCommand("shooter_primeShooter", ShooterCommands.primeShooter(shooterState));
+        NamedCommands.registerCommand("shoot", ShooterCommands.feed(shooter));
+        NamedCommands.registerCommand("intake_lower", IntakeCommands.lower(intake));
+        NamedCommands.registerCommand("intake", IntakeCommands.intake(false, intake));
+        NamedCommands.registerCommand("intake_reverse", IntakeCommands.intake(true, intake));
+        NamedCommands.registerCommand("intake_agitate", IntakeCommands.intakeAgitate(intake));
+
+        // Register event commands for PathPlanner autos
+        new EventTrigger("event_auto_intake").whileTrue(IntakeCommands.intake(false, intake));
+        new EventTrigger("event_auto_shoot").whileTrue(ShooterCommands.autoShoot(shooter, shooterState, alignedToHub));
+    }
+
     private void configureAutoChooser() {
         autoChooser.addOption("Left", AutoCommands.basicAuto(6, -45, drive, shooterState, shooter));
         autoChooser.addOption("Middle", AutoCommands.basicAuto(4, 0, drive, shooterState, shooter));
         autoChooser.addOption("Right", AutoCommands.basicAuto(2, 45, drive, shooterState, shooter));
+        autoChooser.addOption("RightShootIntakeShoot", AutoBuilder.buildAuto("RightShootIntakeShoot"));
+        autoChooser.addOption("LeftShootIntakeShoot", new PathPlannerAuto("RightShootIntakeShoot", true));
 
-        autoChooser.addOption("LeftIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(6, -45, drive, shooterState, shooter, intake));
-        autoChooser.addOption("MiddleIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(4, 0, drive, shooterState, shooter, intake));
-        autoChooser.addOption("RightIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(2, 45, drive, shooterState, shooter, intake));
+        // autoChooser.addOption("LeftIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(6, -45, drive, shooterState, shooter, intake));
+        // autoChooser.addOption("MiddleIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(4, 0, drive, shooterState, shooter, intake));
+        // autoChooser.addOption("RightIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(2, 45, drive, shooterState, shooter, intake));
 
-        autoChooser.addOption("LeftNeutral", AutoCommands.neutralAuto(6, -45, 90, drive, shooterState, shooter, intake));
-        autoChooser.addOption("MiddleNeutral", AutoCommands.neutralAuto(4, 0, 90, drive, shooterState, shooter, intake));
-        autoChooser.addOption("RightNeutral", AutoCommands.neutralAuto(2, 45, 90, drive, shooterState, shooter, intake));
+        // autoChooser.addOption("LeftNeutral", AutoCommands.neutralAuto(6, -45, 90, drive, shooterState, shooter, intake));
+        // autoChooser.addOption("MiddleNeutral", AutoCommands.neutralAuto(4, 0, 90, drive, shooterState, shooter, intake));
+        // autoChooser.addOption("RightNeutral", AutoCommands.neutralAuto(2, 45, 90, drive, shooterState, shooter, intake));
 
         // // Set up SysId routines
         // autoChooser.addOption(
@@ -155,11 +185,11 @@ public class RobotContainer {
         driverController.povUp().onTrue(IntakeCommands.raise(intake));
 
         driverController.rightBumper().whileTrue(
-            Commands.startEnd(() -> intake.startRoller(false), () -> intake.stopRoller(), intake)
+            IntakeCommands.intake(false, intake)
         );
 
         driverController.leftBumper().whileTrue(
-            Commands.startEnd(() -> intake.startRoller(true), () -> intake.stopRoller(), intake, shooter)
+            IntakeCommands.intake(true, intake)
         );
 
         driverController.start().onTrue(PathCommands.goToHubCommand(drive));
@@ -177,11 +207,11 @@ public class RobotContainer {
     }
 
     private void configureOperatorBindings() {
-        operatorController.y().whileTrue(ShooterCommands.autoHub(shooterState));
-        operatorController.b().whileTrue(ShooterCommands.manual(shooterState, operatorController::getLeftY, operatorController::getLeftX));
+        operatorController.y().whileTrue(ShooterCommands.primeShooter(shooterState));
+        operatorController.b().whileTrue(ShooterCommands.adjustAim(shooterState, operatorController::getLeftY, operatorController::getLeftX));
 
-        operatorController.rightTrigger().whileTrue(ShooterCommands.shoot(shooter));
-        operatorController.leftTrigger().whileTrue(ShooterCommands.reverseFeeder(shooter));
+        operatorController.rightTrigger().whileTrue(ShooterCommands.feed(shooter));
+        operatorController.leftTrigger().whileTrue(ShooterCommands.unjam(shooter));
 
         operatorController.a().whileTrue(IntakeCommands.intakeAgitate(intake));
     }

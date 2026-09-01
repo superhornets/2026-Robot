@@ -7,7 +7,7 @@
         {
           "type": "named",
           "data": {
-            "name": "flywheel_start"
+            "name": "shooter_idle"
           }
         },
         {
@@ -21,33 +21,28 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "flywheel_start"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "shooter_start"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "shooter_stop"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "flywheel_idle"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shooter_primeShooter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shoot"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 3.0
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -64,33 +59,28 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "flywheel_start"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "shooter_start"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "shooter_stop"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "flywheel_idle"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shooter_primeShooter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shoot"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 3.0
+                      }
+                    }
+                  ]
                 }
               }
             ]

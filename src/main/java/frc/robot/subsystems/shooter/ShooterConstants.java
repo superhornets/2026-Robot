@@ -7,8 +7,9 @@ package frc.robot.subsystems.shooter;
 import frc.robot.util.MOI;
 
 public final class ShooterConstants {
-  public static final double kFlywheelMaxSpeed = 6000.0; // RPM
+  public static final double kFlywheelMaxSpeed = 4500.0; // RPM
   public static final double kFlywheelMinSpeed = -200.0; // RPM
+  public static final double kFlywheelIdleSpeed = 2000.0; // RPM — warm idle, spins up quickly
   public static final double kHoodMinAngle = 0;
   public static final double kHoodMaxAngle = 25;
 

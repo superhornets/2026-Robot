@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.RebuiltField;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.function.BooleanSupplier;
@@ -146,39 +147,17 @@ public final class DriveCommands {
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
   }
 
-  /**
-   * Turns to a target angle using PID, with no driver translation input.
-   * Completes when the angle controller reaches its setpoint.
-   */
-  public static Command autonomousAlignToCommand(
-      Drive drive,
-      Supplier<Rotation2d> rotationSupplier,
-      DoubleSupplier speedMultiplierSupplier) {
+  /** Rotates the robot in place to face the alliance hub, holding translation at zero. */
+  public static Command alignToHub(Drive drive) {
+    return alignToHub(drive, () -> 0, () -> 0);
+  }
 
-    ProfiledPIDController angleController = new ProfiledPIDController(
-        ANGLE_KP, 0.0, ANGLE_KD,
-        new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
-    angleController.enableContinuousInput(-Math.PI, Math.PI);
-    angleController.setTolerance(Units.degreesToRadians(1.5));
-
-    Command turnCommand = Commands.run(
-        () -> {
-          double omega = angleController.calculate(
-              drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
-          double speedMultiplier = speedMultiplierSupplier.getAsDouble();
-          boolean isFlipped = DriverStation.getAlliance().isPresent()
-              && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  new ChassisSpeeds(0.0, 0.0, omega * drive.getMaxAngularSpeedRadPerSec() * speedMultiplier),
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
-        },
-        drive)
-        .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
-
-    return Commands.race(turnCommand, Commands.waitUntil(angleController::atSetpoint));
+  /** Locks rotation onto the alliance hub while the driver controls translation. */
+  public static Command alignToHub(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    return joystickDriveAtAngle(
+        drive, xSupplier, ySupplier,
+        () -> RebuiltField.getTranslationToHub2D().getAngle(),
+        () -> 0.75);
   }
 
   /**

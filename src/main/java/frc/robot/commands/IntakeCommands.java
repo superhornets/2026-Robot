@@ -42,6 +42,18 @@ public class IntakeCommands {
     }, intake);
   }
 
+  public static Command intake(Boolean reverse, IntakeSubsystem intake) {
+    return Commands.startEnd(
+      () -> {
+        intake.startRoller(reverse);
+      },
+      () -> {
+        intake.stopRoller();
+      },
+      intake
+    );
+  }
+
   public static Command intakeAgitate(IntakeSubsystem intake) {
     return Commands.repeatingSequence(
       Commands.waitSeconds(0.5),
@@ -60,18 +72,3 @@ public class IntakeCommands {
     );
   }
 }
-//     return Commands.runEnd(
-//       () -> {
-//         if (intake.isAtSetpoint()) {
-//           if (intake.isLowered()) {
-//             intake.raiseHalf();
-//           } else {
-//             intake.lower();
-//           }
-//         }
-//       }, 
-//       () -> {
-//         intake.lower();
-//       }, intake
-//     );
-//   } }

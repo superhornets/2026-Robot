@@ -51,7 +51,7 @@ public class ShooterIOSparkMax implements ShooterIO {
         .i(0)
         .d(0.01)
         .outputRange(-1, 1)
-        .allowedClosedLoopError(Units.degreesToRotations(0.2), ClosedLoopSlot.kSlot0);
+        .allowedClosedLoopError(Units.degreesToRotations(5), ClosedLoopSlot.kSlot0);
     hoodMotor.configure(hoodConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     hoodController = hoodMotor.getClosedLoopController();
     hoodMotor.getEncoder().setPosition(0);

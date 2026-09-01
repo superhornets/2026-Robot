@@ -28,10 +28,16 @@ public class ShooterStateStore implements Supplier<ShooterState> {
         current = updated.clamped();
     }
 
-    public void reset() {
+    public void stop() {
         // store the last position so that we can return there if we want to
         last = current;
-        current = ShooterState.min;
+        set(ShooterState.zero);
+    }
+
+    public void idle() {
+        // store the last position so that we can return there if we want to
+        last = current;
+        set(ShooterState.idle);
     }
 
     public void returnToLast() {

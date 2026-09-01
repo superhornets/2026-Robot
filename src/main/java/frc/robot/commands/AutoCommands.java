@@ -22,9 +22,9 @@ public class AutoCommands {
         Command shootSeq = Commands.sequence(
             Commands.runOnce(() -> store.set(RebuiltField.shooterStateForHub())),
             Commands.waitSeconds(1.5),
-            ShooterCommands.startFeeder(shooter),
+            ShooterCommands.triggerFeed(shooter),
             Commands.waitSeconds(shootSecs),
-            ShooterCommands.stop(shooter, store)
+            ShooterCommands.idle(shooter, store)
         );
         Command[] allCmds = new Command[2 + extraRaceCmds.length];
         allCmds[0] = alignCmd;
@@ -63,9 +63,9 @@ public class AutoCommands {
                 Commands.sequence(
                     Commands.runOnce(() -> shooterStateStore.set(RebuiltField.shooterStateForHub())),
                     Commands.waitSeconds(1.5),
-                    ShooterCommands.startFeeder(shooterSubsystem),
+                    ShooterCommands.triggerFeed(shooterSubsystem),
                     Commands.waitSeconds(7),
-                    ShooterCommands.stop(shooterSubsystem, shooterStateStore),
+                    ShooterCommands.idle(shooterSubsystem, shooterStateStore),
                     Commands.runOnce(() -> { intake.lower(); intake.startRoller(false); })
                 )
             ),

@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.933017338966837,
-        "y": 0.7932670998086746
+        "x": 2.3766424984056123,
+        "y": 1.5515183354591842
       },
       "prevControl": {
-        "x": 3.000379384566327,
-        "y": 0.4574706234056134
+        "x": 2.4440034150703003,
+        "y": 1.215721632589498
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [
     {
       "fieldPosition": {
-        "x": 4.65,
+        "x": 4.625,
         "y": 4.0
       },
       "rotationOffset": 0.0,
@@ -42,7 +42,14 @@
       "name": "Hub Aim"
     }
   ],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "",
+      "waypointRelativePos": 0.06543448240589199,
+      "endWaypointRelativePos": 1.0,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 6.0,
     "maxAcceleration": 3.0,
@@ -53,7 +60,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 63.641843566437394
+    "rotation": 47.272232285337
   },
   "reversed": false,
   "folder": null,

@@ -362,6 +362,13 @@ public class Drive extends SubsystemBase {
     return getMaxLinearSpeedMetersPerSec() / DRIVE_BASE_RADIUS;
   }
 
+  /** Returns true when the robot heading is within {@link DriveConstants#kHubAlignmentToleranceDegrees} of pointing at the alliance hub. */
+  @AutoLogOutput(key = "Drive/AlignedToHub")
+  public boolean isAlignedToHub() {
+    double errorDegrees = Math.abs(getRotation().minus(RebuiltField.getTranslationToHub2D().getAngle()).getDegrees());
+    return errorDegrees < DriveConstants.kHubAlignmentToleranceDegrees;
+  }
+
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {

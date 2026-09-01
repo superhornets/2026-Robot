@@ -9,4 +9,7 @@ public final class DriveConstants {
   public static final double kNormalModeMultiplier = 0.7;
   public static final double kFastModeMultiplier = 0.9;
   public static final double kIntakeSpeedMultiplier = 0.2;
+
+  /** Angular tolerance (degrees) for declaring the robot aimed at the hub. */
+  public static final double kHubAlignmentToleranceDegrees = 2.0;
 }

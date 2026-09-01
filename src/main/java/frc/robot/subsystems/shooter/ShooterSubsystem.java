@@ -139,11 +139,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @AutoLogOutput(key = "Shooter/isAtSpeed")
   public boolean getIsAtSpeed() {
-    return inputs.flywheelAtSetpoint;
+    return Math.abs(inputs.flywheelVelocityRPM - flywheelSetpointRPM) < 50.0;
   }
 
   @AutoLogOutput(key = "Shooter/Ready")
   public boolean getReady() {
-    return inputs.flywheelAtSetpoint && inputs.hoodAtSetpoint;
+    return getIsAtSpeed() && inputs.hoodAtSetpoint;
   }
 }
