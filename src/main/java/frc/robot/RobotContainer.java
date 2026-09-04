@@ -105,6 +105,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("intake_reverse", IntakeCommands.intake(true, intake));
         NamedCommands.registerCommand("intake_agitate", IntakeCommands.intakeAgitate(intake));
 
+        NamedCommands.registerCommand("auto_shoot", ShooterCommands.autoShoot(shooter, shooterState, alignedToHub));
+
         // Register event commands for PathPlanner autos
         new EventTrigger("event_auto_intake").whileTrue(IntakeCommands.intake(false, intake));
         new EventTrigger("event_auto_shoot").whileTrue(ShooterCommands.autoShoot(shooter, shooterState, alignedToHub));
@@ -227,5 +229,12 @@ public class RobotContainer {
     
     public Pose2d getPose() {
         return drive.getPose();
+    }
+
+    /** Returns total simulated current draw across all subsystems for battery voltage simulation. */
+    public double getSimCurrentDrawAmps() {
+        return drive.getSimCurrentDrawAmps()
+            + shooter.getSimCurrentDrawAmps()
+            + intake.getSimCurrentDrawAmps();
     }
 }

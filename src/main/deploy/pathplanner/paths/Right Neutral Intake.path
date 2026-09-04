@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.348717474489797,
-        "y": 1.25896360809949
+        "x": 3.572729551977041,
+        "y": -0.05457880261479531
       },
       "isLocked": false,
       "linkedName": "RightShootingPosition"
@@ -138,15 +138,10 @@
       }
     },
     {
-      "name": "intake_run",
+      "name": "event_auto_intake",
       "waypointRelativePos": 0.44085004091653013,
       "endWaypointRelativePos": 2.562551145662848,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "intake_run"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {

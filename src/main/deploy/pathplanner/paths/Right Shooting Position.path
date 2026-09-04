@@ -42,14 +42,7 @@
       "name": "Hub Aim"
     }
   ],
-  "eventMarkers": [
-    {
-      "name": "",
-      "waypointRelativePos": 0.06543448240589199,
-      "endWaypointRelativePos": 1.0,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 6.0,
     "maxAcceleration": 3.0,

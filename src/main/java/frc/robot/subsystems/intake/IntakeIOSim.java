@@ -41,18 +41,21 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    armSim.setInput(armAppliedOutput * RoboRioSim.getVInVoltage());
-    armSim.update(Constants.SIM.interval);
+    double batteryVolts = RoboRioSim.getVInVoltage();
 
+    armSim.setInput(armAppliedOutput * batteryVolts);
+    armSim.update(Constants.SIM.interval);
     inputs.armPositionRotations = Units.radiansToRotations(armSim.getAngleRads());
     inputs.armAtSetpoint =
         Math.abs(inputs.armPositionRotations - armSetpoint) < Units.degreesToRotations(0.5);
+    inputs.armCurrentAmps = Math.abs(armSim.getCurrentDrawAmps());
 
     // Roller
-    rollerSim.setInput(rollerAppliedVolts);
+    rollerSim.setInput(MathUtil.clamp(rollerAppliedVolts, -batteryVolts, batteryVolts));
     rollerSim.update(Constants.SIM.interval);
     inputs.rollerVelocityRPM =
         Units.radiansPerSecondToRotationsPerMinute(rollerSim.getAngularVelocityRadPerSec());
+    inputs.rollerCurrentAmps = Math.abs(rollerSim.getCurrentDrawAmps());
   }
 
   @Override

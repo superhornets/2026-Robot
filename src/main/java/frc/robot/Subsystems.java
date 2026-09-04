@@ -96,13 +96,13 @@ public final class Subsystems {
             case REAL:
                 return new IntakeSubsystem(
                     new IntakeIOHardware(Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller, true),
-                    "Intake/Right", IntakeConstants.kIntakeRollerSpeedRight);
+                    "Intake", IntakeConstants.kIntakeRollerSpeedRight);
             case SIM:
                 return new IntakeSubsystem(
-                    new IntakeIOSim(), "Intake/Right", IntakeConstants.kIntakeRollerSpeedRight);
+                    new IntakeIOSim(), "Intake", IntakeConstants.kIntakeRollerSpeedRight);
             default:
                 return new IntakeSubsystem(
-                    new IntakeIO() {}, "Intake/Right", IntakeConstants.kIntakeRollerSpeedRight);
+                    new IntakeIO() {}, "Intake", IntakeConstants.kIntakeRollerSpeedRight);
         }
     }
 }

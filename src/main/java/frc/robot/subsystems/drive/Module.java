@@ -138,4 +138,9 @@ public class Module {
   public double getFFCharacterizationVelocity() {
     return Units.radiansToRotations(inputs.driveVelocityRadPerSec);
   }
+
+  /** Returns the total current draw of this module's drive and turn motors (amps). */
+  public double getSimCurrentDrawAmps() {
+    return inputs.driveCurrentAmps + inputs.turnCurrentAmps;
+  }
 }

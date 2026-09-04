@@ -18,6 +18,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 
 /**
  * Physics sim implementation of module IO. The sim models are configured using a set of module
@@ -83,8 +84,9 @@ public class ModuleIOSim implements ModuleIO {
     }
 
     // Update simulation state
-    driveSim.setInputVoltage(MathUtil.clamp(driveAppliedVolts, -12.0, 12.0));
-    turnSim.setInputVoltage(MathUtil.clamp(turnAppliedVolts, -12.0, 12.0));
+    double batteryVolts = RoboRioSim.getVInVoltage();
+    driveSim.setInputVoltage(MathUtil.clamp(driveAppliedVolts, -batteryVolts, batteryVolts));
+    turnSim.setInputVoltage(MathUtil.clamp(turnAppliedVolts, -batteryVolts, batteryVolts));
     driveSim.update(0.02);
     turnSim.update(0.02);
 

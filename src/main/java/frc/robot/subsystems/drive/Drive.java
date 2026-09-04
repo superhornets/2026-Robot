@@ -369,6 +369,15 @@ public class Drive extends SubsystemBase {
     return errorDegrees < DriveConstants.kHubAlignmentToleranceDegrees;
   }
 
+  /** Returns the total current draw of all swerve modules (amps). */
+  public double getSimCurrentDrawAmps() {
+    double total = 0.0;
+    for (var module : modules) {
+      total += module.getSimCurrentDrawAmps();
+    }
+    return total;
+  }
+
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {

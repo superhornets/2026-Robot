@@ -11,7 +11,9 @@ public interface IntakeIO {
   class IntakeIOInputs {
     public double armPositionRotations = 0.0;
     public boolean armAtSetpoint = false;
+    public double armCurrentAmps = 0.0;
     public double rollerVelocityRPM = 0.0;
+    public double rollerCurrentAmps = 0.0;
   }
 
   /** Called every loop to populate the logged inputs struct from hardware/sim. */

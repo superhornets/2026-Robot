@@ -10,6 +10,7 @@ package frc.robot;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.revrobotics.util.StatusLogger;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -154,11 +155,21 @@ public class Robot extends LoggedRobot {
   @Override
   public void testPeriodic() {}
 
+  // Battery model constants: 12V nominal, 20 mΩ internal resistance (typical FRC battery)
+  private static final double BATTERY_NOMINAL_VOLTS = 12.0;
+  private static final double BATTERY_RESISTANCE_OHMS = 0.02;
+
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+    RoboRioSim.setVInVoltage(BATTERY_NOMINAL_VOLTS);
+  }
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    double voltage = Math.max(0,
+        BATTERY_NOMINAL_VOLTS - BATTERY_RESISTANCE_OHMS * robotContainer.getSimCurrentDrawAmps());
+    RoboRioSim.setVInVoltage(voltage);
+  }
 }

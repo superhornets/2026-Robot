@@ -78,29 +78,32 @@ public class ShooterIOSim implements ShooterIO {
     hoodSim.update(dt);
     inputs.hoodPositionRotations =
         (hoodSim.getPositionMeters() - hoodPositionOffset) * HOOD_METERS_TO_ROTATIONS;
-    inputs.hoodCurrentAmps = hoodSim.getCurrentDrawAmps();
+    inputs.hoodCurrentAmps = Math.abs(hoodSim.getCurrentDrawAmps());
     inputs.hoodStalled = (inputs.hoodCurrentAmps > 8.0)
         && (Math.abs(hoodSim.getVelocityMetersPerSecond()) < 0.01);
     inputs.hoodAtSetpoint = Math.abs(inputs.hoodPositionRotations - hoodSetpoint) < Units.degreesToRotations(0.2);
 
     // Flywheel
-    flywheelSim.setInput(flywheelAppliedVolts);
+    flywheelSim.setInput(MathUtil.clamp(flywheelAppliedVolts, -batteryVolts, batteryVolts));
     flywheelSim.update(dt);
     inputs.flywheelVelocityRPM =
         Units.radiansPerSecondToRotationsPerMinute(flywheelSim.getAngularVelocityRadPerSec());
     inputs.flywheelAtSetpoint = Math.abs(inputs.flywheelVelocityRPM - flywheelSetpointRPM) < 50.0;
+    inputs.flywheelCurrentAmps = Math.max(0, flywheelSim.getCurrentDrawAmps());
 
     // Feeder
-    feederSim.setInput(feederAppliedVolts);
+    feederSim.setInput(MathUtil.clamp(feederAppliedVolts, -batteryVolts, batteryVolts));
     feederSim.update(dt);
     inputs.feederVelocityRPM =
         Units.radiansPerSecondToRotationsPerMinute(feederSim.getAngularVelocityRadPerSec());
+    inputs.feederCurrentAmps = Math.abs(feederSim.getCurrentDrawAmps());
 
     // Spindexer
-    spindexerSim.setInput(spindexerAppliedVolts);
+    spindexerSim.setInput(MathUtil.clamp(spindexerAppliedVolts, -batteryVolts, batteryVolts));
     spindexerSim.update(dt);
     inputs.spindexerVelocityRPM =
         Units.radiansPerSecondToRotationsPerMinute(spindexerSim.getAngularVelocityRadPerSec());
+    inputs.spindexerCurrentAmps = Math.abs(spindexerSim.getCurrentDrawAmps());
   }
 
   @Override

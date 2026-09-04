@@ -5,10 +5,9 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,13 +25,13 @@ public class IntakeSubsystem extends SubsystemBase {
   private boolean lowered = false;
   private double armSetpointRotations = IntakeConstants.kRaisedAngle;
 
-  private final Mechanism2d m_mechanism = new Mechanism2d(1, 1);
-  private final MechanismRoot2d m_root = m_mechanism.getRoot("Intake", 0.1, 0.5);
-  private final MechanismLigament2d m_arm =
-      m_root.append(new MechanismLigament2d("Arm", IntakeConstants.SIM.kArmLengthMeters,
+  private final LoggedMechanism2d m_mechanism = new LoggedMechanism2d(1, 1);
+  private final LoggedMechanismRoot2d m_root = m_mechanism.getRoot("Intake", 0.1, 0.5);
+  private final LoggedMechanismLigament2d m_arm =
+      m_root.append(new LoggedMechanismLigament2d("Arm", IntakeConstants.SIM.kArmLengthMeters,
           Units.rotationsToDegrees(IntakeConstants.kRaisedAngle), 6, new Color8Bit(Color.kYellow)));
-  private final MechanismLigament2d m_armSetpoint =
-      m_root.append(new MechanismLigament2d("ArmSetpoint", IntakeConstants.SIM.kArmLengthMeters,
+  private final LoggedMechanismLigament2d m_armSetpoint =
+      m_root.append(new LoggedMechanismLigament2d("ArmSetpoint", IntakeConstants.SIM.kArmLengthMeters,
           Units.rotationsToDegrees(IntakeConstants.kRaisedAngle), 2, new Color8Bit(Color.kGray)));
 
   private final LoggedNetworkNumber rollerSpeed;
@@ -41,7 +40,6 @@ public class IntakeSubsystem extends SubsystemBase {
     this.io = io;
     this.logScope = logScope;
     this.rollerSpeed = new LoggedNetworkNumber(logScope + "/RollerSpeedRPM", defaultRollerSpeedRPM);
-    SmartDashboard.putData(logScope + "/Mechanism", m_mechanism);
   }
 
   @Override
@@ -51,6 +49,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     m_arm.setAngle(Units.rotationsToDegrees(inputs.armPositionRotations));
     m_armSetpoint.setAngle(Units.rotationsToDegrees(armSetpointRotations));
+
+    Logger.recordOutput(logScope + "/Mechanism", m_mechanism);
   }
 
   /** Lowers the arm and prepares servos for intaking. */
@@ -106,5 +106,10 @@ public class IntakeSubsystem extends SubsystemBase {
   @AutoLogOutput(key = "{logScope}/RollerVelocityRPM")
   public double getRollerVelocityRPM() {
     return inputs.rollerVelocityRPM;
+  }
+
+  /** Returns the total current draw of all intake motors (amps). */
+  public double getSimCurrentDrawAmps() {
+    return inputs.armCurrentAmps + inputs.rollerCurrentAmps;
   }
 }

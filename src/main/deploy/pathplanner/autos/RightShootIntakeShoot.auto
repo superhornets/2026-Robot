@@ -27,13 +27,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "shooter_primeShooter"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "shoot"
+                        "name": "auto_shoot"
                       }
                     },
                     {
@@ -65,19 +59,13 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "shooter_primeShooter"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "shoot"
+                        "name": "auto_shoot"
                       }
                     },
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 3.0
+                        "waitTime": 4.0
                       }
                     }
                   ]

@@ -18,7 +18,10 @@ public interface ShooterIO {
     public boolean hoodStalled = false;
 
     public double feederVelocityRPM = 0.0;
+    public double feederCurrentAmps = 0.0;
     public double spindexerVelocityRPM = 0.0;
+    public double spindexerCurrentAmps = 0.0;
+    public double flywheelCurrentAmps = 0.0;
   }
 
   /** Called every loop to populate the logged inputs struct from hardware/sim. */
