@@ -13,7 +13,7 @@ public class ShooterState implements Interpolatable<ShooterState> {
     public static final ShooterState zero = new ShooterState(0, 0);
     public static final ShooterState min = new ShooterState(ShooterConstants.kFlywheelMinSpeed, 0);
     public static final ShooterState max = new ShooterState(ShooterConstants.kFlywheelMaxSpeed, 30);
-    public static final ShooterState idle = new ShooterState(ShooterConstants.kFlywheelIdleSpeed, 30);
+    public static final ShooterState idle = new ShooterState(ShooterConstants.kFlywheelIdleSpeed, 0);
     public static final ShooterState reverse = new ShooterState(ShooterConstants.kFlywheelMinSpeed, 0);
 
     public double speed = 0.0;
