@@ -141,7 +141,12 @@
       "name": "event_auto_intake",
       "waypointRelativePos": 0.44085004091653013,
       "endWaypointRelativePos": 2.562551145662848,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "auto_intake"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -160,7 +165,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": 47.272232285337
+    "rotation": 47.272232285337004
   },
   "useDefaultConstraints": true
 }

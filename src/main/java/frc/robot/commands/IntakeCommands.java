@@ -6,9 +6,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.drive.Drive;
 
 /** Add your docs here. */
 public class IntakeCommands {
@@ -43,7 +42,7 @@ public class IntakeCommands {
   }
 
   public static Command intake(Boolean reverse, IntakeSubsystem intake) {
-    return Commands.startEnd(
+    var intakeCommand = Commands.startEnd(
       () -> {
         intake.startRoller(reverse);
       },
@@ -52,6 +51,8 @@ public class IntakeCommands {
       },
       intake
     );
+    intakeCommand.setName("Intake Command");
+    return intakeCommand;
   }
 
   public static Command intakeAgitate(IntakeSubsystem intake) {

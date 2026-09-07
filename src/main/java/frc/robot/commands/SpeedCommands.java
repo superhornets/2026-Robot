@@ -16,14 +16,20 @@ public final class SpeedCommands {
   private SpeedCommands() {}
 
   public static Command slowCommand(SpeedSupplier speed) {
-    return Commands.startEnd(speed::setSlow, speed::reset);
+    var slow = Commands.startEnd(speed::setSlow, speed::reset);
+    slow.setName("Slow Command");
+    return slow;
   }
 
   public static Command fastCommand(SpeedSupplier speed) {
-    return Commands.startEnd(speed::setFast, speed::reset);
+    var fast = Commands.startEnd(speed::setFast, speed::reset);
+    fast.setName("Fast Command");
+    return fast;
   }
 
   public static Command intakeCommand(SpeedSupplier speed) {
-    return Commands.startEnd(speed::setIntake, speed::reset);
+    var intake = Commands.startEnd(speed::setIntake, speed::reset);
+    intake.setName("Intake Command");
+    return intake;
   }
 }

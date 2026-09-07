@@ -10,7 +10,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.events.EventTrigger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -67,6 +66,10 @@ public class RobotContainer {
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        CommandScheduler.getInstance().onCommandInterrupt(command -> {
+            System.out.println("INTERRUPTED COMMAND: " + command.getName());
+        });
+
         drive   = Subsystems.createDrive(Constants.currentMode);
         vision  = Subsystems.createVision(Constants.currentMode, drive);
         shooter = Subsystems.createShooter(Constants.currentMode, shooterState);
@@ -106,16 +109,14 @@ public class RobotContainer {
         NamedCommands.registerCommand("intake_agitate", IntakeCommands.intakeAgitate(intake));
 
         NamedCommands.registerCommand("auto_shoot", ShooterCommands.autoShoot(shooter, shooterState, alignedToHub));
-
-        // Register event commands for PathPlanner autos
-        new EventTrigger("event_auto_intake").whileTrue(IntakeCommands.intake(false, intake));
-        new EventTrigger("event_auto_shoot").whileTrue(ShooterCommands.autoShoot(shooter, shooterState, alignedToHub));
+        NamedCommands.registerCommand("auto_intake", IntakeCommands.intake(false, intake));
     }
 
     private void configureAutoChooser() {
         autoChooser.addOption("Left", AutoCommands.basicAuto(6, -45, drive, shooterState, shooter));
         autoChooser.addOption("Middle", AutoCommands.basicAuto(4, 0, drive, shooterState, shooter));
         autoChooser.addOption("Right", AutoCommands.basicAuto(2, 45, drive, shooterState, shooter));
+
         autoChooser.addOption("RightShootIntakeShoot", AutoBuilder.buildAuto("RightShootIntakeShoot"));
         autoChooser.addOption("LeftShootIntakeShoot", new PathPlannerAuto("RightShootIntakeShoot", true));
 
