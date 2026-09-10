@@ -32,6 +32,9 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.FlippedSupplier;
 import frc.robot.util.RebuiltField;
+import frc.robot.util.preferences.PreferenceBoolean;
+import frc.robot.util.preferences.PreferencesManager;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
@@ -47,6 +50,7 @@ public class RobotContainer {
     private final Vision vision;
     private final ShooterSubsystem shooter;
     private final IntakeSubsystem intake;
+    private final PreferencesManager preferencesManager = new PreferencesManager();
     
     // Controller
     private final CommandXboxController driverController = new CommandXboxController(0);
@@ -62,7 +66,8 @@ public class RobotContainer {
     
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
-    private LoggedNetworkBoolean fieldOriented = new LoggedNetworkBoolean("Drive/FieldOriented", true);
+    private PreferenceBoolean fieldOriented = new PreferenceBoolean("Drive/FieldOriented", true);
+    private PreferenceBoolean snakeDriveOnIntake = new PreferenceBoolean("Drive/SnakeDriveOnIntake", false);
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -75,7 +80,7 @@ public class RobotContainer {
         shooter = Subsystems.createShooter(Constants.currentMode, shooterState);
         intake  = Subsystems.createIntake(Constants.currentMode);
         
-        shooterReady = new Trigger(shooter::getReady).debounce(0.05);
+        shooterReady = new Trigger(shooter::isReady).debounce(0.05);
         alignedToHub = new Trigger(drive::isAlignedToHub).debounce(0.05);
 
         // Provide RebuiltField with live suppliers so AutoBuilder can flip paths and compute hub targeting.
@@ -119,14 +124,6 @@ public class RobotContainer {
 
         autoChooser.addOption("RightShootIntakeShoot", AutoBuilder.buildAuto("RightShootIntakeShoot"));
         autoChooser.addOption("LeftShootIntakeShoot", new PathPlannerAuto("RightShootIntakeShoot", true));
-
-        // autoChooser.addOption("LeftIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(6, -45, drive, shooterState, shooter, intake));
-        // autoChooser.addOption("MiddleIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(4, 0, drive, shooterState, shooter, intake));
-        // autoChooser.addOption("RightIntakeAgitate", AutoCommands.basicAutoIntakeAgitate(2, 45, drive, shooterState, shooter, intake));
-
-        // autoChooser.addOption("LeftNeutral", AutoCommands.neutralAuto(6, -45, 90, drive, shooterState, shooter, intake));
-        // autoChooser.addOption("MiddleNeutral", AutoCommands.neutralAuto(4, 0, 90, drive, shooterState, shooter, intake));
-        // autoChooser.addOption("RightNeutral", AutoCommands.neutralAuto(2, 45, 90, drive, shooterState, shooter, intake));
 
         // // Set up SysId routines
         // autoChooser.addOption(
@@ -187,7 +184,19 @@ public class RobotContainer {
         driverController.povDown().onTrue(IntakeCommands.lower(intake));
         driverController.povUp().onTrue(IntakeCommands.raise(intake));
 
-        driverController.rightBumper().whileTrue(
+        Trigger snakeDriveOnIntakeTrigger = new Trigger(snakeDriveOnIntake::getAsBoolean);
+
+        driverController.rightTrigger().and(snakeDriveOnIntakeTrigger).whileTrue(
+            Commands.parallel(
+                    IntakeCommands.intake(false, intake),
+                    DriveCommands.snakeDrive(
+                        drive,
+                        () -> -driverController.getLeftY(),
+                        () -> -driverController.getLeftX(),
+                        speedSupplier))
+        );
+
+        driverController.rightTrigger().and(snakeDriveOnIntakeTrigger.negate()).whileTrue(
             IntakeCommands.intake(false, intake)
         );
 
@@ -206,7 +215,7 @@ public class RobotContainer {
         () -> -driverController.getLeftX(),
         () -> false));
 
-        driverController.a().whileTrue(DriveCommands.shake(drive));
+        // driverController.a().whileTrue(DriveCommands.shake(drive));
     }
 
     private void configureOperatorBindings() {

@@ -7,7 +7,6 @@ package frc.robot.util;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -18,6 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
 import frc.robot.subsystems.shooter.ShooterState;
+import frc.robot.util.preferences.PreferenceNumber;
 
 /** Add your docs here. */
 public class RebuiltField {
@@ -27,10 +27,10 @@ public class RebuiltField {
     };
     private static Supplier<Pose2d> robotPoseSupplier = () -> { return new Pose2d(); };
 
-    public static LoggedNetworkNumber nearSpeed = new LoggedNetworkNumber("RebuiltField/NearSpeed", 2950);
-    public static LoggedNetworkNumber farSpeed = new LoggedNetworkNumber("RebuiltField/FarSpeed", 3650);
-    public static LoggedNetworkNumber nearAngle = new LoggedNetworkNumber("RebuiltField/NearAngle", 5);
-    public static LoggedNetworkNumber farAngle = new LoggedNetworkNumber("RebuiltField/FarAngle", 25);
+    public static PreferenceNumber nearSpeed = new PreferenceNumber("HubAim/Near/Speed", 2950);
+    public static PreferenceNumber farSpeed = new PreferenceNumber("HubAim/Far/Speed", 3650);
+    public static PreferenceNumber nearAngle = new PreferenceNumber("HubAim/Near/Angle", 5);
+    public static PreferenceNumber farAngle = new PreferenceNumber("HubAim/Far/Angle", 25);
 
     public static void setGlobalFlippedSupplier(BooleanSupplier newFlippedSupplier) {
         isFlippedSupplier = newFlippedSupplier;

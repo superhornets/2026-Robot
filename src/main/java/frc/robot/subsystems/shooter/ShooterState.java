@@ -6,6 +6,7 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.interpolation.Interpolatable;
+import frc.robot.util.preferences.PreferenceNumber;
 
 /** Add your docs here. */
 public class ShooterState implements Interpolatable<ShooterState> {
@@ -13,8 +14,9 @@ public class ShooterState implements Interpolatable<ShooterState> {
     public static final ShooterState zero = new ShooterState(0, 0);
     public static final ShooterState min = new ShooterState(ShooterConstants.kFlywheelMinSpeed, 0);
     public static final ShooterState max = new ShooterState(ShooterConstants.kFlywheelMaxSpeed, 30);
-    public static final ShooterState idle = new ShooterState(ShooterConstants.kFlywheelIdleSpeed, 0);
     public static final ShooterState reverse = new ShooterState(ShooterConstants.kFlywheelMinSpeed, 0);
+
+    public static final PreferenceNumber flywheelIdleSpeed = new PreferenceNumber("Shooter/FlywheelIdleSpeed", ShooterConstants.kFlywheelIdleSpeed);
 
     public double speed = 0.0;
     public double angle = 0.0;
@@ -29,6 +31,10 @@ public class ShooterState implements Interpolatable<ShooterState> {
             speed + ((endValue.speed - speed) * t),
             angle + ((endValue.angle - angle) * t)
             );
+    }
+
+    public boolean equals(ShooterState other) {
+        return (this.speed == other.speed) && (this.angle == other.angle);
     }
 
     public ShooterState clamped() {

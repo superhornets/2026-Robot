@@ -9,14 +9,16 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
+import frc.robot.util.preferences.PreferenceNumber;
+
 
 /** Add your docs here. */
 public class SpeedSupplier implements DoubleSupplier {
 
-    private LoggedNetworkNumber normal = new LoggedNetworkNumber("Drive/NormalMultiplier", DriveConstants.kNormalModeMultiplier);
-    private LoggedNetworkNumber slow = new LoggedNetworkNumber("Drive/SlowMultiplier", DriveConstants.kSlowModeMultiplier);
-    private LoggedNetworkNumber fast = new LoggedNetworkNumber("Drive/FastMultiplier", DriveConstants.kFastModeMultiplier);
-    private LoggedNetworkNumber intake = new LoggedNetworkNumber("Drive/IntakeMultiplier", DriveConstants.kIntakeSpeedMultiplier);
+    private PreferenceNumber normal = new PreferenceNumber("Drive/NormalMultiplier", DriveConstants.kNormalModeMultiplier);
+    private PreferenceNumber slow = new PreferenceNumber("Drive/SlowMultiplier", DriveConstants.kSlowModeMultiplier);
+    private PreferenceNumber fast = new PreferenceNumber("Drive/FastMultiplier", DriveConstants.kFastModeMultiplier);
+    private PreferenceNumber intake = new PreferenceNumber("Drive/IntakeMultiplier", DriveConstants.kIntakeSpeedMultiplier);
 
     @AutoLogOutput(key = "Drive/CurrentMultiplier")
     private double speedMultiplier = normal.get();

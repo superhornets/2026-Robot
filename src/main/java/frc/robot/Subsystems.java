@@ -95,7 +95,7 @@ public final class Subsystems {
         switch (mode) {
             case REAL:
                 return new IntakeSubsystem(
-                    new IntakeIOHardware(Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller, true),
+                    new IntakeIOHardware(Constants.Intake.CAN.kRightArm, Constants.Intake.CAN.kRightRoller),
                     "Intake", IntakeConstants.kIntakeRollerSpeedRight);
             case SIM:
                 return new IntakeSubsystem(

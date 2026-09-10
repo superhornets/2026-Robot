@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.Servo;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import frc.robot.Constants;
+import frc.robot.util.preferences.PreferenceNumber;
 
 public class IntakeIOHardware implements IntakeIO {
   private final SparkMax armMotor;
@@ -34,17 +35,13 @@ public class IntakeIOHardware implements IntakeIO {
   private final Servo servo1;
   private final Servo servo2;
 
-  private final boolean inverted;
-
   private final DutyCycleOut rollerDutyCycle = new DutyCycleOut(0);
   private final VelocityVoltage rollerVelocity = new VelocityVoltage(0);
 
-  private final LoggedNetworkNumber rollerP;
-  private final LoggedNetworkNumber rollerD;
+  private final PreferenceNumber rollerP;
+  private final PreferenceNumber rollerD;
 
-  public IntakeIOHardware(int armID, int rollerID, boolean inverted) {
-    this.inverted = inverted;
-
+  public IntakeIOHardware(int armID, int rollerID) {
     servo1 = new Servo(Constants.Intake.kServo1Port);
     servo2 = new Servo(Constants.Intake.kServo2Port);
 
@@ -52,7 +49,6 @@ public class IntakeIOHardware implements IntakeIO {
     SparkMaxConfig armConfig = new SparkMaxConfig();
     armConfig
         .idleMode(IdleMode.kBrake)
-        .inverted(inverted)
         .smartCurrentLimit(40)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
@@ -64,10 +60,8 @@ public class IntakeIOHardware implements IntakeIO {
     armMotor.configure(armConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     armController = armMotor.getClosedLoopController();
 
-    rollerP = new LoggedNetworkNumber(
-        inverted ? "/Tuning/Intake/Right/RollerP" : "/Tuning/Intake/Left/RollerP", 0.0005);
-    rollerD = new LoggedNetworkNumber(
-        inverted ? "/Tuning/Intake/Right/RollerD" : "/Tuning/Intake/Left/RollerD", 0.0001);
+    rollerP = new PreferenceNumber("Intake/RollerP", 0.0005);
+    rollerD = new PreferenceNumber("Intake/RollerD", 0.0001);
 
     rollerMotor = new TalonFX(rollerID);
     configureRoller();
@@ -75,8 +69,7 @@ public class IntakeIOHardware implements IntakeIO {
 
   private void configureRoller() {
     TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
-    rollerConfig.MotorOutput.Inverted =
-        inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+    rollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rollerConfig.CurrentLimits.StatorCurrentLimit = 40;
     rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;

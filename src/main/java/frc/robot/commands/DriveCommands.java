@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.RebuiltField;
+import frc.robot.util.preferences.PreferenceNumber;
+
 import org.littletonrobotics.junction.Logger;
 
 import java.util.function.BooleanSupplier;
@@ -31,10 +33,10 @@ import java.util.function.Supplier;
 /** Teleop driving commands: joystick drive, angle-locked drive, snake drive, and alignment. */
 public final class DriveCommands {
   private static final double DEADBAND = 0.1;
-  private static final double ANGLE_KP = 2.0;
-  private static final double ANGLE_KD = 0;
-  private static final double ANGLE_MAX_VELOCITY = 8.0;
-  private static final double ANGLE_MAX_ACCELERATION = 20.0;
+  private static final PreferenceNumber ANGLE_KP = new PreferenceNumber("Drive/AngleKP", 2.0);
+  private static final PreferenceNumber ANGLE_KD = new PreferenceNumber("Drive/AngleKD", 0.0);
+  private static final PreferenceNumber ANGLE_MAX_VELOCITY = new PreferenceNumber("Drive/AngleMaxVelocity", 8.0);
+  private static final PreferenceNumber ANGLE_MAX_ACCELERATION = new PreferenceNumber("Drive/AngleMaxAcceleration", 20.0);
 
   private DriveCommands() {}
 
@@ -115,13 +117,17 @@ public final class DriveCommands {
       DoubleSupplier speedMultiplierSupplier) {
 
     ProfiledPIDController angleController = new ProfiledPIDController(
-        ANGLE_KP, 0.0, ANGLE_KD,
-        new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+        ANGLE_KP.get(), 0.0, ANGLE_KD.get(),
+        new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY.get(), ANGLE_MAX_ACCELERATION.get()));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
     angleController.setTolerance(Units.degreesToRadians(0.5));
 
     return Commands.run(
         () -> {
+          angleController.setPID(ANGLE_KP.get(), 0.0, ANGLE_KD.get());
+          angleController.setConstraints(new TrapezoidProfile.Constraints(
+              ANGLE_MAX_VELOCITY.get(), ANGLE_MAX_ACCELERATION.get()));
+
           Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
               ySupplier.getAsDouble());
 
@@ -174,12 +180,16 @@ public final class DriveCommands {
       DoubleSupplier speedMultiplierSupplier) {
 
     ProfiledPIDController angleController = new ProfiledPIDController(
-        ANGLE_KP, 0.0, ANGLE_KD,
-        new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+        ANGLE_KP.get(), 0.0, ANGLE_KD.get(),
+        new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY.get(), ANGLE_MAX_ACCELERATION.get()));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
     return Commands.run(
         () -> {
+          angleController.setPID(ANGLE_KP.get(), 0.0, ANGLE_KD.get());
+          angleController.setConstraints(new TrapezoidProfile.Constraints(
+              ANGLE_MAX_VELOCITY.get(), ANGLE_MAX_ACCELERATION.get()));
+
           Translation2d linearVelocity =
               getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 

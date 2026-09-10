@@ -20,9 +20,9 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.util.Units;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import frc.robot.Constants;
+import frc.robot.util.preferences.PreferenceNumber;
 
 public class ShooterIOSparkMax implements ShooterIO {
   private final SparkFlex flywheelMotorLeft;
@@ -37,8 +37,8 @@ public class ShooterIOSparkMax implements ShooterIO {
   private final SparkFlex feederMotor;
   private final SparkClosedLoopController feederController;
 
-  private final LoggedNetworkNumber flywheelP = new LoggedNetworkNumber("Shooter/FlywheelP", 0.0007);
-  private final LoggedNetworkNumber flywheelD = new LoggedNetworkNumber("Shooter/FlywheelD", 0.0000);
+  private final PreferenceNumber flywheelP = new PreferenceNumber("Shooter/FlywheelP", 0.0007);
+  private final PreferenceNumber flywheelD = new PreferenceNumber("Shooter/FlywheelD", 0.0000);
 
   public ShooterIOSparkMax() {
     hoodMotor = new SparkMax(Constants.Shooter.CAN.kHood, MotorType.kBrushless);
@@ -51,7 +51,7 @@ public class ShooterIOSparkMax implements ShooterIO {
         .i(0)
         .d(0.01)
         .outputRange(-1, 1)
-        .allowedClosedLoopError(Units.degreesToRotations(5), ClosedLoopSlot.kSlot0);
+        .allowedClosedLoopError(1.5, ClosedLoopSlot.kSlot0);
     hoodMotor.configure(hoodConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     hoodController = hoodMotor.getClosedLoopController();
     hoodMotor.getEncoder().setPosition(0);

@@ -17,7 +17,7 @@ public final class ShooterConstants {
     public static final double kFlywheelMOI = MOI.in2lbToKgM2(10.7);
     public static final double kFlywheelGearRatio = 1.0;
 
-    public static final double kHoodGearRatio = 9.0; // 9:1 gearbox
+    public static final double kHoodGearRatio = 27.0; // 9:1 gearbox
 
     // Feeder: Neo 1.0, 4:1 gear ratio. MOI is an estimate — update with measured value.
     public static final double kFeederMOI = kFlywheelMOI * 0.3;

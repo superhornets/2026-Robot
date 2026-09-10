@@ -104,22 +104,6 @@
             }
           },
           {
-            "title": "FlywheelVelocityRPM",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 448.0,
-            "height": 256.0,
-            "type": "Graph",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Shooter/FlywheelVelocityRPM",
-              "period": 0.033,
-              "data_type": "double",
-              "time_displayed": 15.0,
-              "color": 4278238420,
-              "line_width": 2.0
-            }
-          },
-          {
             "title": "MatchTime",
             "x": 768.0,
             "y": 384.0,
@@ -154,68 +138,184 @@
             "y": 512.0,
             "width": 448.0,
             "height": 128.0,
-            "type": "Split Button Chooser",
+            "type": "ComboBox Chooser",
             "properties": {
               "topic": "/SmartDashboard/Auto Choices",
-              "period": 0.06
+              "period": 0.06,
+              "sort_options": false
             }
           },
           {
-            "title": "FeederSetpointRPM",
+            "title": "BatteryVoltage",
             "x": 0.0,
-            "y": 640.0,
+            "y": 384.0,
             "width": 448.0,
             "height": 256.0,
             "type": "Graph",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Shooter/FeederSetpointRPM",
+              "topic": "/AdvantageKit/SystemStats/BatteryVoltage",
               "period": 0.033,
               "data_type": "double",
-              "time_displayed": 15.0,
+              "time_displayed": 20.0,
               "color": 4278238420,
               "line_width": 2.0
             }
           },
           {
-            "title": "Field Oriented",
-            "x": 1088.0,
+            "title": "Aligned To Hub",
+            "x": 768.0,
             "y": 640.0,
-            "width": 128.0,
+            "width": 192.0,
             "height": 128.0,
-            "type": "Toggle Switch",
+            "type": "Boolean Box",
             "properties": {
-              "topic": "Drive/FieldOriented",
+              "topic": "/AdvantageKit/RealOutputs/Drive/AlignedToHub",
               "period": 0.06,
-              "data_type": "boolean"
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Shooter Ready",
+            "x": 960.0,
+            "y": 640.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Shooter/Ready",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
       }
     },
     {
-      "name": "Adjustments",
+      "name": "Settings",
       "grid_layout": {
         "layouts": [
+          {
+            "title": "Hub Aim Far",
+            "x": 576.0,
+            "y": 256.0,
+            "width": 576.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "LEFT"
+            },
+            "children": [
+              {
+                "title": "Angle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "/Preferences/HubAim/Far/Angle",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 35.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              },
+              {
+                "title": "Speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "/Preferences/HubAim/Far/Speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 4000.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "Hub Aim Near",
+            "x": 576.0,
+            "y": 0.0,
+            "width": 576.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "LEFT"
+            },
+            "children": [
+              {
+                "title": "Angle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "/Preferences/HubAim/Near/Angle",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 35.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              },
+              {
+                "title": "Speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "/Preferences/HubAim/Near/Speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 0.0,
+                  "max_value": 4000.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              }
+            ]
+          },
           {
             "title": "Drive",
             "x": 0.0,
             "y": 0.0,
-            "width": 640.0,
-            "height": 384.0,
+            "width": 576.0,
+            "height": 512.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
             },
             "children": [
               {
-                "title": "FastMultiplier",
+                "title": "Normal Speed",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Number Slider",
                 "properties": {
-                  "topic": "Drive/FastMultiplier",
+                  "topic": "/Preferences/Drive/NormalMultiplier",
                   "period": 0.06,
                   "data_type": "double",
                   "min_value": 0.0,
@@ -225,14 +325,14 @@
                 }
               },
               {
-                "title": "NormalMultiplier",
+                "title": "Slow Speed",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Number Slider",
                 "properties": {
-                  "topic": "Drive/NormalMultiplier",
+                  "topic": "/Preferences/Drive/SlowMultiplier",
                   "period": 0.06,
                   "data_type": "double",
                   "min_value": 0.0,
@@ -242,14 +342,31 @@
                 }
               },
               {
-                "title": "SlowMultiplier",
+                "title": "Fast Speed",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Number Slider",
                 "properties": {
-                  "topic": "Drive/SlowMultiplier",
+                  "topic": "/Preferences/Drive/FastMultiplier",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": -1.0,
+                  "max_value": 1.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              },
+              {
+                "title": "Speed When Intaking",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "/Preferences/Drive/IntakeMultiplier",
                   "period": 0.06,
                   "data_type": "double",
                   "min_value": 0.0,
@@ -261,116 +378,122 @@
             ]
           },
           {
-            "title": "Shooter",
-            "x": 640.0,
-            "y": 0.0,
-            "width": 576.0,
-            "height": 320.0,
+            "title": "List Layout",
+            "x": 256.0,
+            "y": 512.0,
+            "width": 320.0,
+            "height": 256.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
             },
             "children": [
               {
-                "title": "HoodAdjustment",
+                "title": "AngleKP",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Number Slider",
+                "type": "Text Display",
                 "properties": {
-                  "topic": "Shooter/HoodAdjustment",
+                  "topic": "Drive/AngleKP",
                   "period": 0.06,
                   "data_type": "double",
-                  "min_value": 0.0,
-                  "max_value": 1.0,
-                  "divisions": 5,
-                  "update_continuously": false
+                  "show_submit_button": false
                 }
               },
               {
-                "title": "SpeedAdjustment",
+                "title": "AngleKD",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Number Slider",
+                "type": "Text Display",
                 "properties": {
-                  "topic": "Shooter/SpeedAdjustment",
+                  "topic": "Drive/AngleKD",
                   "period": 0.06,
                   "data_type": "double",
-                  "min_value": 0.0,
-                  "max_value": 10.0,
-                  "divisions": 5,
-                  "update_continuously": false
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "AngleMaxVelocity",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "Drive/AngleMaxVelocity",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "AngleMaxAcceleration",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "Drive/AngleMaxAcceleration",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
                 }
               }
             ]
           },
           {
-            "title": "Auto Shoot Settings",
-            "x": 640.0,
-            "y": 320.0,
+            "title": "Reset To Defaults",
+            "x": 576.0,
+            "y": 640.0,
             "width": 576.0,
-            "height": 320.0,
+            "height": 256.0,
             "type": "List Layout",
             "properties": {
-              "label_position": "TOP"
+              "label_position": "LEFT"
             },
             "children": [
               {
-                "title": "FarAngle",
+                "title": "Tap To Reset",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Text Display",
+                "type": "Toggle Button",
                 "properties": {
-                  "topic": "RebuiltField/FarAngle",
+                  "topic": "PreferencesManager/Reset",
                   "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
+                  "data_type": "boolean"
                 }
               },
               {
-                "title": "FarSpeed",
+                "title": "Tap To Confirm",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Text Display",
+                "type": "Toggle Button",
                 "properties": {
-                  "topic": "RebuiltField/FarSpeed",
+                  "topic": "PreferencesManager/Confirm",
                   "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
+                  "data_type": "boolean"
                 }
               },
               {
-                "title": "NearAngle",
+                "title": "Message",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "RebuiltField/NearAngle",
+                  "topic": "PreferencesManager/Message",
                   "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "NearSpeed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "RebuiltField/NearSpeed",
-                  "period": 0.06,
-                  "data_type": "double",
+                  "data_type": "string",
                   "show_submit_button": false
                 }
               }
@@ -381,179 +504,51 @@
           {
             "title": "Intake Roller Speed",
             "x": 0.0,
-            "y": 384.0,
-            "width": 640.0,
+            "y": 768.0,
+            "width": 576.0,
             "height": 128.0,
             "type": "Number Slider",
             "properties": {
-              "topic": "Intake/RollerSpeed",
+              "topic": "/Preferences/Intake/RollerSpeedRPM",
               "period": 0.06,
               "data_type": "double",
-              "min_value": 3500.0,
-              "max_value": 6000.0,
+              "min_value": 0.0,
+              "max_value": 5000.0,
               "divisions": 5,
-              "update_continuously": true
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "Power",
-      "grid_layout": {
-        "layouts": [],
-        "containers": [
-          {
-            "title": "BatteryCurrent",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 896.0,
-            "height": 256.0,
-            "type": "Graph",
-            "properties": {
-              "topic": "/AdvantageKit/SystemStats/BatteryCurrent",
-              "period": 0.033,
-              "data_type": "double",
-              "time_displayed": 15.0,
-              "color": 4278238420,
-              "line_width": 2.0
+              "update_continuously": false
             }
           },
           {
-            "title": "BatteryVoltage",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 896.0,
-            "height": 256.0,
-            "type": "Graph",
+            "title": "FlywheelIdleSpeed",
+            "x": 576.0,
+            "y": 512.0,
+            "width": 576.0,
+            "height": 128.0,
+            "type": "Number Slider",
             "properties": {
-              "topic": "/AdvantageKit/SystemStats/BatteryVoltage",
-              "period": 0.033,
+              "topic": "/Preferences/Shooter/FlywheelIdleSpeed",
+              "period": 0.06,
               "data_type": "double",
-              "time_displayed": 15.0,
-              "color": 4285333716,
-              "line_width": 2.0
+              "min_value": 0.0,
+              "max_value": 3000.0,
+              "divisions": 5,
+              "update_continuously": false
+            }
+          },
+          {
+            "title": "Snake Drive When Intaking",
+            "x": 0.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Toggle Switch",
+            "properties": {
+              "topic": "/Preferences/Drive/SnakeDriveOnIntake",
+              "period": 0.06,
+              "data_type": "boolean"
             }
           }
         ]
-      }
-    },
-    {
-      "name": "Intake",
-      "grid_layout": {
-        "layouts": [
-          {
-            "title": "Left",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "RollerD",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Tuning/ntake/Left/RollerD",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "RollerP",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Tuning/ntake/Left/RollerP",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "RollerSpeed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Tuning/ntake/Left/RollerSpeed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              }
-            ]
-          },
-          {
-            "title": "Right",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "RollerD",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Tuning/ntake/Right/RollerD",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "RollerP",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Tuning/ntake/Right/RollerP",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "RollerSpeed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Tuning/ntake/Right/RollerSpeed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              }
-            ]
-          }
-        ],
-        "containers": []
       }
     }
   ]

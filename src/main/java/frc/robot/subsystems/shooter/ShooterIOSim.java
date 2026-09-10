@@ -81,7 +81,7 @@ public class ShooterIOSim implements ShooterIO {
     inputs.hoodCurrentAmps = Math.abs(hoodSim.getCurrentDrawAmps());
     inputs.hoodStalled = (inputs.hoodCurrentAmps > 8.0)
         && (Math.abs(hoodSim.getVelocityMetersPerSecond()) < 0.01);
-    inputs.hoodAtSetpoint = Math.abs(inputs.hoodPositionRotations - hoodSetpoint) < Units.degreesToRotations(0.2);
+    inputs.hoodAtSetpoint = Math.abs(inputs.hoodPositionRotations - hoodSetpoint) < 1.5;
 
     // Flywheel
     flywheelSim.setInput(MathUtil.clamp(flywheelAppliedVolts, -batteryVolts, batteryVolts));

@@ -4,21 +4,22 @@
 
 package frc.robot.subsystems.shooter;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+import frc.robot.util.preferences.PreferenceNumber;
 
 
 /** Add your docs here. */
 public class ShooterStateStore implements Supplier<ShooterState> {
 
     private ShooterState current = ShooterState.zero;
-
     private ShooterState last = ShooterState.zero;
 
-    private LoggedNetworkNumber hoodAdjustment = new LoggedNetworkNumber("Shooter/HoodAdjustment", .6);
-    private LoggedNetworkNumber speedAdjustment = new LoggedNetworkNumber("Shooter/SpeedAdjustment", 100);
+    private PreferenceNumber hoodAdjustment = new PreferenceNumber("Shooter/HoodIncrement", .6);
+    private PreferenceNumber speedAdjustment = new PreferenceNumber("Shooter/SpeedIncrement", 100);
+    private DoubleSupplier idleSupplier = ShooterState.flywheelIdleSpeed;
+
 
     public ShooterState get() {
         return current;
@@ -34,10 +35,18 @@ public class ShooterStateStore implements Supplier<ShooterState> {
         set(ShooterState.zero);
     }
 
+    public ShooterState getIdle() {
+        return new ShooterState(idleSupplier.getAsDouble(), 0);
+    }
+
     public void idle() {
         // store the last position so that we can return there if we want to
         last = current;
-        set(ShooterState.idle);
+        set(getIdle());
+    }
+
+    public boolean isIdle() {
+        return current.equals(getIdle()) || current.equals(ShooterState.zero);
     }
 
     public void returnToLast() {
