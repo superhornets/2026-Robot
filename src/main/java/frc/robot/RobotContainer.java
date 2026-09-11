@@ -186,7 +186,7 @@ public class RobotContainer {
 
         Trigger snakeDriveOnIntakeTrigger = new Trigger(snakeDriveOnIntake::getAsBoolean);
 
-        driverController.rightTrigger().and(snakeDriveOnIntakeTrigger).whileTrue(
+        driverController.rightBumper().and(snakeDriveOnIntakeTrigger).whileTrue(
             Commands.parallel(
                     IntakeCommands.intake(false, intake),
                     DriveCommands.snakeDrive(
@@ -196,7 +196,7 @@ public class RobotContainer {
                         speedSupplier))
         );
 
-        driverController.rightTrigger().and(snakeDriveOnIntakeTrigger.negate()).whileTrue(
+        driverController.rightBumper().and(snakeDriveOnIntakeTrigger.negate()).whileTrue(
             IntakeCommands.intake(false, intake)
         );
 

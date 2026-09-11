@@ -6,6 +6,8 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.preferences.PreferenceNumber;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -18,6 +20,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private double flywheelSetpointRPM = 0.0;
   private double hoodSetpointRotations = 0.0;
   private double feederSetpointRPM = 0.0;
+
+  private PreferenceNumber
 
   public ShooterSubsystem(ShooterIO io, ShooterStateStore store) {
     this.io = io;
@@ -117,6 +121,16 @@ public class ShooterSubsystem extends SubsystemBase {
   @AutoLogOutput(key = "Shooter/FeederSetpointRPM")
   public double getFeederSetpointRPM() {
     return feederSetpointRPM;
+  }
+
+  @AutoLogOutput(key = "Shooter/FeederVelocityRPM")
+  public double getFeederVelocityRPM() {
+    return inputs.feederVelocityRPM;
+  }
+
+  @AutoLogOutput(key = "Shooter/SpindexerVelocityRPM")
+  public double getSpindexerVelocityRPM() {
+    return inputs.spindexerVelocityRPM;
   }
 
   @AutoLogOutput(key = "Shooter/isAtSpeed")
