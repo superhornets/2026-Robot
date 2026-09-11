@@ -21,8 +21,6 @@ public class ShooterSubsystem extends SubsystemBase {
   private double hoodSetpointRotations = 0.0;
   private double feederSetpointRPM = 0.0;
 
-  private PreferenceNumber
-
   public ShooterSubsystem(ShooterIO io, ShooterStateStore store) {
     this.io = io;
     this.stateStore = store;

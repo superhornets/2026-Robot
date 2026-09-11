@@ -69,7 +69,7 @@ public class IntakeIOHardware implements IntakeIO {
 
   private void configureRoller() {
     TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
-    rollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rollerConfig.CurrentLimits.StatorCurrentLimit = 40;
     rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;

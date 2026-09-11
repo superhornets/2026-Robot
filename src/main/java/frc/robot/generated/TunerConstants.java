@@ -61,12 +61,13 @@ public class TunerConstants {
   private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration()
     .withCurrentLimits(
         new CurrentLimitsConfigs()
-        .withStatorCurrentLimit(Amps.of(30))
+        .withStatorCurrentLimit(Amps.of(50))
         .withStatorCurrentLimitEnable(true)
-        .withSupplyCurrentLimit(Amps.of(30))
+        .withSupplyCurrentLimit(Amps.of(50))
         .withSupplyCurrentLimitEnable(true)
         .withSupplyCurrentLowerLimit(Amps.of(10))
         .withSupplyCurrentLimitEnable(true)
+        .withSupplyCurrentLowerTime(0.1)
     );
   private static final TalonFXConfiguration steerInitialConfigs =
       new TalonFXConfiguration()
@@ -178,7 +179,7 @@ public class TunerConstants {
   private static final int kBackRightDriveMotorId = 12;
   private static final int kBackRightSteerMotorId = 11;
   private static final int kBackRightEncoderId = 13;
-  private static final Angle kBackRightEncoderOffset = Rotations.of(-0.32763671875);
+  private static final Angle kBackRightEncoderOffset = Rotations.of(-0.05029296875);
   private static final boolean kBackRightSteerMotorInverted = false;
   private static final boolean kBackRightEncoderInverted = false;
 

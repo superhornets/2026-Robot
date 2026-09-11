@@ -1,6 +1,6 @@
 {
   "version": 1.0,
-  "grid_size": 64,
+  "grid_size": 32,
   "tabs": [
     {
       "name": "Teleoperated",
@@ -8,13 +8,13 @@
         "layouts": [
           {
             "title": "Shooter",
-            "x": 768.0,
-            "y": 128.0,
-            "width": 448.0,
-            "height": 256.0,
+            "x": 896.0,
+            "y": 256.0,
+            "width": 640.0,
+            "height": 416.0,
             "type": "List Layout",
             "properties": {
-              "label_position": "HIDDEN"
+              "label_position": "TOP"
             },
             "children": [
               {
@@ -52,6 +52,40 @@
                   "inverted": false,
                   "orientation": "horizontal"
                 }
+              },
+              {
+                "title": "AlignedToHub",
+                "x": 960.0,
+                "y": 544.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/AdvantageKit/RealOutputs/Drive/AlignedToHub",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Flywheel and Hood Ready",
+                "x": 1088.0,
+                "y": 544.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/AdvantageKit/RealOutputs/Shooter/Ready",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
               }
             ]
           }
@@ -59,9 +93,9 @@
         "containers": [
           {
             "title": "FMSInfo",
-            "x": 768.0,
+            "x": 896.0,
             "y": 0.0,
-            "width": 448.0,
+            "width": 384.0,
             "height": 128.0,
             "type": "FMSInfo",
             "properties": {
@@ -71,10 +105,10 @@
           },
           {
             "title": "photonvision_Port_1182_Output_MJPEG_Server",
-            "x": 448.0,
-            "y": 384.0,
-            "width": 320.0,
-            "height": 256.0,
+            "x": 480.0,
+            "y": 512.0,
+            "width": 416.0,
+            "height": 288.0,
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/photonvision_Port_1182_Output_MJPEG_Server",
@@ -86,8 +120,8 @@
             "title": "Field",
             "x": 0.0,
             "y": 0.0,
-            "width": 768.0,
-            "height": 384.0,
+            "width": 896.0,
+            "height": 512.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Field",
@@ -104,39 +138,10 @@
             }
           },
           {
-            "title": "MatchTime",
-            "x": 768.0,
-            "y": 384.0,
-            "width": 320.0,
-            "height": 128.0,
-            "type": "Match Time",
-            "properties": {
-              "topic": "/AdvantageKit/DriverStation/MatchTime",
-              "period": 0.06,
-              "data_type": "double",
-              "time_display_mode": "Minutes and Seconds",
-              "red_start_time": 20,
-              "yellow_start_time": 30
-            }
-          },
-          {
-            "title": "Hub Status",
-            "x": 1088.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Single Color View",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Match/HubDisplayColor",
-              "period": 0.06,
-              "data_type": "string"
-            }
-          },
-          {
             "title": "Auto Choices",
-            "x": 768.0,
-            "y": 512.0,
-            "width": 448.0,
+            "x": 896.0,
+            "y": 672.0,
+            "width": 640.0,
             "height": 128.0,
             "type": "ComboBox Chooser",
             "properties": {
@@ -148,9 +153,9 @@
           {
             "title": "BatteryVoltage",
             "x": 0.0,
-            "y": 384.0,
-            "width": 448.0,
-            "height": 256.0,
+            "y": 512.0,
+            "width": 480.0,
+            "height": 288.0,
             "type": "Graph",
             "properties": {
               "topic": "/AdvantageKit/SystemStats/BatteryVoltage",
@@ -162,37 +167,32 @@
             }
           },
           {
-            "title": "Aligned To Hub",
-            "x": 768.0,
-            "y": 640.0,
-            "width": 192.0,
-            "height": 128.0,
-            "type": "Boolean Box",
+            "title": "Hub Status",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Single Color View",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Drive/AlignedToHub",
+              "topic": "/AdvantageKit/RealOutputs/Match/HubDisplayColor",
               "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "data_type": "string"
             }
           },
           {
-            "title": "Shooter Ready",
-            "x": 960.0,
-            "y": 640.0,
-            "width": 256.0,
+            "title": "MatchTime",
+            "x": 896.0,
+            "y": 128.0,
+            "width": 384.0,
             "height": 128.0,
-            "type": "Boolean Box",
+            "type": "Match Time",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Shooter/Ready",
+              "topic": "/AdvantageKit/DriverStation/MatchTime",
               "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "data_type": "double",
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 20,
+              "yellow_start_time": 30
             }
           }
         ]
@@ -301,10 +301,10 @@
             "x": 0.0,
             "y": 0.0,
             "width": 576.0,
-            "height": 512.0,
+            "height": 416.0,
             "type": "List Layout",
             "properties": {
-              "label_position": "TOP"
+              "label_position": "LEFT"
             },
             "children": [
               {
@@ -378,14 +378,14 @@
             ]
           },
           {
-            "title": "List Layout",
+            "title": "Turning",
             "x": 256.0,
-            "y": 512.0,
+            "y": 416.0,
             "width": 320.0,
             "height": 256.0,
             "type": "List Layout",
             "properties": {
-              "label_position": "TOP"
+              "label_position": "LEFT"
             },
             "children": [
               {
@@ -448,9 +448,9 @@
           },
           {
             "title": "Reset To Defaults",
-            "x": 576.0,
-            "y": 640.0,
-            "width": 576.0,
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 256.0,
             "height": 256.0,
             "type": "List Layout",
             "properties": {
@@ -504,7 +504,7 @@
           {
             "title": "Intake Roller Speed",
             "x": 0.0,
-            "y": 768.0,
+            "y": 672.0,
             "width": 576.0,
             "height": 128.0,
             "type": "Number Slider",
@@ -538,9 +538,9 @@
           {
             "title": "Snake Drive When Intaking",
             "x": 0.0,
-            "y": 512.0,
+            "y": 416.0,
             "width": 256.0,
-            "height": 256.0,
+            "height": 96.0,
             "type": "Toggle Switch",
             "properties": {
               "topic": "/Preferences/Drive/SnakeDriveOnIntake",
