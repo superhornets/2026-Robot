@@ -12,6 +12,11 @@ public class OrchestraPlayCommand extends Command {
   }
 
   @Override
+  public String getName() {
+    return "Orchestra Play";
+  }
+
+  @Override
   public void initialize() {}
 
   @Override

@@ -90,7 +90,7 @@ public final class DriveCharacterizationCommands {
                   System.out.println("********** Drive FF Characterization Results **********");
                   System.out.println("\tkS: " + formatter.format(kS));
                   System.out.println("\tkV: " + formatter.format(kV));
-                }));
+                })).withName("Feedforward Characterization");
   }
 
   /** Measures the robot's wheel radius by spinning in a circle. */
@@ -159,7 +159,7 @@ public final class DriveCharacterizationCommands {
                               + " meters, "
                               + formatter.format(Units.metersToInches(wheelRadius))
                               + " inches");
-                    })));
+                    }))).withName("Wheel Radius Characterization");
   }
 
   private static class WheelRadiusCharacterizationState {

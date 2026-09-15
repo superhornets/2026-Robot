@@ -101,7 +101,7 @@ public final class DriveCommands {
 
           drive.runVelocity(chassisSpeeds);
         },
-        drive);
+        drive).withName("Joystick Drive");
   }
 
   /**
@@ -150,7 +150,8 @@ public final class DriveCommands {
                       : drive.getRotation()));
         },
         drive)
-        .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+        .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()))
+        .withName("Joystick Drive At Angle");
   }
 
   /** Rotates the robot in place to face the alliance hub, holding translation at zero. */
@@ -163,7 +164,7 @@ public final class DriveCommands {
     return joystickDriveAtAngle(
         drive, xSupplier, ySupplier,
         () -> RebuiltField.getTranslationToHub2D().getAngle(),
-        () -> 0.75);
+        () -> 0.75).withName("Align To Hub");
   }
 
   /**
@@ -232,7 +233,7 @@ public final class DriveCommands {
               double heading = drive.getRotation().getRadians();
               angleController.reset(heading);
               angleController.setGoal(heading);
-            });
+            }).withName("Snake Drive");
   }
 
   /**
@@ -268,7 +269,7 @@ public final class DriveCommands {
     }
 
     seq.add(Commands.runOnce(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 0.0)), drive));
-    return Commands.sequence(seq.toArray(new Command[0]));
+    return Commands.sequence(seq.toArray(new Command[0])).withName("Shake");
   }
 
   /** Convenience shake command with sane defaults (0.5 fraction, 0.2s pulses, 3 cycles). */

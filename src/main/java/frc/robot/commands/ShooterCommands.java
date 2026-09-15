@@ -21,7 +21,7 @@ public class ShooterCommands {
 
   /** Sets the shooter to the idle state, which spins the flywheel at a low speed for fast spin-up. */
   public static Command warmup(ShooterStateStore state) {
-    return Commands.runOnce(() -> state.idle());
+    return Commands.runOnce(() -> state.idle()).withName("Warmup");
   }
 
   /** Continuously primes the shooter for the hub, switching to the alliance-zone preset while in the neutral zone. */
@@ -34,7 +34,7 @@ public class ShooterCommands {
             state.set(RebuiltField.shooterStateForHub());
           }
         },
-        () -> state.idle());
+        () -> state.idle()).withName("Prime Shooter");
   }
 
   /** Incrementally adjusts hood angle and flywheel speed from joystick axes. Restores last manual state on start, resets on cancel. */
@@ -46,7 +46,7 @@ public class ShooterCommands {
               state.modifyAngle(-hoodChange.getAsDouble());
               state.modifySpeed(speedChange.getAsDouble());
             },
-            () -> state.idle()));
+            () -> state.idle())).withName("Adjust Aim");
   }
 
   /** Runs the feeder and spindexer while held, stopping both on release. */
@@ -54,7 +54,7 @@ public class ShooterCommands {
     return Commands.runEnd(
         () -> shooter.startFeeder(),
         () -> shooter.stopFeeder(),
-        shooter);
+        shooter).withName("Feed");
   }
 
   /** Reverses the spindexer to clear a jam. */
@@ -62,12 +62,12 @@ public class ShooterCommands {
     return Commands.runEnd(
         () -> shooter.startReverseFeeder(),
         () -> shooter.stopFeeder(),
-        shooter);
+        shooter).withName("Unjam");
   }
 
   /** Fires the feeder once — intended for use inside autonomous sequences. */
   public static Command triggerFeed(ShooterSubsystem shooter) {
-    return Commands.runOnce(() -> shooter.startFeeder(), shooter);
+    return Commands.runOnce(() -> shooter.startFeeder(), shooter).withName("Trigger Feed");
   }
 
   /**
@@ -81,7 +81,7 @@ public class ShooterCommands {
           state.idle();
           shooter.stopFeeder();
         },
-        shooter);
+        shooter).withName("Idle Shooter");
   }
 
   /** Waits until {@code ready} is true, then runs the feeder until interrupted. */
@@ -89,7 +89,7 @@ public class ShooterCommands {
     return Commands.sequence(
         Commands.waitUntil(ready),
         feed(shooter)
-    );
+    ).withName("Feed When Ready");
   }
 
   /**
@@ -110,7 +110,7 @@ public class ShooterCommands {
         DriveCommands.alignToHub(drive, xSupplier, ySupplier),
         primeShooter(state),
         feedWhenReady(shooter, readyToFire)
-    );
+    ).withName("Auto Shoot");
   }
 
   /**
@@ -122,7 +122,7 @@ public class ShooterCommands {
     return Commands.parallel(
         primeShooter(state),
         feedWhenReady(shooter, readyToFire)
-    );
+    ).withName("Auto Shoot");
   }
 
   /** Homes the hood by driving it to the hard stop, detecting a stall, then zeroing the encoder. */
@@ -130,6 +130,6 @@ public class ShooterCommands {
     return Commands.sequence(
         Commands.runOnce(() -> shooter.startHoodZeroing(), shooter),
         Commands.waitUntil(() -> shooter.isHoodStalled()),
-        Commands.runOnce(() -> shooter.setHoodZero(), shooter));
+        Commands.runOnce(() -> shooter.setHoodZero(), shooter)).withName("Home Hood");
   }
 }

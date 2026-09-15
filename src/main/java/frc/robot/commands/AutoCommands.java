@@ -41,7 +41,7 @@ public class AutoCommands {
         return Commands.sequence(
             PathCommands.goToCoordinate(() -> 2, () -> y, () -> angle, drive),
             buildShootRace(drive, shooterStateStore, shooterSubsystem, 10)
-        );
+        ).withName("Basic Auto");
     }
 
     public static Command basicAutoIntakeAgitate(double y, double angle, Drive drive, ShooterStateStore shooterStateStore, ShooterSubsystem shooterSubsystem, IntakeSubsystem intake) {
@@ -49,7 +49,7 @@ public class AutoCommands {
             PathCommands.goToCoordinate(() -> 2, () -> y, () -> angle, drive),
             buildShootRace(drive, shooterStateStore, shooterSubsystem, 10,
                 Commands.sequence(Commands.waitSeconds(1.5), IntakeCommands.intakeAgitate(intake)))
-        );
+        ).withName("Basic Auto Intake Agitate");
     }
 
     public static Command neutralAuto(double y, double angle, double intakeAngle, Drive drive, ShooterStateStore shooterStateStore, ShooterSubsystem shooterSubsystem, IntakeSubsystem intake) {
@@ -70,6 +70,6 @@ public class AutoCommands {
                 )
             ),
             PathCommands.goToCoordinate(() -> Constants.FieldConstants.center.getX(), () -> y, () -> intakeAngle, drive)
-        );
+        ).withName("Neutral Auto");
     }
 }

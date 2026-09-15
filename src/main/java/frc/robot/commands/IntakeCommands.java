@@ -19,7 +19,7 @@ public class IntakeCommands {
         () -> {
           intake.raise();
         },
-        intake);
+        intake).withName("Raise Intake");
   }
 
   public static Command lower(IntakeSubsystem intake) {
@@ -27,7 +27,7 @@ public class IntakeCommands {
         () -> {
           intake.lower();
         },
-        intake);
+        intake).withName("Lower Intake");
   }
 
   public static Command toggle(IntakeSubsystem intake) {
@@ -38,7 +38,7 @@ public class IntakeCommands {
       } else {
         intake.lower();
       }
-    }, intake);
+    }, intake).withName("Toggle Intake");
   }
 
   public static Command intake(Boolean reverse, IntakeSubsystem intake) {
@@ -70,6 +70,6 @@ public class IntakeCommands {
           intake.lower();
           intake.startRoller(false);
         }, intake)
-    );
+    ).withName("Intake Agitate");
   }
 }

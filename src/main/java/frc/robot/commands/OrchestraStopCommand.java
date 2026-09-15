@@ -12,6 +12,11 @@ public class OrchestraStopCommand extends Command {
   }
 
   @Override
+  public String getName() {
+    return "Orchestra Stop";
+  }
+
+  @Override
   public void initialize() {}
 
   @Override

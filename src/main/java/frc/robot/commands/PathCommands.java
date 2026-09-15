@@ -29,7 +29,7 @@ public class PathCommands {
   }
 
   public static Command goToHubCommand(Drive drive) {
-    return goToCoordinate(() -> 2, () -> 4, () -> 0, drive);
+    return goToCoordinate(() -> 2, () -> 4, () -> 0, drive).withName("Go To Hub");
   }
 
   public static Command goToCoordinate(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier angleSupplier, Drive drive) {
@@ -44,7 +44,7 @@ public class PathCommands {
               Rotation2d.fromDegrees(angleSupplier.getAsDouble()));
           return AutoBuilder.pathfindToPoseFlipped(targetPose, constraints, 0.0);
         },
-        Set.of(drive));
+        Set.of(drive)).withName("Go To Coordinate");
   }
 
   public static Command ClosestTrench(
@@ -91,6 +91,6 @@ public class PathCommands {
 
           return AutoBuilder.pathfindToPose(targetPose, constraints, 0.0);
         },
-        Set.of(drive));
+        Set.of(drive)).withName("Closest Trench");
   }
 }
