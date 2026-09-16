@@ -41,6 +41,16 @@ public class VisionConstants {
   public static double maxAmbiguity = 0.3;
   public static double maxZError = 0.75;
 
+  // Temporal and motion filtering thresholds. Start conservatively and tune from AdvantageKit logs.
+  public static double maxObservationAgeSeconds = 0.35;
+  public static double maxSingleTagAngularVelocityRadPerSec = 4.0;
+  public static double motionStdDevFactorPerRadPerSec = 0.15;
+
+  // Maximum disagreement from the odometry estimate at the observation timestamp. MegaTag 2 does
+  // not contain an independent rotation measurement, so its heading is not checked.
+  public static double maxPoseTranslationErrorMeters = 2.0;
+  public static double maxPoseRotationErrorRadians = Units.degreesToRadians(60.0);
+
   // Standard deviation baselines, for 1 meter distance and 1 tag
   // (Adjusted automatically based on distance and # of tags)
   public static double linearStdDevBaseline = 0.02; // Meters

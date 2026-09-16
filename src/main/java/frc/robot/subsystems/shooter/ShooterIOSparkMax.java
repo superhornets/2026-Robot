@@ -39,6 +39,8 @@ public class ShooterIOSparkMax implements ShooterIO {
 
   private final PreferenceNumber flywheelP = new PreferenceNumber("Shooter/FlywheelP", 0.0007);
   private final PreferenceNumber flywheelD = new PreferenceNumber("Shooter/FlywheelD", 0.0000);
+  private double appliedFlywheelP = Double.NaN;
+  private double appliedFlywheelD = Double.NaN;
 
   public ShooterIOSparkMax() {
     hoodMotor = new SparkMax(Constants.Shooter.CAN.kHood, MotorType.kBrushless);
@@ -82,6 +84,8 @@ public class ShooterIOSparkMax implements ShooterIO {
     flywheelMotorLeft.configure(
         flywheelConfig.inverted(true), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     flywheelControllerLeft = flywheelMotorLeft.getClosedLoopController();
+    appliedFlywheelP = flywheelP.get();
+    appliedFlywheelD = flywheelD.get();
 
     // Feeder
     feederMotor = new SparkFlex(Constants.Shooter.CAN.kFeeder, MotorType.kBrushless);
@@ -115,6 +119,8 @@ public class ShooterIOSparkMax implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
+    updateFlywheelGains();
+
     inputs.flywheelVelocityRPM = flywheelMotorRight.getEncoder().getVelocity();
     inputs.flywheelAtSetpoint = flywheelControllerRight.isAtSetpoint();
 
@@ -125,6 +131,24 @@ public class ShooterIOSparkMax implements ShooterIO {
 
     inputs.feederVelocityRPM = feederMotor.getEncoder().getVelocity();
     inputs.spindexerVelocityRPM = spindexerMotor.getEncoder().getVelocity();
+  }
+
+  /** Applies dashboard gain changes without resetting motor configuration or persisting tuning values. */
+  private void updateFlywheelGains() {
+    double newP = flywheelP.get();
+    double newD = flywheelD.get();
+    if (newP == appliedFlywheelP && newD == appliedFlywheelD) {
+      return;
+    }
+
+    SparkFlexConfig gainsConfig = new SparkFlexConfig();
+    gainsConfig.closedLoop.p(newP).d(newD);
+    flywheelMotorLeft.configure(
+        gainsConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    flywheelMotorRight.configure(
+        gainsConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    appliedFlywheelP = newP;
+    appliedFlywheelD = newD;
   }
 
   @Override

@@ -22,16 +22,27 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.DoubleFunction;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;
+  private final DoubleFunction<Optional<Pose2d>> poseAtTimestamp;
+  private final DoubleSupplier angularVelocityRadPerSec;
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
 
-  public Vision(VisionConsumer consumer, VisionIO... io) {
+  public Vision(
+      VisionConsumer consumer,
+      DoubleFunction<Optional<Pose2d>> poseAtTimestamp,
+      DoubleSupplier angularVelocityRadPerSec,
+      VisionIO... io) {
     this.consumer = consumer;
+    this.poseAtTimestamp = poseAtTimestamp;
+    this.angularVelocityRadPerSec = angularVelocityRadPerSec;
     this.io = io;
 
     // Initialize inputs
@@ -81,6 +92,8 @@ public class Vision extends SubsystemBase {
       List<Pose3d> robotPoses = new LinkedList<>();
       List<Pose3d> robotPosesAccepted = new LinkedList<>();
       List<Pose3d> robotPosesRejected = new LinkedList<>();
+      List<String> rejectionReasons = new LinkedList<>();
+      double angularVelocity = Math.abs(angularVelocityRadPerSec.getAsDouble());
 
       // Add tag poses
       for (int tagId : inputs[cameraIndex].tagIds) {
@@ -93,23 +106,14 @@ public class Vision extends SubsystemBase {
       // Loop over pose observations
       for (var observation : inputs[cameraIndex].poseObservations) {
         // Check whether to reject pose
-        boolean rejectPose =
-            observation.tagCount() == 0 // Must have at least one tag
-                || (observation.tagCount() == 1
-                    && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
-                || Math.abs(observation.pose().getZ())
-                    > maxZError // Must have realistic Z coordinate
-
-                // Must be within the field boundaries
-                || observation.pose().getX() < 0.0
-                || observation.pose().getX() > aprilTagLayout.getFieldLength()
-                || observation.pose().getY() < 0.0
-                || observation.pose().getY() > aprilTagLayout.getFieldWidth();
+        String rejectionReason = getRejectionReason(observation, angularVelocity);
+        boolean rejectPose = !rejectionReason.isEmpty();
 
         // Add pose to log
         robotPoses.add(observation.pose());
         if (rejectPose) {
           robotPosesRejected.add(observation.pose());
+          rejectionReasons.add(rejectionReason);
         } else {
           robotPosesAccepted.add(observation.pose());
         }
@@ -132,6 +136,9 @@ public class Vision extends SubsystemBase {
           linearStdDev *= cameraStdDevFactors[cameraIndex];
           angularStdDev *= cameraStdDevFactors[cameraIndex];
         }
+        double motionStdDevFactor = 1.0 + angularVelocity * motionStdDevFactorPerRadPerSec;
+        linearStdDev *= motionStdDevFactor;
+        angularStdDev *= motionStdDevFactor;
 
         // Send vision observation
         consumer.accept(
@@ -153,6 +160,12 @@ public class Vision extends SubsystemBase {
       Logger.recordOutput(
           "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesRejected",
           robotPosesRejected.toArray(new Pose3d[0]));
+      Logger.recordOutput(
+          "Vision/Camera" + Integer.toString(cameraIndex) + "/RejectionReasons",
+          rejectionReasons.toArray(new String[0]));
+      Logger.recordOutput(
+          "Vision/Camera" + Integer.toString(cameraIndex) + "/AngularVelocityRadPerSec",
+          angularVelocity);
       allTagPoses.addAll(tagPoses);
       allRobotPoses.addAll(robotPoses);
       allRobotPosesAccepted.addAll(robotPosesAccepted);
@@ -166,6 +179,33 @@ public class Vision extends SubsystemBase {
         "Vision/Summary/RobotPosesAccepted", allRobotPosesAccepted.toArray(new Pose3d[0]));
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected", allRobotPosesRejected.toArray(new Pose3d[0]));
+  }
+
+  /** Returns why an observation is unsafe to fuse, or an empty string when it is acceptable. */
+  private String getRejectionReason(VisionIO.PoseObservation observation, double angularVelocity) {
+    if (observation.tagCount() == 0) return "NoTags";
+    if (observation.tagCount() == 1 && observation.ambiguity() > maxAmbiguity) return "Ambiguous";
+    if (Math.abs(observation.pose().getZ()) > maxZError) return "InvalidZ";
+    if (observation.pose().getX() < 0.0 || observation.pose().getX() > aprilTagLayout.getFieldLength()
+        || observation.pose().getY() < 0.0 || observation.pose().getY() > aprilTagLayout.getFieldWidth()) {
+      return "OutsideField";
+    }
+
+    // AdvantageKit's timestamp advances with replay logs as well as on a live robot.
+    double observationAgeSeconds = Logger.getTimestamp() / 1.0e6 - observation.timestamp();
+    if (observationAgeSeconds < 0.0 || observationAgeSeconds > maxObservationAgeSeconds) return "Stale";
+    if (observation.tagCount() == 1 && angularVelocity > maxSingleTagAngularVelocityRadPerSec) {
+      return "SingleTagHighRotation";
+    }
+
+    Optional<Pose2d> estimatedPose = poseAtTimestamp.apply(observation.timestamp());
+    if (estimatedPose.isEmpty()) return "NoOdometrySample";
+    if (estimatedPose.get().getTranslation().getDistance(observation.pose().toPose2d().getTranslation())
+        > maxPoseTranslationErrorMeters) return "TranslationOutlier";
+    if (observation.type() != PoseObservationType.MEGATAG_2
+        && Math.abs(estimatedPose.get().getRotation().minus(observation.pose().toPose2d().getRotation()).getRadians())
+            > maxPoseRotationErrorRadians) return "RotationOutlier";
+    return "";
   }
 
   @FunctionalInterface

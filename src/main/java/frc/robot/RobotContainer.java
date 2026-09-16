@@ -122,8 +122,10 @@ public class RobotContainer {
         autoChooser.addOption("Middle", AutoCommands.basicAuto(4, 0, drive, shooterState, shooter));
         autoChooser.addOption("Right", AutoCommands.basicAuto(2, 45, drive, shooterState, shooter));
 
-        autoChooser.addOption("RightShootIntakeShoot", AutoBuilder.buildAuto("RightShootIntakeShoot"));
-        autoChooser.addOption("LeftShootIntakeShoot", new PathPlannerAuto("RightShootIntakeShoot", true));
+        autoChooser.addOption(
+            "RightShootIntakeShoot", PathCommands.pathfindThenRunAuto("RightShootIntakeShoot", drive));
+        autoChooser.addOption(
+            "LeftShootIntakeShoot", PathCommands.pathfindThenRunAuto("LeftShootIntakeShoot", drive));
 
         // // Set up SysId routines
         // autoChooser.addOption(

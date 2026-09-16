@@ -50,6 +50,7 @@ import frc.robot.util.RebuiltField;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.Optional;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -331,6 +332,16 @@ public class Drive extends SubsystemBase {
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
+  }
+
+  /** Returns the estimated pose at a past timestamp, when it is still in the estimator buffer. */
+  public Optional<Pose2d> getPoseAtTimestamp(double timestampSeconds) {
+    return poseEstimator.sampleAt(timestampSeconds);
+  }
+
+  /** Returns the measured robot-relative angular velocity in radians per second. */
+  public double getAngularVelocityRadPerSec() {
+    return getChassisSpeeds().omegaRadiansPerSecond;
   }
 
   /** Returns the current odometry rotation. */

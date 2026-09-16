@@ -68,15 +68,24 @@ public final class Subsystems {
             case REAL:
                 return new Vision(
                     drive::addVisionMeasurement,
+                    drive::getPoseAtTimestamp,
+                    drive::getAngularVelocityRadPerSec,
                     new VisionIOPhotonVision(camera0Name, robotToCamera0),
                     new VisionIOPhotonVision(camera1Name, robotToCamera1));
             case SIM:
                 return new Vision(
                     drive::addVisionMeasurement,
+                    drive::getPoseAtTimestamp,
+                    drive::getAngularVelocityRadPerSec,
                     new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
                     new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
             default:
-                return new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+                return new Vision(
+                    drive::addVisionMeasurement,
+                    drive::getPoseAtTimestamp,
+                    drive::getAngularVelocityRadPerSec,
+                    new VisionIO() {},
+                    new VisionIO() {});
         }
     }
 

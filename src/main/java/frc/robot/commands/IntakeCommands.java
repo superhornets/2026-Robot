@@ -15,30 +15,23 @@ public class IntakeCommands {
   private IntakeCommands() {}
 
   public static Command raise(IntakeSubsystem intake) {
-    return Commands.run(
-        () -> {
-          intake.raise();
-        },
-        intake).withName("Raise Intake");
+    return Commands.runOnce(intake::raise, intake).withName("Raise Intake");
   }
 
   public static Command lower(IntakeSubsystem intake) {
-    return Commands.run(
-        () -> {
-          intake.lower();
-        },
-        intake).withName("Lower Intake");
+    return Commands.runOnce(intake::lower, intake).withName("Lower Intake");
   }
 
   public static Command toggle(IntakeSubsystem intake) {
-    return Commands.run(
-    () -> {
-      if (intake.isLowered()) {
-        intake.raise();
-      } else {
-        intake.lower();
-      }
-    }, intake).withName("Toggle Intake");
+    return Commands.runOnce(
+        () -> {
+          if (intake.isLowered()) {
+            intake.raise();
+          } else {
+            intake.lower();
+          }
+        },
+        intake).withName("Toggle Intake");
   }
 
   public static Command intake(Boolean reverse, IntakeSubsystem intake) {

@@ -37,9 +37,12 @@ public class IntakeIOHardware implements IntakeIO {
 
   private final DutyCycleOut rollerDutyCycle = new DutyCycleOut(0);
   private final VelocityVoltage rollerVelocity = new VelocityVoltage(0);
+  private final TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
 
   private final PreferenceNumber rollerP;
   private final PreferenceNumber rollerD;
+  private double appliedRollerP = Double.NaN;
+  private double appliedRollerD = Double.NaN;
 
   public IntakeIOHardware(int armID, int rollerID) {
     servo1 = new Servo(Constants.Intake.kServo1Port);
@@ -68,7 +71,6 @@ public class IntakeIOHardware implements IntakeIO {
   }
 
   private void configureRoller() {
-    TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
     rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rollerConfig.CurrentLimits.StatorCurrentLimit = 40;
@@ -77,13 +79,32 @@ public class IntakeIOHardware implements IntakeIO {
     rollerConfig.Slot0.kD = rollerD.get();
     rollerConfig.Slot0.kV = 0.12;
     rollerMotor.getConfigurator().apply(rollerConfig);
+    appliedRollerP = rollerConfig.Slot0.kP;
+    appliedRollerD = rollerConfig.Slot0.kD;
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
+    updateRollerGains();
+
     inputs.armPositionRotations = armMotor.getAbsoluteEncoder().getPosition();
     inputs.armAtSetpoint = armController.isAtSetpoint();
     inputs.rollerVelocityRPM = rollerMotor.getVelocity().getValueAsDouble() * 60.0;
+  }
+
+  /** Applies dashboard gain changes without replacing the roller's safety or motor settings. */
+  private void updateRollerGains() {
+    double newP = rollerP.get();
+    double newD = rollerD.get();
+    if (newP == appliedRollerP && newD == appliedRollerD) {
+      return;
+    }
+
+    rollerConfig.Slot0.kP = newP;
+    rollerConfig.Slot0.kD = newD;
+    rollerMotor.getConfigurator().apply(rollerConfig);
+    appliedRollerP = newP;
+    appliedRollerD = newD;
   }
 
   @Override

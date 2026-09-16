@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
@@ -30,6 +32,18 @@ public class PathCommands {
 
   public static Command goToHubCommand(Drive drive) {
     return goToCoordinate(() -> 2, () -> 4, () -> 0, drive).withName("Go To Hub");
+  }
+
+  /** Pathfinds to an auto's blue-alliance starting pose, then runs that auto. */
+  public static Command pathfindThenRunAuto(String autoName, Drive drive) {
+    PathPlannerAuto auto = new PathPlannerAuto(autoName);
+    Pose2d startingPose = auto.getStartingPose();
+    PathConstraints constraints =
+        new PathConstraints(4.0, 3.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+
+    return Commands.sequence(
+            AutoBuilder.pathfindToPoseFlipped(startingPose, constraints, 0.0), auto)
+        .withName("Pathfind Then Run " + autoName);
   }
 
   public static Command goToCoordinate(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier angleSupplier, Drive drive) {
