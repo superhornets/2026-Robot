@@ -220,7 +220,7 @@ public class RobotContainer {
 
     private void configureOperatorBindings() {
         operatorController.y().whileTrue(ShooterCommands.primeShooter(shooterState));
-        operatorController.b().whileTrue(ShooterCommands.adjustAim(shooterState, operatorController::getLeftY, operatorController::getLeftX));
+        operatorController.b().whileTrue(ShooterCommands.adjustAim(shooterState, driverController::getLeftY, driverController::getLeftX));
 
         operatorController.rightTrigger().whileTrue(ShooterCommands.feed(shooter));
         operatorController.leftTrigger().whileTrue(ShooterCommands.unjam(shooter));
